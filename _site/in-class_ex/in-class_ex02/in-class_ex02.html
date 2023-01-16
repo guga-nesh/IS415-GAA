@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2023-01-16">
 
 <title>IS415-GAA - In-Class Exercise 2: Geospatial Data Wrangling</title>
 <style>
@@ -185,7 +186,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#objective" id="toc-objective" class="nav-link active" data-scroll-target="#objective">Objective</a></li>
+  <li><a href="#import-sf-tidyverse-and-funmodeling" id="toc-import-sf-tidyverse-and-funmodeling" class="nav-link" data-scroll-target="#import-sf-tidyverse-and-funmodeling">Import sf, tidyverse, and funModeling</a></li>
+  <li><a href="#import-geospatial-data" id="toc-import-geospatial-data" class="nav-link" data-scroll-target="#import-geospatial-data">Import Geospatial Data</a>
+  <ul class="collapse">
+  <li><a href="#geoboundaries" id="toc-geoboundaries" class="nav-link" data-scroll-target="#geoboundaries">geoBoundaries</a></li>
+  <li><a href="#nga" id="toc-nga" class="nav-link" data-scroll-target="#nga">NGA</a></li>
+  </ul></li>
+  <li><a href="#import-aspatial-data" id="toc-import-aspatial-data" class="nav-link" data-scroll-target="#import-aspatial-data">Import Aspatial Data</a></li>
+  <li><a href="#converting-aspatial-data-into-geospatial" id="toc-converting-aspatial-data-into-geospatial" class="nav-link" data-scroll-target="#converting-aspatial-data-into-geospatial">Converting Aspatial Data into Geospatial</a></li>
+  <li><a href="#projection-transformation" id="toc-projection-transformation" class="nav-link" data-scroll-target="#projection-transformation">Projection transformation</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -200,6 +216,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 16, 2023</p>
+    </div>
+  </div>
   
     
   </div>
@@ -207,13 +229,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
+<section id="objective" class="level2">
+<h2 class="anchored" data-anchor-id="objective">Objective</h2>
+<p>Geospatial analytics hold tremendous potential to address complex problems facing society. In this study, you are tasked to apply appropriate geospatial data wrangling methods to prepare the data for water point mapping study. For the purpose of this study, Nigeria will be used as the study country.</p>
+</section>
+<section id="import-sf-tidyverse-and-funmodeling" class="level2">
+<h2 class="anchored" data-anchor-id="import-sf-tidyverse-and-funmodeling">Import sf, tidyverse, and funModeling</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse, funModeling)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="import-geospatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="import-geospatial-data">Import Geospatial Data</h2>
+<section id="geoboundaries" class="level3">
+<h3 class="anchored" data-anchor-id="geoboundaries">geoBoundaries</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>geoBoundaries <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/geospatial/"</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">layer=</span><span class="st">"geoBoundaries-NGA-ADM2"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs=</span><span class="dv">26392</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>geoBoundaries <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">layer =</span> <span class="st">"geoBoundaries-NGA-ADM2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `geoBoundaries-NGA-ADM2' from data source 
   `C:\guga-nesh\IS415-GAA\in-class_ex\in-class_ex02\data\geospatial' 
@@ -225,22 +257,162 @@ Bounding box:  xmin: 2.668534 ymin: 4.273007 xmax: 14.67882 ymax: 13.89442
 Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
+</section>
+<section id="nga" class="level3">
+<h3 class="anchored" data-anchor-id="nga">NGA</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>NGA <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/geospatial/"</span>,</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">layer=</span><span class="st">'nga_admbnda_adm2_osgof_20190417'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>nga <span class="ot">=</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">layer =</span> <span class="st">"nga_admbnda_adm0_osgof_20190417"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Reading layer `nga_admbnda_adm2_osgof_20190417' from data source 
+<pre><code>Reading layer `nga_admbnda_adm0_osgof_20190417' from data source 
   `C:\guga-nesh\IS415-GAA\in-class_ex\in-class_ex02\data\geospatial' 
   using driver `ESRI Shapefile'
-Simple feature collection with 774 features and 16 fields
+Simple feature collection with 1 feature and 10 fields
 Geometry type: MULTIPOLYGON
 Dimension:     XY
 Bounding box:  xmin: 2.668534 ymin: 4.273007 xmax: 14.67882 ymax: 13.89442
 Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
+</section>
+</section>
+<section id="import-aspatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="import-aspatial-data">Import Aspatial Data</h2>
+<p>First we need more information about the data set so I used <code>spec()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>wp_nga <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/WPDX.csv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">#clean_country_name</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"Nigeria"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>wp_nga</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 95,008 × 70
+   row_id `#source`      #lat_…¹ #lon_…² #repo…³ #stat…⁴ #wate…⁵ #wate…⁶ #wate…⁷
+    &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
+ 1 429068 GRID3             7.98    5.12 08/29/… Unknown &lt;NA&gt;    &lt;NA&gt;    Tapsta…
+ 2 222071 Federal Minis…    6.96    3.60 08/16/… Yes     Boreho… Well    Mechan…
+ 3 160612 WaterAid          6.49    7.93 12/04/… Yes     Boreho… Well    Hand P…
+ 4 160669 WaterAid          6.73    7.65 12/04/… Yes     Boreho… Well    &lt;NA&gt;   
+ 5 160642 WaterAid          6.78    7.66 12/04/… Yes     Boreho… Well    Hand P…
+ 6 160628 WaterAid          6.96    7.78 12/04/… Yes     Boreho… Well    Hand P…
+ 7 160632 WaterAid          7.02    7.84 12/04/… Yes     Boreho… Well    Hand P…
+ 8 642747 Living Water …    7.33    8.98 10/03/… Yes     Boreho… Well    Mechan…
+ 9 642456 Living Water …    7.17    9.11 10/03/… Yes     Boreho… Well    Hand P…
+10 641347 Living Water …    7.20    9.22 03/28/… Yes     Boreho… Well    Hand P…
+# … with 94,998 more rows, 61 more variables: `#water_tech_category` &lt;chr&gt;,
+#   `#facility_type` &lt;chr&gt;, `#clean_country_name` &lt;chr&gt;, `#clean_adm1` &lt;chr&gt;,
+#   `#clean_adm2` &lt;chr&gt;, `#clean_adm3` &lt;chr&gt;, `#clean_adm4` &lt;chr&gt;,
+#   `#install_year` &lt;dbl&gt;, `#installer` &lt;chr&gt;, `#rehab_year` &lt;lgl&gt;,
+#   `#rehabilitator` &lt;lgl&gt;, `#management_clean` &lt;chr&gt;, `#status_clean` &lt;chr&gt;,
+#   `#pay` &lt;chr&gt;, `#fecal_coliform_presence` &lt;chr&gt;,
+#   `#fecal_coliform_value` &lt;dbl&gt;, `#subjective_quality` &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="converting-aspatial-data-into-geospatial" class="level2">
+<h2 class="anchored" data-anchor-id="converting-aspatial-data-into-geospatial">Converting Aspatial Data into Geospatial</h2>
+<p>We can create a new column called geometry. Using <code>st_as_sfc()</code> we can convert a foreign geometry object into an sfc <em>(simple feature geometry list column)</em> object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>wp_nga<span class="sc">$</span>geometry <span class="ot">=</span> <span class="fu">st_as_sfc</span>(wp_nga<span class="sc">$</span><span class="st">`</span><span class="at">New Georeferenced Column</span><span class="st">`</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>wp_nga<span class="sc">$</span>geometry</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 95008 features 
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 2.707441 ymin: 4.301812 xmax: 14.21828 ymax: 13.86568
+CRS:           NA
+First 5 geometries:</code></pre>
+</div>
+</div>
+<p>Or we can simply use the <code>st_sf()</code> function…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># EPSG 4326 is wgs84 GCS</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>wp_sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(wp_nga, <span class="at">crs=</span><span class="dv">4326</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>wp_sf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 95008 features and 70 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 2.707441 ymin: 4.301812 xmax: 14.21828 ymax: 13.86568
+Geodetic CRS:  WGS 84
+# A tibble: 95,008 × 71
+   row_id `#source`      #lat_…¹ #lon_…² #repo…³ #stat…⁴ #wate…⁵ #wate…⁶ #wate…⁷
+ *  &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
+ 1 429068 GRID3             7.98    5.12 08/29/… Unknown &lt;NA&gt;    &lt;NA&gt;    Tapsta…
+ 2 222071 Federal Minis…    6.96    3.60 08/16/… Yes     Boreho… Well    Mechan…
+ 3 160612 WaterAid          6.49    7.93 12/04/… Yes     Boreho… Well    Hand P…
+ 4 160669 WaterAid          6.73    7.65 12/04/… Yes     Boreho… Well    &lt;NA&gt;   
+ 5 160642 WaterAid          6.78    7.66 12/04/… Yes     Boreho… Well    Hand P…
+ 6 160628 WaterAid          6.96    7.78 12/04/… Yes     Boreho… Well    Hand P…
+ 7 160632 WaterAid          7.02    7.84 12/04/… Yes     Boreho… Well    Hand P…
+ 8 642747 Living Water …    7.33    8.98 10/03/… Yes     Boreho… Well    Mechan…
+ 9 642456 Living Water …    7.17    9.11 10/03/… Yes     Boreho… Well    Hand P…
+10 641347 Living Water …    7.20    9.22 03/28/… Yes     Boreho… Well    Hand P…
+# … with 94,998 more rows, 62 more variables: `#water_tech_category` &lt;chr&gt;,
+#   `#facility_type` &lt;chr&gt;, `#clean_country_name` &lt;chr&gt;, `#clean_adm1` &lt;chr&gt;,
+#   `#clean_adm2` &lt;chr&gt;, `#clean_adm3` &lt;chr&gt;, `#clean_adm4` &lt;chr&gt;,
+#   `#install_year` &lt;dbl&gt;, `#installer` &lt;chr&gt;, `#rehab_year` &lt;lgl&gt;,
+#   `#rehabilitator` &lt;lgl&gt;, `#management_clean` &lt;chr&gt;, `#status_clean` &lt;chr&gt;,
+#   `#pay` &lt;chr&gt;, `#fecal_coliform_presence` &lt;chr&gt;,
+#   `#fecal_coliform_value` &lt;dbl&gt;, `#subjective_quality` &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="projection-transformation" class="level2">
+<h2 class="anchored" data-anchor-id="projection-transformation">Projection transformation</h2>
+<p>We can find the appropriate PCS of Nigeria from <a href="https://epsg.io/">epsg.io</a></p>
+<p><img src="images/image-1541851854.png" class="img-fluid" width="375"></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>wp_sf <span class="ot">&lt;-</span> wp_sf <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">26392</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(wp_sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: EPSG:26392 
+  wkt:
+PROJCRS["Minna / Nigeria Mid Belt",
+    BASEGEOGCRS["Minna",
+        DATUM["Minna",
+            ELLIPSOID["Clarke 1880 (RGS)",6378249.145,293.465,
+                LENGTHUNIT["metre",1]]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4263]],
+    CONVERSION["Nigeria Mid Belt",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",4,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",8.5,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",0.99975,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",670553.98,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",0,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["(E)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["(N)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    USAGE[
+        SCOPE["Engineering survey, topographic mapping."],
+        AREA["Nigeria between 6°30'E and 10°30'E, onshore and offshore shelf."],
+        BBOX[3.57,6.5,13.53,10.51]],
+    ID["EPSG",26392]]</code></pre>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

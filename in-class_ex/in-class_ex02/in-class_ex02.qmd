@@ -1,18 +1,77 @@
 ---
 title: "In-Class Exercise 2: Geospatial Data Wrangling"
+date: "`r Sys.Date()`"
+format: html
+execute: 
+  message: false
+  warning: false
+editor: visual
 ---
+
+## Objective
+
+Geospatial analytics hold tremendous potential to address complex problems facing society. In this study, you are tasked to apply appropriate geospatial data wrangling methods to prepare the data for water point mapping study. For the purpose of this study, Nigeria will be used as the study country.
+
+## Import sf, tidyverse, and funModeling
 
 ```{r}
 pacman::p_load(sf, tidyverse, funModeling)
 ```
 
+## Import Geospatial Data
+
+### geoBoundaries
+
 ```{r}
-geoBoundaries <- st_read("data/geospatial/",
-                         layer="geoBoundaries-NGA-ADM2") %>%
-  st_transform(crs=26392)
+geoBoundaries = st_read(dsn = "data/geospatial", 
+                  layer = "geoBoundaries-NGA-ADM2")
+```
+
+### NGA
+
+```{r}
+nga = st_read(dsn = "data/geospatial", 
+                  layer = "nga_admbnda_adm0_osgof_20190417")
+```
+
+## Import Aspatial Data
+
+First we need more information about the data set so I used `spec()`
+
+```{r}
+wp_nga <- read_csv("data/aspatial/WPDX.csv") %>%
+  filter(`#clean_country_name` == "Nigeria")
 ```
 
 ```{r}
-NGA <- st_read("data/geospatial/",
-               layer='nga_admbnda_adm2_osgof_20190417')
+wp_nga
+```
+
+## Converting Aspatial Data into Geospatial
+
+We can create a new column called geometry. Using `st_as_sfc()` we can convert a foreign geometry object into an sfc *(simple feature geometry list column)* object.
+
+```{r}
+wp_nga$geometry = st_as_sfc(wp_nga$`New Georeferenced Column`)
+wp_nga$geometry
+```
+
+Or we can simply use the `st_sf()` function...
+
+```{r}
+# EPSG 4326 is wgs84 GCS
+wp_sf <- st_sf(wp_nga, crs=4326)
+wp_sf
+```
+
+## Projection transformation
+
+We can find the appropriate PCS of Nigeria from [epsg.io](https://epsg.io/)
+
+![](images/image-1541851854.png){width="375"}
+
+```{r}
+wp_sf <- wp_sf %>%
+  st_transform(crs = 26392)
+st_crs(wp_sf)
 ```
