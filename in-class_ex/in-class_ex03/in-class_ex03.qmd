@@ -29,7 +29,7 @@ The tmap package documentation can be found [here](https://cran.r-project.org/we
 NGA_wp <- read_rds("data/rds/NGA_wp.rds")
 ```
 
-### Visualizing distribution of functional and non-functional water point
+### Visualizing distribution of functional and non-functional water point using Choropleth Maps
 
 ```{r}
 p1 <- tm_shape(NGA_wp) + 
@@ -115,6 +115,7 @@ p2
 ```
 
 ```{r}
+# show both together on one row
 tmap_arrange(p2, p1, nrow=1)
 ```
 
@@ -122,7 +123,7 @@ tmap_arrange(p2, p1, nrow=1)
 # You can even show both maps as one by using Rates: usually we do this to see if both categories tell the same story
 NGA_wp <- NGA_wp %>%
   
-  # calc % (i.e., rate) of functional and non-functional water points
+  # use mutate() to calc % (i.e., rate) of functional and non-functional water points
   mutate(pct_functional = wp_functional/total_wp) %>%
   mutate(pct_nonfunctional = wp_nonfunctional/total_wp)
 ```
@@ -159,47 +160,49 @@ var <- NGA_wp["pct_functional"] %>%
 quantile(var[,1], percent)
 ```
 
+#### Writing functions to do the same functionality for specific data sets...
+
 ```{r}
-# creating a function to do whatever we did above so we can insert different objects to do the same thing
+# R function to extract a variable (i.e., wp_nonfunctional as a vector out of an sf data.frame)
 get.var <- function(vname, df) {
   v <- df[vname] %>%
     st_set_geometry(NULL)
     v <- unname(v[,1])
+    
+  # return vector with values (without a col name)
   return(v)
 }
 ```
 
 ```{r}
-percentmap <- function(vname, df, legtitle=NA, mtitle="Percentile Map") {
-  percent <- c(0, .01, .1, .5, .9, .99, 1)
-  var <- quantile(var, percent)
+# percentile mapping function
+percentmap <- function(vnam, df, legtitle=NA, mtitle="Percentile Map"){
+  percent <- c(0,.01,.1,.5,.9,.99,1)
+  var <- get.var(vnam, df)
   bperc <- quantile(var, percent)
   tm_shape(df) +
-  tm_polygons() + 
-  tm_shape(df) + 
-    tm_fill(vname,
-            title=legtitle,
-            breaks=bperc,
-            palette="Blues",
-            labels=c("< 1%", "1% - 10%", "10% - 50%", "50% - 90%", "90%- 99%", "99% - 100%")) + 
-    tm_borders() +
-    tm_layout(main.title = mtitle,
-              title.position = c("right", "bottom"))
+  tm_polygons() +
+  tm_shape(df) +
+     tm_fill(vnam,
+             title=legtitle,
+             breaks=bperc,
+             palette="Blues",
+          labels=c("< 1%", "1% - 10%", "10% - 50%", "50% - 90%", "90% - 99%", "> 99%"))  +
+  tm_borders() +
+  tm_layout(main.title = mtitle, 
+            title.position = c("right","bottom"))
 }
 ```
 
 ```{r}
-var = get.var("pct_functional", NGA_wp)
-percentmap("pct_functional", NGA_wp,)
-```
-
-```{r}
-percentmap("pct_nonfunctional", NGA_wp)
+# test the function
+percentmap("total_wp", NGA_wp)
 ```
 
 ### Visualizing using a Box Plot
 
 ```{r}
+# boxplot is as augmented quartile map with an additional lower and upper category.
 ggplot(data = NGA_wp,
        aes(x = "",
            y = wp_nonfunctional)) + 
@@ -207,6 +210,93 @@ ggplot(data = NGA_wp,
 ```
 
 ```{r}
-# creating a boxplot function
+# creating a boxbreaks function
+# arguments - v: vector with observations, mult: multiplier for IQR (default 1.5)
+# returns - bb: vector with 7 breakpoints compute quartile and fences
 
+boxbreaks <- function(v,mult=1.5) {
+  qv <- unname(quantile(v))
+  iqr <- qv[4] - qv[2]
+  upfence <- qv[4] + mult * iqr
+  lofence <- qv[2] - mult * iqr
+  # initialize break points vector
+  bb <- vector(mode="numeric",length=7)
+  # logic for lower and upper fences
+  if (lofence < qv[1]) {  # no lower outliers
+    bb[1] <- lofence
+    bb[2] <- floor(qv[1])
+  } else {
+    bb[2] <- lofence
+    bb[1] <- qv[1]
+  }
+  if (upfence > qv[5]) { # no upper outliers
+    bb[7] <- upfence
+    bb[6] <- ceiling(qv[5])
+  } else {
+    bb[6] <- upfence
+    bb[7] <- qv[5]
+  }
+  bb[3:5] <- qv[2:4]
+  return(bb)
+}
+```
+
+```{r}
+# creating the get.var function
+# arguments - vname: variable name (in quotes), df: name of sf data.frame
+# returns - v: vector with values (without col name)
+get.var <- function(vname,df) {
+  v <- df[vname] %>% st_set_geometry(NULL)
+  v <- unname(v[,1])
+  return(v)
+}
+```
+
+```{r}
+# test function
+var <- get.var("wp_nonfunctional", NGA_wp) 
+boxbreaks(var)
+```
+
+#### Boxmap function
+
+```{r}
+boxmap <- function(vnam, df, 
+                   legtitle=NA,
+                   mtitle="Box Map",
+                   mult=1.5){
+  var <- get.var(vnam,df)
+  bb <- boxbreaks(var)
+  tm_shape(df) +
+    tm_polygons() +
+  tm_shape(df) +
+     tm_fill(vnam,title=legtitle,
+             breaks=bb,
+             palette="Set3",
+          labels = c("lower outlier", 
+                     "< 25%", 
+                     "25% - 50%", 
+                     "50% - 75%",
+                     "> 75%", 
+                     "upper outlier"))  +
+  tm_borders() +
+  tm_layout(main.title = mtitle, 
+            title.position = c("left",
+                               "top"))
+}
+```
+
+```{r}
+tmap_mode("plot")
+boxmap("wp_nonfunctional", NGA_wp)
+```
+
+### Recode to zero
+
+This code chunk is used to recode LGAs with zero total water points into NA.
+
+```{r}
+NGA_wp <- NGA_wp %>%
+  mutate(wp_functional = na_if(
+    total_wp, total_wp < 0))
 ```
