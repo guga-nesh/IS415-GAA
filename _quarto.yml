@@ -11,7 +11,7 @@ website:
     left: 
       - text: "Hands-on Exercise"
         menu: 
-          - text: "1 Geospatial Data Wrangling with R"
+          - text: "2 Choropleth Mapping with R"
             href: "hands-on_ex/hands-on_ex02/hands-on_ex02.html"
       - text: "In-Class Exercise"
         menu: 

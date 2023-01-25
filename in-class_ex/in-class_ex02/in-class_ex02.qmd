@@ -25,13 +25,17 @@ pacman::p_load(sf, tidyverse, funModeling)
 ```{r}
 geoBoundaries = st_read(dsn = "data/geospatial", 
                   layer = "geoBoundaries-NGA-ADM2")
+
+# should use st_transform(crs=26392) -> convert it from degrees to meters
 ```
 
 ### NGA
 
 ```{r}
 nga = st_read(dsn = "data/geospatial", 
-                  layer = "nga_admbnda_adm0_osgof_20190417")
+                  layer = "nga_admbnda_adm2_osgof_20190417")
+
+# should use st_transform(crs=26392) -> convert it from degrees to meters
 ```
 
 ## Import Aspatial Data
@@ -41,6 +45,9 @@ First we need more information about the data set so I used `spec()`
 ```{r}
 wp_nga <- read_csv("data/aspatial/WPDX.csv") %>%
   filter(`#clean_country_name` == "Nigeria")
+
+# use ` for variables with spaces
+# use " for attributes
 ```
 
 ```{r}
@@ -64,6 +71,55 @@ wp_sf <- st_sf(wp_nga, crs=4326)
 wp_sf
 ```
 
+## Excluding redundant fields
+
+```{r}
+nga <- nga %>%
+  select(c(3:4, 8:9))
+```
+
+```{r}
+# checking for duplicate name
+nga$ADM2_EN[duplicated(nga$ADM2_EN)==TRUE]
+```
+
+```{r}
+wp_sf_nga <- wp_sf %>%
+  rename(status_clean = '#status_clean') %>%
+  select(status_clean) %>%
+  mutate(status_clean = replace_na(
+    status_clean, "unknown"))
+```
+
+```{r}
+wp_functional <- wp_sf_nga %>%
+  filter(status_clean %in%
+           c("Functional",
+             "Functional but not in use",
+             "Functional but needs repair"))
+```
+
+```{r}
+wp_nonfunctional <- wp_sf_nga %>%
+  filter(status_clean %in%
+           c("Abandoned/Decommissioned",
+             "Abandoned",
+             "Non-Functional due to dry season",
+             "Non-Functional",
+             "Non functional due to dry season"))
+```
+
+```{r}
+wp_unknown <- wp_sf_nga %>%
+  filter(status_clean %in% c("unknown"))
+```
+
+```{r}
+
+
+NGA_wp <- nga %>%   mutate(`total_wp` = lengths(     st_intersects(nga, wp_sf_nga))) %>%   mutate(`wp_functional` = lengths(     st_intersects(nga, wp_functional))) %>%   mutate(`wp_nonfunctional` = lengths(     st_intersects(nga, wp_nonfunctional))) %>%   mutate(`wp_unknown` = lengths(     st_intersects(nga, wp_unknown)))
+```
+
 ## Projection transformation
 
 We can find the appropriate PCS of Nigeria from [epsg.io](https://epsg.io/)
@@ -71,6 +127,9 @@ We can find the appropriate PCS of Nigeria from [epsg.io](https://epsg.io/)
 ![](images/image-1541851854.png){width="375"}
 
 ```{r}
+# Previously we used the wgs84 for original data...
+# Now we are transforming it to the Nigerian projection.
+
 wp_sf <- wp_sf %>%
   st_transform(crs = 26392)
 st_crs(wp_sf)
