@@ -1,0 +1,212 @@
+---
+title: "In-Class Exercise 3: Analytical Mapping"
+date: "25 January 2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+editor: visual
+---
+
+### Overview
+
+...
+
+### Installing and loading packages
+
+```{r}
+pacman::p_load(tmap, tidyverse, sf)
+```
+
+The tmap package documentation can be found [here](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html).
+
+### Importing data
+
+```{r}
+NGA_wp <- read_rds("data/rds/NGA_wp.rds")
+```
+
+### Visualizing distribution of functional and non-functional water point
+
+```{r}
+p1 <- tm_shape(NGA_wp) + 
+  tm_fill("wp_functional",
+          n = 10,
+          
+          #style is used for data classification method
+          style = "equal",
+          
+          #colour palettes are always plural
+          palette = "Blues") +  
+  
+  # line width
+  tm_borders(lwd = 0.1,
+             
+             # opacity
+             alpha = 1) + 
+  
+  # main.title places the title outside the plot
+  tm_layout(main.title = "Distribution of functional water point",
+            
+            # legend.outside puts legends in- or outside of your plot
+            legend.outside = FALSE)
+
+# things to take note: tm_fill() and tm_borders() combined is tm_polygon()
+
+p1
+```
+
+```{r}
+p1 <- tm_shape(NGA_wp) + 
+  tm_fill("wp_functional",
+          n = 10,
+          
+          #style is used for data classification method
+          style = "equal",
+          
+          #colour palettes are always plural
+          palette = "Blues") +  
+  
+  # line width
+  tm_borders(lwd = 0.1,
+             
+             # opacity
+             alpha = 1) + 
+  
+  # main.title places the title outside the plot
+  tm_layout(main.title = "Distribution of functional water points by LGAs",
+            
+            # legend.outside puts legends in- or outside of your plot
+            legend.outside = FALSE)
+
+# things to take note: tm_fill() and tm_borders() combined is tm_polygon()
+
+# p1 is a map object
+p1
+```
+
+```{r}
+p2 <- tm_shape(NGA_wp) + 
+  tm_fill("total_wp",
+          n = 10,
+          
+          #style is used for data classification method
+          style = "equal",
+          
+          #colour palettes are always plural
+          palette = "Blues") +  
+  
+  # line width
+  tm_borders(lwd = 0.1,
+             
+             # opacity
+             alpha = 1) + 
+  
+  # main.title places the title outside the plot
+  tm_layout(main.title = "Distribution of total water points by LGAs",
+            
+            # legend.outside puts legends in- or outside of your plot
+            legend.outside = FALSE)
+
+p2
+```
+
+```{r}
+tmap_arrange(p2, p1, nrow=1)
+```
+
+```{r}
+# You can even show both maps as one by using Rates: usually we do this to see if both categories tell the same story
+NGA_wp <- NGA_wp %>%
+  
+  # calc % (i.e., rate) of functional and non-functional water points
+  mutate(pct_functional = wp_functional/total_wp) %>%
+  mutate(pct_nonfunctional = wp_nonfunctional/total_wp)
+```
+
+```{r}
+tm_shape(NGA_wp) + 
+  tm_fill("pct_functional",
+          n = 10,
+          style = "equal",
+          palette = "Blues",
+          legend.hist = TRUE) +
+  tm_borders(lwd = 0.1,
+             alpha = 1) +
+  tm_layout(main.title = "Rate map of functional water points by LGAs",
+            legend.outside = TRUE)
+```
+
+### Visualization using a Percentile Map
+
+Tells you which areas are the top 10%. The six specific categories are: 0-1%, 1-10%, 10-50%, 50-90%, 90-99%, and 99-100%.
+
+```{r}
+# Data Preparation
+  # Exclude NA values
+NGA_wp <- NGA_wp %>%
+  drop_na()
+
+  # create customised classification and extract values
+percent <- c(0, .01, .1, .5, .9, .99, 1)
+var <- NGA_wp["pct_functional"] %>%
+  
+  # 
+  st_set_geometry(NULL)
+quantile(var[,1], percent)
+```
+
+```{r}
+# creating a function to do whatever we did above so we can insert different objects to do the same thing
+get.var <- function(vname, df) {
+  v <- df[vname] %>%
+    st_set_geometry(NULL)
+    v <- unname(v[,1])
+  return(v)
+}
+```
+
+```{r}
+percentmap <- function(vname, df, legtitle=NA, mtitle="Percentile Map") {
+  percent <- c(0, .01, .1, .5, .9, .99, 1)
+  var <- quantile(var, percent)
+  bperc <- quantile(var, percent)
+  tm_shape(df) +
+  tm_polygons() + 
+  tm_shape(df) + 
+    tm_fill(vname,
+            title=legtitle,
+            breaks=bperc,
+            palette="Blues",
+            labels=c("< 1%", "1% - 10%", "10% - 50%", "50% - 90%", "90%- 99%", "99% - 100%")) + 
+    tm_borders() +
+    tm_layout(main.title = mtitle,
+              title.position = c("right", "bottom"))
+}
+```
+
+```{r}
+var = get.var("pct_functional", NGA_wp)
+percentmap("pct_functional", NGA_wp,)
+```
+
+```{r}
+percentmap("pct_nonfunctional", NGA_wp)
+```
+
+### Visualizing using a Box Plot
+
+```{r}
+ggplot(data = NGA_wp,
+       aes(x = "",
+           y = wp_nonfunctional)) + 
+  geom_boxplot()
+```
+
+```{r}
+# creating a boxplot function
+
+```
