@@ -18,3 +18,15 @@ Spatial point processes of childcare centers in Singapore using 2nd order spatia
 ```{r}
 pacman::p_load(maptools, sf, raster, spatstat, tmap)
 ```
+
+Importing spatial data - use `sf`package
+
+```{r}
+childcare_sf <- st_read("data/child-care-services-geojson.geojson") %>%
+  st_transform(crs = 3414)
+
+sg_sf <- st_read(dsn = "data", layer="CostalOutline")
+
+mpsz_sf <- st_read(dsn = "data", 
+                layer = "MP14_SUBZONE_WEB_PL")
+```
