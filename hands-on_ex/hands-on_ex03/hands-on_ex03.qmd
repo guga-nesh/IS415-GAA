@@ -486,6 +486,40 @@ plot(density(childcare_tm_ppp.km,
 
 ## Nearest Neighbour Analysis
 
-```{r}
+We will perform the Clark-Evans test of aggregation for a spatial point pattern by using `clarkevans.test()` of **spatstat**. The hypothesis are:
 
+-   H0: Distribution of childcare services are randomly distributed
+
+-   H1: Distribution of childcare services are not randomly distributed
+
+The 95% confident interval will be used.
+
+### Testing spatial point patterns using Clark and Evans Test
+
+```{r}
+clarkevans.test(childcareSG_ppp,
+                correction="none",
+                clipregion="sg_owin",
+                alternative=c("clustered"),
+                nsim=99)
+```
+
+### Clark and Evans Test: CCK planning area
+
+```{r}
+clarkevans.test(childcare_ck_ppp,
+                correction="none",
+                clipregion=NULL,
+                alternative=c("two.sided"),
+                nsim=999)
+```
+
+### Clark and Evans Test: Tampines planning area
+
+```{r}
+clarkevans.test(childcare_tm_ppp,
+                correction="none",
+                clipregion=NULL,
+                alternative=c("two.sided"),
+                nsim=999)
 ```
