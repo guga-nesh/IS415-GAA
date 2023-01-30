@@ -1,0 +1,20 @@
+---
+title: "In-Class Exercise 4: 2nd Order Spatial Point Patterns Analysis"
+date: "30 January 2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+editor: visual
+---
+
+## Overview
+
+Spatial point processes of childcare centers in Singapore using 2nd order spatial point pattern analysis methods.
+
+```{r}
+pacman::p_load(maptools, sf, raster, spatstat, tmap)
+```

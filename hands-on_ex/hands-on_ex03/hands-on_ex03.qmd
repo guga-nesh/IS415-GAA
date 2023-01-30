@@ -492,7 +492,9 @@ We will perform the Clark-Evans test of aggregation for a spatial point pattern 
 
 -   H1: Distribution of childcare services are not randomly distributed
 
-The 95% confident interval will be used.
+The 95% confident interval will be used. If the index is:
+
+-   \*
 
 ### Testing spatial point patterns using Clark and Evans Test
 
@@ -501,18 +503,29 @@ clarkevans.test(childcareSG_ppp,
                 correction="none",
                 clipregion="sg_owin",
                 alternative=c("clustered"),
-                nsim=99)
+                nsim=99) # minimum is 99... which is 100 simulations
 ```
 
 ### Clark and Evans Test: CCK planning area
 
-```{r}
-clarkevans.test(childcare_ck_ppp,
-                correction="none",
-                clipregion=NULL,
-                alternative=c("two.sided"),
-                nsim=999)
-```
+-   <div>
+
+    -   <div>
+
+        ```{r}
+        clarkevans.test(childcare_ck_ppp,
+                  
+
+
+              correction="none",
+                        clipregion=NULL,
+                        alternative=c("two.sided"),
+                        nsim=999)
+        ```
+
+        </div>
+
+    </div>
 
 ### Clark and Evans Test: Tampines planning area
 
