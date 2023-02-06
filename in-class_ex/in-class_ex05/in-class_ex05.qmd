@@ -1,0 +1,94 @@
+---
+title: "In-Class Exercise 5: 2nd Order Spatial Point Patterns Analysis"
+date: "06 February 2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+editor: visual
+---
+
+# Install relevant packages
+
+```{r}
+pacman::p_load(tidyverse, tmap, sf, sfdep)
+```
+
+We only focus on local colocation quotient of the `sfdep` package
+
+# Import studyArea
+
+```{r}
+studyArea <- st_read(dsn = "data",
+                     layer = "study_area") %>%
+  st_transform(crs = 3829)#National Projection System of Taiwan
+```
+
+# Import stores data
+
+```{r}
+stores <- st_read(dsn = "data",
+                  layer = "stores") %>%
+  st_transform(crs = 3829)
+```
+
+# Plot the values imported
+
+```{r}
+# plotting functional and non-functional points in the area of study
+tmap_mode("view")
+tm_shape(studyArea) +  #always display the polygon first
+  tm_polygons() +
+tm_shape(stores) + 
+  tm_dots(col = "Name", #colour coded for 7-Elevent and Family Mart
+          size = 0.01,
+          border.col = "black",
+          border.lwd = 0.5) +
+  tm_view(set.zoom.limits = c(12, 16))
+```
+
+# Perform LCLQ calculation
+
+```{r}
+# neighbourhood list
+nb <- include_self(
+  st_knn(st_geometry(stores), 6)) # i want it to search for the 6 nearest neighbours - stay with even number you will never have a balance of neighbours
+
+# weight
+wt <- st_kernel_weights(nb, # calculate weight metrics using adaptive and gaussian mtd
+                        stores,
+                        "gaussian",
+                        adaptive = TRUE)
+
+FamilyMart <- stores %>%
+  filter(Name == "Family Mart")
+A <- FamilyMart$Name # variable is a vector to be used in local_colocation()
+
+SevenEleven <- stores %>%
+  filter(Name == "7-Eleven")
+B <- SevenEleven$Name
+```
+
+```{r}
+# A = target
+# B = neighbour to find out if colocate or not
+# once you take nsim it will take the p-value automatically
+LCLQ <- local_colocation(A, B, nb, wt, 49) # this is a data table with 2 columns in order to map it we need to combine it back with the stores. NA means cannot find colocation or isolation (not significant)
+LCLQ_stores <- cbind(stores, LCLQ) # only works if you don't sort the LCLQ it binds by the same table order from the orginal stores data
+```
+
+```{r}
+# see which points are colocated and their corresponding p-value
+tmap_mode("view")
+tm_shape(studyArea) + 
+  tm_polygons() + 
+tm_shape(LCLQ_stores) + 
+  tm_dots(col = "X7.Eleven",
+          size = 0.01,
+          border.col = "black",
+          border.lwd = 0.5) +
+  tm_view(set.zoom.limits = c(12, 16))
+```
