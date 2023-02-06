@@ -31,9 +31,20 @@ mpsz_sf <- st_read(dsn = "data",
                 layer = "MP14_SUBZONE_WEB_PL")
 ```
 
+Plotting the map of childcare centers:
+
+```{r}
+tmap_mode("view")
+tm_shape(childcare_sf)+
+  tm_dots(alph=0.5, # transparency (intensity of colour based on value)
+          size=0.01)+
+  tm_view(set.zoom.limits=c(11,24)) # zoom-out value, zoom-in value
+```
+
 Converting `sf` dataframe into `SpatialPointsDataFrame`.
 
 ```{r}
+# because we want to use spatstat
 childcare <- as_Spatial(childcare_sf)
 mpsz <- as_Spatial(mpsz_sf)
 sg <- as_Spatial(sg_sf)
