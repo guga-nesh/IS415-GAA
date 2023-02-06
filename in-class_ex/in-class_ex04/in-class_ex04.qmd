@@ -25,7 +25,9 @@ Importing spatial data - use `sf`package
 # point feature data providing both location and attribute info of childcare centres
 childcare_sf <- st_read("data/child-care-services-geojson.geojson") %>%
   st_transform(crs = 3414)
+```
 
+```{r}
 # polygon feature data showing the national boundary of Singapore
 sg_sf <- st_read(dsn = "data", layer="CostalOutline")
 
@@ -55,7 +57,7 @@ tm_shape(childcare_sf)+
 # tm_shape(mpsz_sf) +
 #   tm_polygons() +
 # tm_shape(childcare_sf)+
-#   tm_dots(size = 0.01)
+#   tm_dots()
 ```
 
 Converting `sf` dataframe into `SpatialPointsDataFrame`.
@@ -115,8 +117,9 @@ Creating an `owin` object to confine the analysis within a geographical area (in
 ```{r}
 sg_owin <- as(sg_sp, "owin")
 
-childcareSG_ppp = childcare_ppp_jit[sg_owin]
+childcareSG_ppp = childcare_ppp[sg_owin]
 plot(childcareSG_ppp)
+summary(childcareSG_ppp)
 ```
 
 ### 1st Order Spatial Analysis
@@ -136,7 +139,7 @@ Calculating KDE using fixed bandwidth
 childcareSG_ppp.km = rescale(childcareSG_ppp, 1000, "km")
 
 # computing KDE using fixed bandwidth
-kde_childcareSG_bw <- density(childcareSG_ppp.km,
+kde_childcareSG_bw <- density(childcareSG_ppp,
                               sigma=bw.diggle,
                               edge=TRUE,
                             kernel="gaussian") 
@@ -176,10 +179,9 @@ kde_childcareSG_bw_raster
 ```
 
 ```{r}
-# visualise the output
-# tm_shape(kde_childcareSG_bw_raster) + 
-#   tm_raster("v") +
-#   tm_layout(legend.position = c("right", "bottom"), frame = FALSE)
+tm_shape(kde_childcareSG_bw_raster) + 
+  tm_raster("v") +
+  tm_layout(legend.position = c("right", "bottom"), frame = FALSE)
 ```
 
 -   performing **confirmatory spatial point patterns analysis** by using **nearest neighbour** statistics
@@ -247,8 +249,55 @@ G_CK.csr <- envelope(childcare_ck_ppp, Gest, nsim = 999)
 plot(G_CK.csr)
 ```
 
+**How to analyse the above-mentioned graph:\
+**There is insufficient statistical evidence to reject the null hypothesis that the distribution is random.
+
+**How to read the graph:**
+
+Anything below the red line is regular pattern, anything above shows clustering. Inside the grey area, cannot reject the null hypothesis, outside grey area = statistically significant to reject.
+
 -   F-function
+
+```{r}
+F_CK = Fest(childcare_ck_ppp) # can do correction = "best"
+plot(F_CK)
+```
+
+```{r}
+F_CK.csr <- envelope(childcare_ck_ppp, Fest, nsim = 999)
+```
+
+```{r}
+plot(F_CK.csr)
+```
 
 -   K-function
 
+```{r}
+K_ck = Kest(childcare_ck_ppp, correction = "Ripley")
+plot(K_ck, . -r ~ r, ylab= "K(d)-r", xlab = "d(m)")
+```
+
+```{r}
+K_ck.csr <- envelope(childcare_ck_ppp, Kest, nsim = 99, rank = 1, glocal=TRUE)
+```
+
+```{r}
+plot(K_ck.csr, . - r ~ r, xlab="d", ylab="K(d)-r")
+```
+
 -   L-function
+
+```{r}
+L_ck = Lest(childcare_ck_ppp, correction = "Ripley")
+plot(L_ck, . -r ~ r, 
+     ylab= "L(d)-r", xlab = "d(m)")
+```
+
+```{r}
+L_ck.csr <- envelope(childcare_ck_ppp, Lest, nsim = 99, rank = 1, glocal=TRUE)
+```
+
+```{r}
+plot(L_ck.csr, . - r ~ r, xlab="d", ylab="L(d)-r")
+```
