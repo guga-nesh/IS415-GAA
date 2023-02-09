@@ -22,7 +22,7 @@ Our goal is to apply appropriate spatial point patterns analysis methods to disc
 # Install relevant packages to be used
 
 ```{r}
-pacman::p_load(tmap, sf, tidyverse, maptools, raster, spatstat, funModeling)
+pacman::p_load(tmap, sf, tidyverse, maptools, raster, spatstat, funModeling, dplyr)
 ```
 
 # Import data
@@ -33,8 +33,6 @@ state_boundary <- st_read(dsn = "data/geospatial",
 
 waterpoints <- read_csv("data/aspatial/WPDX.csv")
 ```
-
-# Data Wrangling
 
 Let's take a look at the `state_boundary` data:
 
@@ -55,6 +53,15 @@ Since we would only like to take a look at Nigeria's Osun State, let's only use 
 
 ```{r}
 osun_boundary <- subset(state_boundary_26392, ADM1_EN == "Osun")
+```
+
+This sf object has a lot of unnecessary variables that are not needed and it can be quite confusing, so since we will not be using it, let us remove it.
+
+```{r}
+osun_boundary <- osun_boundary %>%
+  dplyr::select (c(3:4, 8:9))
+
+osun_boundary
 ```
 
 Let's also take a look at the `waterpoints` data
@@ -123,6 +130,7 @@ freq(data=wp_sf_cat,
 ```
 
 ```{r}
+# 3. separate data into 3 sf(s): functional, non-functional, unknown
 wp_functional_sf <- wp_sf_cat %>%
   filter(`#status_clean` %in%
            c("Functional",
@@ -165,4 +173,74 @@ tm_shape(wp_functional_sf) +
   tm_dots(col= "green") +
 tm_shape(wp_nonfunctional_sf) +
   tm_dots (col = "red")
+```
+
+A closer look at the map above shows us that there are more non-functional water points than functional water points in the Osun State of Nigeria.
+
+## Converting sf dataframe into sp's Spatial class
+
+In order to use the spatstat library which requires analytical data in **ppp** object form, we need to convert the data
+
+```{r}
+# create Osun Boundary SPDF
+osun_boundary_spdf <- as_Spatial(osun_boundary)
+
+# create Functional Waterpoints SPDF
+wp_functional_spdf <- as_Spatial(wp_functional_sf)
+
+# create Non-Functional waterpoints SPDF
+wp_nonfunctional_spdf <- as_Spatial(wp_nonfunctional_sf)
+```
+
+Let's display these three variables:
+
+```{r}
+print(osun_boundary_spdf) # SpatialPolygons DataFrame
+```
+
+```{r}
+print(wp_functional_spdf) #SpatialPoints DataFrame
+```
+
+```{r}
+print(wp_nonfunctional_spdf) #SpatialPoints DataFrame
+```
+
+## Converting Spatial class into Formal class
+
+```{r}
+# as we saw above, osun_boundary is a SpatialPolygon
+osun_boundary_sp <- as(osun_boundary_spdf, "SpatialPolygons")
+
+# as we saw above, both waterpoint data are SpatialPoints
+wp_functional_sp <- as(wp_functional_spdf, "SpatialPoints")
+
+wp_nonfunctional_sp <- as(wp_nonfunctional_spdf, "SpatialPoints")
+```
+
+## Converting Formal class into ppp format
+
+```{r}
+wp_functional_ppp <- as(wp_functional_sp, "ppp")
+
+wp_nonfunctional_ppp <- as(wp_nonfunctional_sp, "ppp")
+```
+
+Let's take a look at the ppp format.
+
+```{r}
+summary(wp_functional_ppp)
+summary(wp_nonfunctional_ppp)
+```
+
+As we can see there are no duplicates in the two variables above. Usually if there are duplicates, there will be a warning like so:
+
+![](images/image-867556106.png){width="601"}
+
+## Create an owin object of Osun State
+
+Creating an **owin** object to confine the analysis within a geographical area is the common practice.
+
+```{r}
+osun_boundary_owin <- as(osun_boundary_sp, "owin")
 ```

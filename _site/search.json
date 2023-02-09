@@ -192,7 +192,7 @@
     "objectID": "take-home_ex/take-home_ex01/take-home_ex01.html#initial-visualization",
     "href": "take-home_ex/take-home_ex01/take-home_ex01.html#initial-visualization",
     "title": "Take Home Exercise 01",
-    "section": "6.1 Initial Visualization",
-    "text": "6.1 Initial Visualization\nLet’s check if we can visualize Nigeria’s Administrative Boundary Level 2.\n\n# plotting base map using plot() function\nplot(st_geometry(osun_boundary))\n\n\n\n\nLet’s try a more interactive view using tmaps. Here I am plotting the functional and non-functional water points in Osun State, Nigeria.\n\ntmap_mode(\"view\")\ntm_shape(osun_boundary) + \n  tm_polygons() + \ntm_shape(wp_functional_sf) + \n  tm_dots(col= \"green\") +\ntm_shape(wp_nonfunctional_sf) +\n  tm_dots (col = \"red\")"
+    "section": "5.1 Initial Visualization",
+    "text": "5.1 Initial Visualization\nLet’s check if we can visualize Nigeria’s Administrative Boundary Level 2.\n\n# plotting base map using plot() function\nplot(st_geometry(osun_boundary))\n\n\n\n\nLet’s try a more interactive view using tmaps. Here I am plotting the functional and non-functional water points in Osun State, Nigeria.\n\ntmap_mode(\"view\")\ntm_shape(osun_boundary) + \n  tm_polygons() + \ntm_shape(wp_functional_sf) + \n  tm_dots(col= \"green\") +\ntm_shape(wp_nonfunctional_sf) +\n  tm_dots (col = \"red\")\n\n\n\n\n\n\nA closer look at the map above shows us that there are more non-functional water points than functional water points in the Osun State of Nigeria."
   }
 ]
