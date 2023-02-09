@@ -88,7 +88,7 @@
     "href": "hands-on_ex/hands-on_ex03/hands-on_ex03.html#nearest-neighbour-analysis",
     "title": "Hands-On Exercise 3: 1st Order Spatial Point Patterns Analysis Methods",
     "section": "7 Nearest Neighbour Analysis",
-    "text": "7 Nearest Neighbour Analysis\nWe will perform the Clark-Evans test of aggregation for a spatial point pattern by using clarkevans.test() of spatstat. The hypothesis are:\n\nH0: Distribution of childcare services are randomly distributed\nH1: Distribution of childcare services are not randomly distributed\n\nThe 95% confident interval will be used. If the index is:\n\n*\n\n\n7.1 Testing spatial point patterns using Clark and Evans Test\n\nclarkevans.test(childcareSG_ppp,\n                correction=\"none\",\n                clipregion=\"sg_owin\",\n                alternative=c(\"clustered\"),\n                nsim=99) # minimum is 99... which is 100 simulations\n\n\n    Clark-Evans test\n    No edge correction\n    Monte Carlo test based on 99 simulations of CSR with fixed n\n\ndata:  childcareSG_ppp\nR = 0.54756, p-value = 0.01\nalternative hypothesis: clustered (R < 1)\n\n\n\n\n7.2 Clark and Evans Test: CCK planning area\n\n\n\n\n\nclarkevans.test(childcare_ck_ppp,\n\n\n      correction=\"none\",\n                clipregion=NULL,\n                alternative=c(\"two.sided\"),\n                nsim=999)\n\n\n    Clark-Evans test\n    No edge correction\n    Monte Carlo test based on 999 simulations of CSR with fixed n\n\ndata:  childcare_ck_ppp\nR = 0.87455, p-value = 0.006\nalternative hypothesis: two-sided\n\n\n\n\n\n\n\n\n7.3 Clark and Evans Test: Tampines planning area\n\nclarkevans.test(childcare_tm_ppp,\n                correction=\"none\",\n                clipregion=NULL,\n                alternative=c(\"two.sided\"),\n                nsim=999)\n\n\n    Clark-Evans test\n    No edge correction\n    Monte Carlo test based on 999 simulations of CSR with fixed n\n\ndata:  childcare_tm_ppp\nR = 0.80291, p-value = 0.002\nalternative hypothesis: two-sided"
+    "text": "7 Nearest Neighbour Analysis\nWe will perform the Clark-Evans test of aggregation for a spatial point pattern by using clarkevans.test() of spatstat. The hypothesis are:\n\nH0: Distribution of childcare services are randomly distributed\nH1: Distribution of childcare services are not randomly distributed\n\nThe 95% confident interval will be used. If the index is:\n\n*\n\n\n7.1 Testing spatial point patterns using Clark and Evans Test\n\nclarkevans.test(childcareSG_ppp,\n                correction=\"none\",\n                clipregion=\"sg_owin\",\n                alternative=c(\"clustered\"),\n                nsim=99) # minimum is 99... which is 100 simulations\n\n\n    Clark-Evans test\n    No edge correction\n    Monte Carlo test based on 99 simulations of CSR with fixed n\n\ndata:  childcareSG_ppp\nR = 0.54756, p-value = 0.01\nalternative hypothesis: clustered (R < 1)\n\n\n\n\n7.2 Clark and Evans Test: CCK planning area\n\n\n\n\n\nclarkevans.test(childcare_ck_ppp,\n\n\n      correction=\"none\",\n                clipregion=NULL,\n                alternative=c(\"two.sided\"),\n                nsim=999)\n\n\n    Clark-Evans test\n    No edge correction\n    Monte Carlo test based on 999 simulations of CSR with fixed n\n\ndata:  childcare_ck_ppp\nR = 0.98413, p-value = 0.302\nalternative hypothesis: two-sided\n\n\n\n\n\n\n\n\n7.3 Clark and Evans Test: Tampines planning area\n\nclarkevans.test(childcare_tm_ppp,\n                correction=\"none\",\n                clipregion=NULL,\n                alternative=c(\"two.sided\"),\n                nsim=999)\n\n\n    Clark-Evans test\n    No edge correction\n    Monte Carlo test based on 999 simulations of CSR with fixed n\n\ndata:  childcare_tm_ppp\nR = 0.79283, p-value = 0.002\nalternative hypothesis: two-sided"
   },
   {
     "objectID": "in-class_ex/in-class_ex02/in-class_ex02.html",
@@ -180,5 +180,19 @@
     "title": "IS415-GAA",
     "section": "",
     "text": "Hi everyone! Welcome to my IS415: Geospatial Analytics and Applications website. You can find all my course work here :)"
+  },
+  {
+    "objectID": "take-home_ex/take-home_ex01/take-home_ex01.html",
+    "href": "take-home_ex/take-home_ex01/take-home_ex01.html",
+    "title": "Take Home Exercise 01",
+    "section": "",
+    "text": "To address the issue of providing clean and sustainable water supply to the Osun State in Nigeria, a global Water Point Data Exchange (WPdx) project has been initiated. The main aim of this initiative is to collect water point related data from rural areas at the water point or small water scheme level and share the data via WPdx Data Repository, a cloud-based data library."
+  },
+  {
+    "objectID": "take-home_ex/take-home_ex01/take-home_ex01.html#initial-visualization",
+    "href": "take-home_ex/take-home_ex01/take-home_ex01.html#initial-visualization",
+    "title": "Take Home Exercise 01",
+    "section": "6.1 Initial Visualization",
+    "text": "6.1 Initial Visualization\nLet’s check if we can visualize Nigeria’s Administrative Boundary Level 2.\n\n# plotting base map using plot() function\nplot(st_geometry(osun_boundary))\n\n\n\n\nLet’s try a more interactive view using tmaps. Here I am plotting the functional and non-functional water points in Osun State, Nigeria.\n\ntmap_mode(\"view\")\ntm_shape(osun_boundary) + \n  tm_polygons() + \ntm_shape(wp_functional_sf) + \n  tm_dots(col= \"green\") +\ntm_shape(wp_nonfunctional_sf) +\n  tm_dots (col = \"red\")"
   }
 ]

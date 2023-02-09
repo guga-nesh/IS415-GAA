@@ -1,0 +1,168 @@
+---
+title: "Take Home Exercise 01"
+date: "30 January 2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+editor: visual
+---
+
+# Overview
+
+To address the issue of providing clean and sustainable water supply to the Osun State in Nigeria, a global [Water Point Data Exchange (WPdx)](https://www.waterpointdata.org/about/) project has been initiated. The main aim of this initiative is to collect water point related data from rural areas at the water point or small water scheme level and share the data via WPdx Data Repository, a cloud-based data library.
+
+# Our goal
+
+Our goal is to apply appropriate spatial point patterns analysis methods to discover the distribution of functional and non-functional water points and their co-locations (if any) in Osun State, Nigeria.
+
+# Install relevant packages to be used
+
+```{r}
+pacman::p_load(tmap, sf, tidyverse, maptools, raster, spatstat, funModeling)
+```
+
+# Import data
+
+```{r}
+state_boundary <- st_read(dsn = "data/geospatial",
+                          layer = "nga_admbnda_adm2_osgof_20190417")
+
+waterpoints <- read_csv("data/aspatial/WPDX.csv")
+```
+
+# Data Wrangling
+
+Let's take a look at the `state_boundary` data:
+
+```{r}
+print(state_boundary)
+print(crs(state_boundary))
+```
+
+From the results shown above, we can see that `state_boundary` is an **sf** dataframe with the MULTIPOLYGON data type. However, it is not using the Projected Coordinate System of Nigeria where `crs = 26392`. So let's change this:
+
+```{r}
+state_boundary_26392 = st_transform(state_boundary, 26392)
+
+crs(state_boundary_26392)
+```
+
+Since we would only like to take a look at Nigeria's Osun State, let's only use the Osun state for our map.
+
+```{r}
+osun_boundary <- subset(state_boundary_26392, ADM1_EN == "Osun")
+```
+
+Let's also take a look at the `waterpoints` data
+
+```{r}
+waterpoints
+```
+
+The `waterpoints` data is a **tibble dataframe** as seen in the picture below. It also contains data of other countries (please refer under column `#clean_country_name`).
+
+![](images/image-247286243.png){width="430"}
+
+Hence, we will need to convert the **tibble dataframe** into an **sf** object and filter out all the unneeded countries and states from the data set.
+
+```{r}
+wp_nga = read_csv("data/aspatial/WPDX.csv")%>%
+  filter(`#clean_country_name` == "Nigeria")
+
+wp_osu = filter(wp_nga, `#clean_adm1` == "Osun")
+print(wp_osu)
+```
+
+Let's convert the **tibble dataframe** into a **sf** object.
+
+```{r}
+# first we need to convert the wkt (Well-known text representation of geometry) into an sfc field
+wp_osu$geometry = st_as_sfc(wp_osu$`New Georeferenced Column`)
+
+wp_osu
+```
+
+```{r}
+# then, we need to transform the tibble dataframe into an sf object using Nigeria's Projected Coordinate System
+wp_sf = st_sf(wp_osu, crs=4326)
+
+wp_sf <- wp_sf %>%
+  st_transform(crs = 26392)
+
+wp_sf
+```
+
+The code output above shows us that it has been converted into an **sf** object with the POINT geometry type and it is also using the correct `crs`.
+
+To analyse the functional and non-functional water points, we first need to identify which points are functional and which are non-functional.
+
+![](images/image-956250018.png){width="413"}\
+A quick glance at the `wp_sf` variable (as shown above) tells us that we need to look at the `#status_clean` column to identify which points are functional and which aren't.
+
+```{r}
+freq(data = wp_sf,
+     input = '#status_clean')
+```
+
+From the image above, we can see that there are a total of 10 different statuses. 10.42% of the data is also "NA". Hence, we will need to group the statuses into Functional, Non-Functional, and those that are "NA".
+
+```{r}
+# 1. replace na values with "unknown"
+wp_sf_cat <- wp_sf %>%
+  mutate(`#status_clean` = replace_na(
+    `#status_clean`, "unknown"
+  ))
+
+# 2. check if it worked
+freq(data=wp_sf_cat,
+     input='#status_clean')
+```
+
+```{r}
+wp_functional_sf <- wp_sf_cat %>%
+  filter(`#status_clean` %in%
+           c("Functional",
+             "Functional, needs repair",
+             "Functional, not in use",
+             "Functional but not in use",
+             "Functional but needs repair"))
+
+wp_nonfunctional_sf <- wp_sf_cat %>%
+  filter(`#status_clean` %in%
+           c("Non-Functional",
+             "Non-Functional, dry",
+             "Abandoned/Decommissioned",
+             "Non-Functional due to dry season"))
+
+wp_unknown_sf <- wp_sf_cat %>%
+  filter (`#status_clean` %in% 'unknown')
+```
+
+# Exploratory Spatial Data Analysis
+
+After all the data wrangling done, now we are finally ready to analyse the data. It should be noted that
+
+## Initial Visualization
+
+Let's check if we can visualize Nigeria's Administrative Boundary Level 2.
+
+```{r}
+# plotting base map using plot() function
+plot(st_geometry(osun_boundary))
+```
+
+Let's try a more interactive view using **tmaps**. Here I am plotting the functional and non-functional water points in Osun State, Nigeria.
+
+```{r}
+tmap_mode("view")
+tm_shape(osun_boundary) + 
+  tm_polygons() + 
+tm_shape(wp_functional_sf) + 
+  tm_dots(col= "green") +
+tm_shape(wp_nonfunctional_sf) +
+  tm_dots (col = "red")
+```
