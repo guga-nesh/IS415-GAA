@@ -175,7 +175,13 @@ tm_shape(wp_nonfunctional_sf) +
   tm_dots (col = "red")
 ```
 
-A closer look at the map above shows us that there are more non-functional water points than functional water points in the Osun State of Nigeria.
+At a glance it seems like the water points (both functional and non-functional) are evenly spread out across the entire state. However, a closer look at the map tells us that there are small clusters of both types of waterpoints throughout the state and there are more non-functional water points than functional water points in the Osun State of Nigeria.
+
+Adaptive versus Fixed bandwidth:
+
+adaptive bandwidths adjust itself according to density of data (shorter bandwidths where data are dense and longer where sparse)
+
+fixed might produce large estimate variances where data are sparse, while mask subtle local variations where data are dense.
 
 ## Converting sf dataframe into sp's Spatial class
 
