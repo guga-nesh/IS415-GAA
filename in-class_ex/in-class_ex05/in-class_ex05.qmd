@@ -78,6 +78,8 @@ B <- SevenEleven$Name
 # once you take nsim it will take the p-value automatically
 LCLQ <- local_colocation(A, B, nb, wt, 49) # this is a data table with 2 columns in order to map it we need to combine it back with the stores. NA means cannot find colocation or isolation (not significant)
 LCLQ_stores <- cbind(stores, LCLQ) # only works if you don't sort the LCLQ it binds by the same table order from the orginal stores data
+
+LCLQ_stores
 ```
 
 ```{r}
