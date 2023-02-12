@@ -22,7 +22,7 @@ Our goal is to apply appropriate spatial point patterns analysis methods to disc
 # Install relevant packages to be used
 
 ```{r}
-pacman::p_load(tmap, sf, tidyverse, maptools, raster, spatstat, funModeling, dplyr)
+pacman::p_load(tmap, sf, tidyverse, maptools, raster, spatstat, funModeling)
 ```
 
 # Import data
@@ -150,6 +150,48 @@ wp_unknown_sf <- wp_sf_cat %>%
   filter (`#status_clean` %in% 'unknown')
 ```
 
+**Look at distribution of data**
+
+```{r}
+osun_wp <- osun_boundary %>%
+  mutate(`functional_wp` = lengths(st_intersects(osun_boundary, wp_functional_sf))) %>%
+  mutate(`nonfunctional_wp` = lengths(st_intersects(osun_boundary, wp_nonfunctional_sf)))
+```
+
+```{r}
+ggplot(data = osun_wp,
+       aes(x = functional_wp)) + 
+  geom_histogram(bins=20,
+                 color="black",
+                 fill="light blue") +
+  geom_vline(aes(xintercept=mean(
+    functional_wp, na.rm=T)),
+             color="red", 
+             linetype="dashed", 
+             size=0.8) +
+  ggtitle("Distribution of functional water points by LGA") +
+  xlab("No. of water points") +
+  ylab("No. of\nLGAs") +
+  theme(axis.title.y=element_text(angle = 0))
+```
+
+```{r}
+ggplot(data = osun_wp,
+       aes(x = nonfunctional_wp)) + 
+  geom_histogram(bins=20,
+                 color="black",
+                 fill="light blue") +
+  geom_vline(aes(xintercept=mean(
+    nonfunctional_wp, na.rm=T)),
+             color="red", 
+             linetype="dashed", 
+             size=0.8) +
+  ggtitle("Distribution of non-functional water points by LGA") +
+  xlab("No. of water points") +
+  ylab("No. of\nLGAs") +
+  theme(axis.title.y=element_text(angle = 0))
+```
+
 # Exploratory Spatial Data Analysis
 
 After all the data wrangling done, now we are finally ready to analyse the data. It should be noted that
@@ -176,12 +218,6 @@ tm_shape(wp_nonfunctional_sf) +
 ```
 
 At a glance it seems like the water points (both functional and non-functional) are evenly spread out across the entire state. However, a closer look at the map tells us that there are small clusters of both types of waterpoints throughout the state and there are more non-functional water points than functional water points in the Osun State of Nigeria.
-
-Adaptive versus Fixed bandwidth:
-
-adaptive bandwidths adjust itself according to density of data (shorter bandwidths where data are dense and longer where sparse)
-
-fixed might produce large estimate variances where data are sparse, while mask subtle local variations where data are dense.
 
 ## Converting sf dataframe into sp's Spatial class
 
@@ -250,3 +286,151 @@ Creating an **owin** object to confine the analysis within a geographical area i
 ```{r}
 osun_boundary_owin <- as(osun_boundary_sp, "owin")
 ```
+
+Combining point event objects and owin object
+
+```{r}
+wp_functional_ppp_osun = wp_functional_ppp[osun_boundary_owin]
+wp_nonfunctional_ppp_osun = wp_nonfunctional_ppp[osun_boundary_owin]
+```
+
+Visualisation of ppp objects within Osun boundaries
+
+```{r}
+par(mfrow = c(1,2))
+plot(wp_nonfunctional_ppp_osun)
+plot(wp_functional_ppp_osun)
+```
+
+As we went through in HOE5B we need to rescale() them from m into km as the density value of our output will be too small later on.
+
+```{r}
+wp_functional_ppp_osun_km <- rescale(wp_functional_ppp_osun, 1000, "km")
+wp_nonfunctional_ppp_osun_km <- rescale(wp_nonfunctional_ppp_osun, 1000, "km")
+```
+
+**Computing kernel density estimation**
+
+As mentioned in our Lesson 4 slides, kernel density estimation can be calculated using either adaptive or fixed bandwidth. Since the fixed bandwidth method is very sensitive to highly skewed distribution of spatial point patterns over geographical units we use adaptive bandwidths instead.
+
+We also saw in our HOE4 that for computing the kernel density estimation using automatic bandwidth selection have the choice of using either `bw.ppl` or `bw.diggle`. But since the former is recommended for patterns of predominantly tight clusters as we saw in section xx let's use that.
+
+```{r}
+kde_wpfunctional.bw <- density(wp_functional_ppp_osun_km, sigma=bw.ppl, edge=TRUE, kernel="gaussian")
+
+kde_wpnonfunctional.bw <- density(wp_nonfunctional_ppp_osun_km, sigma=bw.ppl, edge=TRUE, kernel="gaussian")
+
+par(mfrow=c(1,2))
+plot(kde_wpfunctional.bw, main = "Functional Waterpoints")
+plot(kde_wpnonfunctional.bw, main = "Non-functional Waterpoints")
+```
+
+```{r}
+kde_wpfunctional_adaptive <- adaptive.density(wp_functional_ppp_osun_km, method = "kernel")
+
+kde_wpnonfunctional_adaptive <- adaptive.density(wp_nonfunctional_ppp_osun_km, method = "kernel")
+
+par(mfrow=c(1,2))
+plot(kde_wpfunctional_adaptive, main = "Functional Waterpoints")
+plot(kde_wpnonfunctional_adaptive, main = "Non-functional Waterpoints")
+```
+
+**Displaying Kernel Density Maps on OpenStreetMap of Osun State, Nigeria**
+
+The KDE maps shown above are image files that do not show exactly where the location is. So we need to convert the image into a Grid Object and then into a RasterLayer object.
+
+```{r}
+kde_wpfunctional_bw_raster <- kde_wpfunctional_adaptive %>%
+  as.SpatialGridDataFrame.im()%>%
+  raster()
+
+kde_wpnonfunctional_bw_raster <- kde_wpnonfunctional_adaptive %>%
+  as.SpatialGridDataFrame.im()%>%
+  raster()
+```
+
+Let's view the properties of the RasterLayers.
+
+```{r}
+kde_wpfunctional_bw_raster
+```
+
+```{r}
+kde_wpnonfunctional_bw_raster
+```
+
+We can see that the crs property is NA. Let's fix this.
+
+```{r}
+projection(kde_wpfunctional_bw_raster) <- CRS("+init=EPSG:26392 +datum=WGS84 +units=km")
+projection(kde_wpnonfunctional_bw_raster) <- CRS("+init=EPSG:26392 +datum=WGS84 +units=km")
+```
+
+```{r}
+tm_shape(kde_wpfunctional_bw_raster) + 
+  tm_raster("v") +
+  tm_layout(legend.position = c("right", "bottom"), frame = FALSE)
+```
+
+```{r}
+tm_shape(kde_wpnonfunctional_bw_raster) + 
+  tm_raster("v") +
+  tm_layout(legend.position = c("right", "bottom"), frame = FALSE)
+```
+
+**Kernel Density Maps Analysis**
+
+blah blah blah
+
+# Second-order Spatial Point Patterns Analysis
+
+**Performing Complete Spatial Randomness Test**
+
+Ho = The distribution of functional waterpoints in Osun State, Nigeria are randomly distributed.
+
+H1= The distribution of functional waterpoints in Osun State, Nigeria are not randomly distributed.
+
+The null hypothesis will be rejected if the p-value is smaller than alpha value of 0.005.
+
+G function - measures the distribution of distances from an arbitrary event to its nearest neighbour.
+
+F function - is the cumulative distance function of the distance from a fixed reference location in the study window to the nearest data point.
+
+K function - computes cumulative average number of points that lie closer than a distance r, standardised by dividing by the intensity of the study region.
+
+L function - commonly used variation of K-function. It transforms the theoretical Poisson K-function to a straight line. The purpose is to make visual assessment of deviation easier.
+
+```{r}
+#| eval: false
+L_osun = Lest(wp_functional_ppp_osun, correction = "Ripley")
+```
+
+```{r}
+#| eval: false
+plot(L_osun, . -r ~ r, 
+     ylab= "L(d)-r", xlab = "d(m)")
+```
+
+```{r}
+#| eval: false
+L_osun.csr <- envelope(wp_functional_ppp_osun, Lest, nsim = 39, rank = 1, glocal=TRUE)
+```
+
+```{r}
+#| eval: false
+plot(L_osun.csr, . - r ~ r, xlab="d", ylab="L(d)-r")
+```
+
+![Cross-L Function for Functional Waterpoints](images/unnamed-chunk-41-1.png){width="677" height="483"}
+
+```{r}
+#| eval: false
+L_osun_nonfunctional <- envelope(wp_nonfunctional_ppp_osun, Lest, nsim = 39, rank = 1, glocal=TRUE)
+```
+
+```{r}
+#| eval: false
+plot(L_osun_nonfunctional, . - r ~ r, xlab="d", ylab="L(d)-r")
+```
+
+![Cross-L Function for Non-Functional Waterpoints](images/unnamed-chunk-43-1.png "Cross-L Function for Non-functional Waterpoints")
