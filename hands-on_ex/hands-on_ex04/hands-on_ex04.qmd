@@ -1,0 +1,12 @@
+---
+title: "Hands-On Exercise 4: Spatial Weights and Applications"
+date: "13 February 2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+editor: visual
+---
