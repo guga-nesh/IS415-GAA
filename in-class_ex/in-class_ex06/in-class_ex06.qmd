@@ -1,5 +1,5 @@
 ---
-title: "In-Class Exercise 6: Spatial Weights - spdep method"
+title: "In-Class Exercise 6: Spatial Weights - sfdep method"
 date: "06 February 2023"
 date-modified: "`r Sys.Date()`"
 number-sections: true
@@ -14,7 +14,132 @@ editor: visual
 # Installing and Loading the R Packages
 
 ```{r}
-pacman::p_load(sf, sfdep, tidyverse)
+pacman::p_load(sf, sfdep, tidyverse, tmap)
 ```
 
-# Data
+# The Data
+
+For the purpose of this in-class exercise, the Hunan data sets will be used. There are two data sets in this use case, they are:
+
+-   Hunan, a geospatial data set in ESRI shapefile format, and
+
+-   Hunan_2012, an attribute data set in csv format
+
+## Importing geospatial data
+
+Import the data as an **sf** format.
+
+```{r}
+hunan <- st_read(dsn="data/geospatial",
+                 layer="Hunan")
+
+# geographic coordinate system is not good for distance-based metrics, but if you're going for contiguity its ok
+```
+
+## Importing attribute table
+
+Import the data as a **tibble data frame**.
+
+```{r}
+hunan_2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+
+hunan_2012
+```
+
+## Combining both data frames using left join
+
+Combine the spatial and aspatial data. Since one is the **tibble data frame** and he other is an **sf** object, to retain geospatial properties, the left data frame must be **sf** (i.e., hunan)
+
+```{r}
+# left_join() keeps all observations in x
+# in this case, we did not mention the common identifier - by default uses common field
+# after they have been joined, I want only columns 1-4, 7, and 15 (basically I just want the GDPPC from the hunan_2012)
+
+hunan_GDPPC <- left_join(hunan, hunan_2012) %>%
+  select(1:4, 7, 15)
+
+hunan_GDPPC
+```
+
+## Plotting Choropleth Map
+
+```{r}
+tmap_mode("plot")
+
+tm_shape(hunan_GDPPC)+
+  tm_fill("GDPPC", 
+          style = "quantile", 
+          palette = "Blues",
+          title = "GDPPC") +
+  tm_layout(main.title = "Distribution of GDP per capita by district, Hunan Province",
+            main.title.position = "center",
+            main.title.size = 0.8,
+            legend.height = 0.35, 
+            legend.width = 0.25,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type="8star", size = 1) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+
+# remember tm_fill and tm_borders will give you the tm_polygon, we do it like this to have a higher level of control on the visuals
+
+# always output the map first to see where you can place the map components like scale bar, compass, etc.
+
+# Classification Method: if you are designing for a regional economic study then you might want to use "equal interval" classification method. It depends on the purpose of our study.
+```
+
+# Identify area neighbours
+
+Before the spatial weight matrix can be derived, the neighbours need to be identified first.
+
+## Contiguity neighbours method
+
+`st_contiguity()` is used to derive contiguity neighbour list using Queen's method. Documentation can be found [here](https://sfdep.josiahparry.com/reference/st_contiguity.html). Some key information:
+
+-   It only works for **sf** geometry type `POLYGON` or `MULTIPOLYGON`.
+
+-   By default, it uses queen (i.e., [`spdep::poly2nb`](https://r-spatial.github.io/spdep/reference/poly2nb.html)).
+
+```{r}
+cn_queen <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         .before=1)
+
+# use dplyr::mutate() to create new field that stores st_contiguity() on the geometry field
+# .before = 1 basically puts the newly created field in the first column
+```
+
+::: callout-tip
+EXTRA: Now, let us derive a contiguity neighbour list using Rook's Method
+:::
+
+```{r}
+cn_rook <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         queen=FALSE,
+         .before=1)
+```
+
+# Computing contiguity weights
+
+## Contiguity weights: Queen's method
+
+```{r}
+wm_q <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         wt = st_weights(nb),
+         .before = 1)
+
+# this code, makes the above one redundant - please refer to the environment variable to see the nb and wt columns
+```
+
+## Contiguity weights: Rook's method
+
+```{r}
+wm_r <- hunan_GDPPC %>%
+  mutate(nb = st_contiguity(geometry),
+         queen=FALSE,
+         wt = st_weights(nb),
+         .before = 1)
+```
