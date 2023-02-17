@@ -1,0 +1,29 @@
+---
+title: "proj-tests_01"
+---
+
+```{r}
+pacman::p_load(sf, sfdep, tidyverse, tmap, raster)
+```
+
+```{r}
+str_name<-'data/india/202206_Global_Pf_Parasite_Rate_IND_2020.tiff' 
+imported_raster=raster(str_name)
+
+imported_raster
+```
+
+```{r}
+plot(imported_raster)
+```
+
+```{r}
+india <- st_read(dsn="data/india",
+                 layer="geoBoundaries-IND-ADM2_simplified")
+
+india
+```
+
+```{r}
+plot(india)
+```
