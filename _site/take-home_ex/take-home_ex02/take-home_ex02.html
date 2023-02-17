@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2023-02-17">
 
-<title>IS415-GAA - Take Home Exercise 02</title>
+<title>IS415-GAA - Take Home Exercise 02: Spatio-temporal Analysis of COVID-19 Vaccination Trends at the Sub-district Level, DKI Jakarta</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -158,14 +221,35 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#problem-context" id="toc-problem-context" class="nav-link active" data-scroll-target="#problem-context"><span class="toc-section-number">1</span>  Problem Context</a></li>
+  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives"><span class="toc-section-number">2</span>  Objectives</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="toc-section-number">3</span>  Setup</a>
+  <ul class="collapse">
+  <li><a href="#packages-used" id="toc-packages-used" class="nav-link" data-scroll-target="#packages-used"><span class="toc-section-number">3.1</span>  Packages used</a></li>
+  <li><a href="#datasets-used" id="toc-datasets-used" class="nav-link" data-scroll-target="#datasets-used"><span class="toc-section-number">3.2</span>  Datasets used</a></li>
+  </ul></li>
+  <li><a href="#data-wrangling-geospatial-data" id="toc-data-wrangling-geospatial-data" class="nav-link" data-scroll-target="#data-wrangling-geospatial-data"><span class="toc-section-number">4</span>  Data Wrangling: Geospatial Data</a>
+  <ul class="collapse">
+  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data"><span class="toc-section-number">4.1</span>  Importing Geospatial Data</a></li>
+  <li><a href="#data-pre-processing" id="toc-data-pre-processing" class="nav-link" data-scroll-target="#data-pre-processing"><span class="toc-section-number">4.2</span>  Data pre-processing</a></li>
+  </ul></li>
+  <li><a href="#data-wrangling-aspatial-data" id="toc-data-wrangling-aspatial-data" class="nav-link" data-scroll-target="#data-wrangling-aspatial-data"><span class="toc-section-number">5</span>  Data Wrangling: Aspatial Data</a>
+  <ul class="collapse">
+  <li><a href="#importing-aspatial-data" id="toc-importing-aspatial-data" class="nav-link" data-scroll-target="#importing-aspatial-data"><span class="toc-section-number">5.1</span>  Importing Aspatial Data</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Take Home Exercise 02</h1>
+<h1 class="title">Take Home Exercise 02: Spatio-temporal Analysis of COVID-19 Vaccination Trends at the Sub-district Level, DKI Jakarta</h1>
 </div>
 
 
@@ -183,7 +267,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 17, 2023</p>
+      <p class="date-modified">February 18, 2023</p>
     </div>
   </div>
     
@@ -192,8 +276,514 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="problem-context" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="problem-context"><span class="header-section-number">1</span> Problem Context</h2>
+<p>In late December 2019, the COVID-19 outbreak was reported in Wuhan, China, which had subsequently affected 210 countries worldwide. COVID-19 can be deadly with a 2% case fatality rate.</p>
+<p>In response to this, Indonesia commenced its COVID-19 vaccination program on 13 January 2021, and as of 5 February 2023, over 204 million people had received the first dose of the vaccine, and over 175 million people had been fully vaccinated, with Jakarta having the highest percentage of population fully vaccinated.</p>
+<p>However despite its compactness, the cumulative vaccination rate are not evenly distributed within DKI Jakarta. The question is where are the sub-districts with a relatively higher number of vaccination rate and how have they changed over time.</p>
+<p>The assignment website can be found <a href="https://is415-ay2022-23t2.netlify.app/th_ex2.html">here</a>.</p>
+</section>
+<section id="objectives" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="objectives"><span class="header-section-number">2</span> Objectives</h2>
+<p>Exploratory Spatial Data Analysis (ESDA) holds tremendous potential to address complex problems facing society. In this study, we will need to use it to uncover the spatio-temporal trends of COVID-19 vaccination in DKI Jakarta namely:</p>
+<ul>
+<li><p>Choropleth Mapping and Analysis</p></li>
+<li><p>Local Gi* Analysis</p></li>
+<li><p>Emerging Hot Spot Analysis (EHSA)</p></li>
+</ul>
+</section>
+<section id="setup" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="setup"><span class="header-section-number">3</span> Setup</h2>
+<section id="packages-used" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="packages-used"><span class="header-section-number">3.1</span> Packages used</h3>
+<p>These are the R packages that we’ll need for our analyses:</p>
+<ul>
+<li><p><strong>sf</strong> - used for importing, managing, and processing geospatial data</p></li>
+<li><p><strong>sfdep</strong> - an <code>sf</code> and <code>tidyverse</code> friendly interface to compute spatial dependence</p></li>
+<li><p><strong>tidyverse</strong> - collection of packages for performing data science tasks such as importing, wrangling, and visualising data</p></li>
+<li><p><strong>tmap</strong> - for plotting cartographic quality static point patterns maps or interactive maps by using <a href="https://leafletjs.com/">leaflet</a> API</p></li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfdep, tidyverse, tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="datasets-used" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="datasets-used"><span class="header-section-number">3.2</span> Datasets used</h3>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Name</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Geospatial</td>
+<td><a href="https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html">DKI Jakarta Provincial Village Boundary</a></td>
+<td>.shp</td>
+<td>District level boundary in DKI Jakarta. Please take note that the data is from 2019.</td>
+</tr>
+<tr class="even">
+<td>Aspatial</td>
+<td><a href="https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/">Village and District Based Vaccination History</a></td>
+<td>.xlsx</td>
+<td>Daily .csv files containing all vaccinations done at the district level in DKI Jakarta.</td>
+</tr>
+</tbody>
+</table>
+<p>To retrieve the monthly cumulative records of COVID-19 vaccinations from <u><em>July 2021 to June 2022</em></u>, I took the data compiled on the <strong>last day</strong> of each month.</p>
+</section>
+</section>
+<section id="data-wrangling-geospatial-data" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="data-wrangling-geospatial-data"><span class="header-section-number">4</span> Data Wrangling: Geospatial Data</h2>
+<section id="importing-geospatial-data" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="importing-geospatial-data"><span class="header-section-number">4.1</span> Importing Geospatial Data</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">"data/geospatial"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">layer=</span><span class="st">"BATAS_DESA_DESEMBER_2019_DUKCAPIL_DKI_JAKARTA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `BATAS_DESA_DESEMBER_2019_DUKCAPIL_DKI_JAKARTA' from data source 
+  `C:\guga-nesh\IS415-GAA\take-home_ex\take-home_ex02\data\geospatial' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 269 features and 161 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 106.3831 ymin: -6.370815 xmax: 106.9728 ymax: -5.184322
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>Information gathered on <code>jakarta</code> :</p>
+<ul>
+<li><p>Data Type: <strong>sf</strong> collection</p></li>
+<li><p>Geometry Type: Multipolygon</p></li>
+<li><p>Shape: 269 features, 161 fields</p></li>
+<li><p>CRS: WGS 84 - ‘The World Geodetic System (WGS)’.</p></li>
+</ul>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The assigned CRS does not seem appropriate. In fact, the assignment requires us to re-assign the CRS to DGN95. We’ll fix this in Section 4.2.3.</p>
+</div>
+</div>
+</section>
+<section id="data-pre-processing" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="data-pre-processing"><span class="header-section-number">4.2</span> Data pre-processing</h3>
+<p>Before we can visualise our data, we need to ensure that the data is validated by handling invalid geometries and missing values.</p>
+<p><em>This section was done by referencing sample submissions done by two seniors, credit to:</em></p>
+<ul>
+<li><p><a href="https://rpubs.com/xiaorongw/IS415_Take-home_Ex02"><em>Xiao Rong Wong’s ‘Detecting Spatio-Temporal Patterns of COVID-19 in Central Mexico’</em></a></p></li>
+<li><p><a href="https://is415-msty.netlify.app/posts/2021-09-10-take-home-exercise-1/#data-pre-processing"><em>Megan Sim Tze Yen’s ‘Analysing and Visualising Spatio-temporal Patterns of COVID-19 in DKI Jakarta, Indonesia’</em></a></p></li>
+</ul>
+<section id="handling-invalid-geometries" class="level4" data-number="4.2.1">
+<h4 data-number="4.2.1" class="anchored" data-anchor-id="handling-invalid-geometries"><span class="header-section-number">4.2.1</span> Handling invalid geometries</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">which</span>(<span class="fu">st_is_valid</span>(jakarta) <span class="sc">==</span> <span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>st_is_valid()</code> checks whether a geometry is valid. It returns a logical vector indicating for each geometries of <code>jakarta</code> whether it is valid. The documentation for this can be found <a href="https://r-spatial.github.io/sf/reference/valid.html">here</a>.</p>
+</div>
+</div>
+<p>From the above output, we can see that the geometry is valid 👍</p>
+</section>
+<section id="handling-missing-values" class="level4" data-number="4.2.2">
+<h4 data-number="4.2.2" class="anchored" data-anchor-id="handling-missing-values"><span class="header-section-number">4.2.2</span> Handling missing values</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>jakarta[<span class="fu">rowSums</span>(<span class="fu">is.na</span>(jakarta))<span class="sc">!=</span><span class="dv">0</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 2 features and 161 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 106.8412 ymin: -6.154036 xmax: 106.8612 ymax: -6.144973
+Geodetic CRS:  WGS 84
+    OBJECT_ID KODE_DESA             DESA   KODE    PROVINSI KAB_KOTA KECAMATAN
+243     25645  31888888     DANAU SUNTER 318888 DKI JAKARTA     &lt;NA&gt;      &lt;NA&gt;
+244     25646  31888888 DANAU SUNTER DLL 318888 DKI JAKARTA     &lt;NA&gt;      &lt;NA&gt;
+    DESA_KELUR JUMLAH_PEN JUMLAH_KK LUAS_WILAY KEPADATAN PERPINDAHA JUMLAH_MEN
+243       &lt;NA&gt;          0         0          0         0          0          0
+244       &lt;NA&gt;          0         0          0         0          0          0
+    PERUBAHAN WAJIB_KTP SILAM KRISTEN KHATOLIK HINDU BUDHA KONGHUCU KEPERCAYAA
+243         0         0     0       0        0     0     0        0          0
+244         0         0     0       0        0     0     0        0          0
+    PRIA WANITA BELUM_KAWI KAWIN CERAI_HIDU CERAI_MATI U0 U5 U10 U15 U20 U25
+243    0      0          0     0          0          0  0  0   0   0   0   0
+244    0      0          0     0          0          0  0  0   0   0   0   0
+    U30 U35 U40 U45 U50 U55 U60 U65 U70 U75 TIDAK_BELU BELUM_TAMA TAMAT_SD SLTP
+243   0   0   0   0   0   0   0   0   0   0          0          0        0    0
+244   0   0   0   0   0   0   0   0   0   0          0          0        0    0
+    SLTA DIPLOMA_I DIPLOMA_II DIPLOMA_IV STRATA_II STRATA_III BELUM_TIDA
+243    0         0          0          0         0          0          0
+244    0         0          0          0         0          0          0
+    APARATUR_P TENAGA_PEN WIRASWASTA PERTANIAN NELAYAN AGAMA_DAN PELAJAR_MA
+243          0          0          0         0       0         0          0
+244          0          0          0         0       0         0          0
+    TENAGA_KES PENSIUNAN LAINNYA GENERATED KODE_DES_1 BELUM_ MENGUR_ PELAJAR_
+243          0         0       0      &lt;NA&gt;       &lt;NA&gt;      0       0        0
+244          0         0       0      &lt;NA&gt;       &lt;NA&gt;      0       0        0
+    PENSIUNA_1 PEGAWAI_ TENTARA KEPOLISIAN PERDAG_ PETANI PETERN_ NELAYAN_1
+243          0        0       0          0       0      0       0         0
+244          0        0       0          0       0      0       0         0
+    INDUSTR_ KONSTR_ TRANSP_ KARYAW_ KARYAW1 KARYAW1_1 KARYAW1_12 BURUH BURUH_
+243        0       0       0       0       0         0          0     0      0
+244        0       0       0       0       0         0          0     0      0
+    BURUH1 BURUH1_1 PEMBANT_ TUKANG TUKANG_1 TUKANG_12 TUKANG__13 TUKANG__14
+243      0        0        0      0        0         0          0          0
+244      0        0        0      0        0         0          0          0
+    TUKANG__15 TUKANG__16 TUKANG__17 PENATA PENATA_ PENATA1_1 MEKANIK SENIMAN_
+243          0          0          0      0       0         0       0        0
+244          0          0          0      0       0         0       0        0
+    TABIB PARAJI_ PERANCA_ PENTER_ IMAM_M PENDETA PASTOR WARTAWAN USTADZ JURU_M
+243     0       0        0       0      0       0      0        0      0      0
+244     0       0        0       0      0       0      0        0      0      0
+    PROMOT ANGGOTA_ ANGGOTA1 ANGGOTA1_1 PRESIDEN WAKIL_PRES ANGGOTA1_2
+243      0        0        0          0        0          0          0
+244      0        0        0          0        0          0          0
+    ANGGOTA1_3 DUTA_B GUBERNUR WAKIL_GUBE BUPATI WAKIL_BUPA WALIKOTA WAKIL_WALI
+243          0      0        0          0      0          0        0          0
+244          0      0        0          0      0          0        0          0
+    ANGGOTA1_4 ANGGOTA1_5 DOSEN GURU PILOT PENGACARA_ NOTARIS ARSITEK AKUNTA_
+243          0          0     0    0     0          0       0       0       0
+244          0          0     0    0     0          0       0       0       0
+    KONSUL_ DOKTER BIDAN PERAWAT APOTEK_ PSIKIATER PENYIA_ PENYIA1 PELAUT
+243       0      0     0       0       0         0       0       0      0
+244       0      0     0       0       0         0       0       0      0
+    PENELITI SOPIR PIALAN PARANORMAL PEDAGA_ PERANG_ KEPALA_ BIARAW_ WIRASWAST_
+243        0     0      0          0       0       0       0       0          0
+244        0     0      0          0       0       0       0       0          0
+    LAINNYA_12 LUAS_DESA KODE_DES_3 DESA_KEL_1 KODE_12
+243          0         0       &lt;NA&gt;       &lt;NA&gt;       0
+244          0         0       &lt;NA&gt;       &lt;NA&gt;       0
+                          geometry
+243 MULTIPOLYGON (((106.8612 -6...
+244 MULTIPOLYGON (((106.8504 -6...</code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>rowSums()</code> method calculates the sum of each row of a data frame. Please refer to the documentation <a href="https://www.rdocumentation.org/packages/raster/versions/3.6-14/topics/rowSums">here</a>.</p>
+<p><code>is.na()</code> is a generic method that indicates which elements are missing. Please refer to the documentation <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/NA">here</a>.</p>
+<p><code>jakarta</code> ‘wrapper’ prints rows that contain NA values.</p>
+</div>
+</div>
+<p>From the output shown above we can see that there are NA values 👎</p>
+<p>In fact, there are two rows with missing values. However, it’s hard to tell which columns the NA values are in since the output is so long and messy. Let’s just retrieve the columns with missing values.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">which</span>(<span class="fu">colSums</span>(<span class="fu">is.na</span>(jakarta))<span class="sc">&gt;</span><span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "KAB_KOTA"   "KECAMATAN"  "DESA_KELUR" "GENERATED"  "KODE_DES_1"
+[6] "KODE_DES_3" "DESA_KEL_1"</code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>colSum()</code> helps form sum for data frame by column. Please refer to the documentation <a href="https://www.rdocumentation.org/packages/Matrix/versions/1.5-3/topics/colSums">here</a>.</p>
+<p><code>which()</code> gives the TRUE indices of a logical object, allowing for array indices. Please refer to the documentation <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/which">here</a>.</p>
+<p><code>names()</code> is used to get or set the names of an object. Please refer to the documentation <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/names">here</a>.</p>
+</div>
+</div>
+<p>There are two rows with missing values in the columns shown above. Let’s see what they mean… Google Translate tells us that: 🤔</p>
+<ul>
+<li><p>“KAB_KOTA” = CITY REGENCY</p></li>
+<li><p>“KECAMATAN” = SUB DISTRICT</p></li>
+<li><p>“DESA_KELUR” = VILLAGE</p></li>
+</ul>
+<p>We can remove all rows with missing values under the “DESA_KELUR” (i.e., VILLAGE level) column since we are only interested in the sub-district and potentially city level data.</p>
+<p><em>Nonetheless, it should be noted that in this particular case removing the missing values from any of the columns will yield the same result.</em></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(jakarta, <span class="fu">c</span>(<span class="st">"DESA_KELUR"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Let’s check if we have removed the rows with missing values:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>jakarta[<span class="fu">rowSums</span>(<span class="fu">is.na</span>(jakarta))<span class="sc">!=</span><span class="dv">0</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 0 features and 161 fields
+Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
+Geodetic CRS:  WGS 84
+  [1] OBJECT_ID  KODE_DESA  DESA       KODE       PROVINSI   KAB_KOTA  
+  [7] KECAMATAN  DESA_KELUR JUMLAH_PEN JUMLAH_KK  LUAS_WILAY KEPADATAN 
+ [13] PERPINDAHA JUMLAH_MEN PERUBAHAN  WAJIB_KTP  SILAM      KRISTEN   
+ [19] KHATOLIK   HINDU      BUDHA      KONGHUCU   KEPERCAYAA PRIA      
+ [25] WANITA     BELUM_KAWI KAWIN      CERAI_HIDU CERAI_MATI U0        
+ [31] U5         U10        U15        U20        U25        U30       
+ [37] U35        U40        U45        U50        U55        U60       
+ [43] U65        U70        U75        TIDAK_BELU BELUM_TAMA TAMAT_SD  
+ [49] SLTP       SLTA       DIPLOMA_I  DIPLOMA_II DIPLOMA_IV STRATA_II 
+ [55] STRATA_III BELUM_TIDA APARATUR_P TENAGA_PEN WIRASWASTA PERTANIAN 
+ [61] NELAYAN    AGAMA_DAN  PELAJAR_MA TENAGA_KES PENSIUNAN  LAINNYA   
+ [67] GENERATED  KODE_DES_1 BELUM_     MENGUR_    PELAJAR_   PENSIUNA_1
+ [73] PEGAWAI_   TENTARA    KEPOLISIAN PERDAG_    PETANI     PETERN_   
+ [79] NELAYAN_1  INDUSTR_   KONSTR_    TRANSP_    KARYAW_    KARYAW1   
+ [85] KARYAW1_1  KARYAW1_12 BURUH      BURUH_     BURUH1     BURUH1_1  
+ [91] PEMBANT_   TUKANG     TUKANG_1   TUKANG_12  TUKANG__13 TUKANG__14
+ [97] TUKANG__15 TUKANG__16 TUKANG__17 PENATA     PENATA_    PENATA1_1 
+[103] MEKANIK    SENIMAN_   TABIB      PARAJI_    PERANCA_   PENTER_   
+[109] IMAM_M     PENDETA    PASTOR     WARTAWAN   USTADZ     JURU_M    
+[115] PROMOT     ANGGOTA_   ANGGOTA1   ANGGOTA1_1 PRESIDEN   WAKIL_PRES
+[121] ANGGOTA1_2 ANGGOTA1_3 DUTA_B     GUBERNUR   WAKIL_GUBE BUPATI    
+[127] WAKIL_BUPA WALIKOTA   WAKIL_WALI ANGGOTA1_4 ANGGOTA1_5 DOSEN     
+[133] GURU       PILOT      PENGACARA_ NOTARIS    ARSITEK    AKUNTA_   
+[139] KONSUL_    DOKTER     BIDAN      PERAWAT    APOTEK_    PSIKIATER 
+[145] PENYIA_    PENYIA1    PELAUT     PENELITI   SOPIR      PIALAN    
+[151] PARANORMAL PEDAGA_    PERANG_    KEPALA_    BIARAW_    WIRASWAST_
+[157] LAINNYA_12 LUAS_DESA  KODE_DES_3 DESA_KEL_1 KODE_12    geometry  
+&lt;0 rows&gt; (or 0-length row.names)</code></pre>
+</div>
+</div>
+<p>Looks good! 😎 But we still have 3 other pre-processing steps to do…</p>
+</section>
+<section id="re-assign-coordinate-reference-system-crs" class="level4" data-number="4.2.3">
+<h4 data-number="4.2.3" class="anchored" data-anchor-id="re-assign-coordinate-reference-system-crs"><span class="header-section-number">4.2.3</span> Re-assign Coordinate Reference System (CRS)</h4>
+<p>The CRS of <code>jakarta</code> is WGS 84. The assignment requires us to use the national CRS of Indonesia <a href="https://epsg.io/23845"><em>( DGN95 / Indonesia TM-3 zone 54.1)</em></a> since our dataset is specific to Indonesia.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(jakarta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: WGS 84 
+  wkt:
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["latitude",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["longitude",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    ID["EPSG",4326]]</code></pre>
+</div>
+</div>
+<p>Let’s re-assign using EPSG code 23845 and check the results.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(jakarta, <span class="dv">23845</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(jakarta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: EPSG:23845 
+  wkt:
+PROJCRS["DGN95 / Indonesia TM-3 zone 54.1",
+    BASEGEOGCRS["DGN95",
+        DATUM["Datum Geodesi Nasional 1995",
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4755]],
+    CONVERSION["Indonesia TM-3 zone 54.1",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",0,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",139.5,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",0.9999,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",200000,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",1500000,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["easting (X)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["northing (Y)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    USAGE[
+        SCOPE["Cadastre."],
+        AREA["Indonesia - onshore east of 138°E."],
+        BBOX[-9.19,138,-1.49,141.01]],
+    ID["EPSG",23845]]</code></pre>
+</div>
+</div>
+</section>
+<section id="exclude-all-outer-islands-from-jakarta" class="level4" data-number="4.2.4">
+<h4 data-number="4.2.4" class="anchored" data-anchor-id="exclude-all-outer-islands-from-jakarta"><span class="header-section-number">4.2.4</span> Exclude all outer islands from <code>jakarta</code></h4>
+<p>The assignment requires us to remove all outer islands from <code>jakarta</code>. Let’s plot the geometry of <code>jakarta</code> to see what we’re working with.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(jakarta[<span class="st">'geometry'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>From the visualisation we can see that there are some outer islands scattered towards the north. Let’s remove them.</p>
+<p>In Section 4.2.2, we saw that the data is grouped by <strong><em>KAB_KOTA</em></strong> (i.e., CITY), <strong><em>KECAMATAN</em></strong> (i.e., SUB-DISTRICT), and <strong><em>DESA_KELUR</em></strong> (i.e., “VILLAGE”). Let’s see the different cities we have in DKI Jakarta.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(jakarta<span class="sc">$</span>KAB_KOTA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "JAKARTA BARAT"    "JAKARTA PUSAT"    "KEPULAUAN SERIBU" "JAKARTA UTARA"   
+[5] "JAKARTA TIMUR"    "JAKARTA SELATAN" </code></pre>
+</div>
+</div>
+<p>The output shows us that there are 6 different cities in DKI Jakarta. 5 of them are prefixed with the string “JAKARTA” while one of them isn’t. Let’s plot this data to see if the one without the prefix represents the outer islands.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(jakarta) <span class="sc">+</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">"KAB_KOTA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>It seems our suspicions are correct, the outer islands are those cities without the “JAKARTA” prefix. Let’s remove them and check the results.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> jakarta <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"JAKARTA"</span>, KAB_KOTA))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(jakarta<span class="sc">$</span>KAB_KOTA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "JAKARTA BARAT"   "JAKARTA PUSAT"   "JAKARTA UTARA"   "JAKARTA TIMUR"  
+[5] "JAKARTA SELATAN"</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(jakarta<span class="sc">$</span>geometry)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Looks good! 😎</p>
+</section>
+<section id="retain-first-nine-fields-in-jakarta" class="level4" data-number="4.2.5">
+<h4 data-number="4.2.5" class="anchored" data-anchor-id="retain-first-nine-fields-in-jakarta"><span class="header-section-number">4.2.5</span> Retain first nine fields in <code>jakarta</code></h4>
+<p>The assignment requires us to only retain the first 9 fields of the <strong>sf</strong> data frame. Let’s do this.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> jakarta[,<span class="dv">0</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>jakarta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 261 features and 9 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -3644275 ymin: 663887.8 xmax: -3606237 ymax: 701380.1
+Projected CRS: DGN95 / Indonesia TM-3 zone 54.1
+First 10 features:
+   OBJECT_ID  KODE_DESA               DESA   KODE    PROVINSI      KAB_KOTA
+1      25477 3173031006          KEAGUNGAN 317303 DKI JAKARTA JAKARTA BARAT
+2      25478 3173031007             GLODOK 317303 DKI JAKARTA JAKARTA BARAT
+3      25397 3171031003      HARAPAN MULIA 317103 DKI JAKARTA JAKARTA PUSAT
+4      25400 3171031006       CEMPAKA BARU 317103 DKI JAKARTA JAKARTA PUSAT
+5      25390 3171021001         PASAR BARU 317102 DKI JAKARTA JAKARTA PUSAT
+6      25391 3171021002       KARANG ANYAR 317102 DKI JAKARTA JAKARTA PUSAT
+7      25394 3171021005 MANGGA DUA SELATAN 317102 DKI JAKARTA JAKARTA PUSAT
+8      25386 3171011003       PETOJO UTARA 317101 DKI JAKARTA JAKARTA PUSAT
+9      25403 3171041001              SENEN 317104 DKI JAKARTA JAKARTA PUSAT
+10     25408 3171041006             BUNGUR 317104 DKI JAKARTA JAKARTA PUSAT
+     KECAMATAN         DESA_KELUR JUMLAH_PEN                       geometry
+1   TAMAN SARI          KEAGUNGAN      21609 MULTIPOLYGON (((-3626874 69...
+2   TAMAN SARI             GLODOK       9069 MULTIPOLYGON (((-3627130 69...
+3    KEMAYORAN      HARAPAN MULIA      29085 MULTIPOLYGON (((-3621251 68...
+4    KEMAYORAN       CEMPAKA BARU      41913 MULTIPOLYGON (((-3620608 69...
+5  SAWAH BESAR         PASAR BARU      15793 MULTIPOLYGON (((-3624097 69...
+6  SAWAH BESAR       KARANG ANYAR      33383 MULTIPOLYGON (((-3624785 69...
+7  SAWAH BESAR MANGGA DUA SELATAN      35906 MULTIPOLYGON (((-3624752 69...
+8       GAMBIR       PETOJO UTARA      21828 MULTIPOLYGON (((-3626121 69...
+9        SENEN              SENEN       8643 MULTIPOLYGON (((-3623189 69...
+10       SENEN             BUNGUR      23001 MULTIPOLYGON (((-3622451 69...</code></pre>
+</div>
+</div>
+<p>From the assignment we know that the ninth field is “JUMLAH_PEN”. The output generated above matches this information.</p>
+<p>We have completed the data pre-processing steps for the geospatial data 🥳 Let’s move on to the aspatial data.</p>
+</section>
+</section>
+</section>
+<section id="data-wrangling-aspatial-data" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="data-wrangling-aspatial-data"><span class="header-section-number">5</span> Data Wrangling: Aspatial Data</h2>
+<section id="importing-aspatial-data" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="importing-aspatial-data"><span class="header-section-number">5.1</span> Importing Aspatial Data</h3>
+<div class="cell">
+
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

@@ -1,5 +1,5 @@
 ---
-title: "Take Home Exercise 02"
+title: "Take Home Exercise 02: Spatio-temporal Analysis of COVID-19 Vaccination Trends at the Sub-district Level, DKI Jakarta"
 date: "17 February 2023"
 date-modified: "`r Sys.Date()`"
 number-sections: true
@@ -10,3 +10,239 @@ execute:
   warning: false
 editor: visual
 ---
+
+## Problem Context
+
+In late December 2019, the COVID-19 outbreak was reported in Wuhan, China, which had subsequently affected 210 countries worldwide. COVID-19 can be deadly with a 2% case fatality rate.
+
+In response to this, Indonesia commenced its COVID-19 vaccination program on 13 January 2021, and as of 5 February 2023, over 204 million people had received the first dose of the vaccine, and over 175 million people had been fully vaccinated, with Jakarta having the highest percentage of population fully vaccinated.
+
+However despite its compactness, the cumulative vaccination rate are not evenly distributed within DKI Jakarta. The question is where are the sub-districts with a relatively higher number of vaccination rate and how have they changed over time.
+
+The assignment website can be found [here](https://is415-ay2022-23t2.netlify.app/th_ex2.html).
+
+## Objectives
+
+Exploratory Spatial Data Analysis (ESDA) holds tremendous potential to address complex problems facing society. In this study, we will need to use it to uncover the spatio-temporal trends of COVID-19 vaccination in DKI Jakarta namely:
+
+-   Choropleth Mapping and Analysis
+
+-   Local Gi\* Analysis
+
+-   Emerging Hot Spot Analysis (EHSA)
+
+## Setup
+
+### Packages used
+
+These are the R packages that we'll need for our analyses:
+
+-   **sf** - used for importing, managing, and processing geospatial data
+
+-   **sfdep** - an `sf` and `tidyverse` friendly interface to compute spatial dependence
+
+-   **tidyverse** - collection of packages for performing data science tasks such as importing, wrangling, and visualising data
+
+-   **tmap** - for plotting cartographic quality static point patterns maps or interactive maps by using [leaflet](https://leafletjs.com/) API
+
+```{r}
+#| code-fold: true
+pacman::p_load(sf, sfdep, tidyverse, tmap)
+```
+
+### Datasets used
+
+| Type       | Name                                                                                                                           | Format | Description                                                                             |
+|------------------|------------------|------------------|------------------|
+| Geospatial | [DKI Jakarta Provincial Village Boundary](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) | .shp   | District level boundary in DKI Jakarta. Please take note that the data is from 2019.    |
+| Aspatial   | [Village and District Based Vaccination History](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)        | .xlsx  | Daily .csv files containing all vaccinations done at the district level in DKI Jakarta. |
+
+To retrieve the monthly cumulative records of COVID-19 vaccinations from [*July 2021 to June 2022*]{.underline}, I took the data compiled on the **last day** of each month.
+
+## Data Wrangling: Geospatial Data
+
+### Importing Geospatial Data
+
+```{r}
+#| code-fold: true
+jakarta <- st_read(dsn="data/geospatial",
+                   layer="BATAS_DESA_DESEMBER_2019_DUKCAPIL_DKI_JAKARTA")
+```
+
+Information gathered on `jakarta` :
+
+-   Data Type: **sf** collection
+
+-   Geometry Type: Multipolygon
+
+-   Shape: 269 features, 161 fields
+
+-   CRS: WGS 84 - 'The World Geodetic System (WGS)'.
+
+::: callout-note
+The assigned CRS does not seem appropriate. In fact, the assignment requires us to re-assign the CRS to DGN95. We'll fix this in Section 4.2.3.
+:::
+
+### Data pre-processing
+
+Before we can visualise our data, we need to ensure that the data is validated by handling invalid geometries and missing values.
+
+*This section was done by referencing sample submissions done by two seniors, credit to:*
+
+-   [*Xiao Rong Wong's 'Detecting Spatio-Temporal Patterns of COVID-19 in Central Mexico'*](https://rpubs.com/xiaorongw/IS415_Take-home_Ex02)
+
+-   [*Megan Sim Tze Yen's 'Analysing and Visualising Spatio-temporal Patterns of COVID-19 in DKI Jakarta, Indonesia'*](https://is415-msty.netlify.app/posts/2021-09-10-take-home-exercise-1/#data-pre-processing)
+
+#### Handling invalid geometries
+
+```{r}
+#| code-fold: true
+length(which(st_is_valid(jakarta) == FALSE))
+```
+
+::: callout-note
+`st_is_valid()` checks whether a geometry is valid. It returns a logical vector indicating for each geometries of `jakarta` whether it is valid. The documentation for this can be found [here](https://r-spatial.github.io/sf/reference/valid.html).
+:::
+
+From the above output, we can see that the geometry is valid 👍
+
+#### Handling missing values
+
+```{r}
+#| code-fold: true
+jakarta[rowSums(is.na(jakarta))!=0,]
+```
+
+::: callout-note
+`rowSums()` method calculates the sum of each row of a data frame. Please refer to the documentation [here](https://www.rdocumentation.org/packages/raster/versions/3.6-14/topics/rowSums).
+
+`is.na()` is a generic method that indicates which elements are missing. Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/NA).
+
+`jakarta` 'wrapper' prints rows that contain NA values.
+:::
+
+From the output shown above we can see that there are NA values 👎
+
+In fact, there are two rows with missing values. However, it's hard to tell which columns the NA values are in since the output is so long and messy. Let's just retrieve the columns with missing values.
+
+```{r}
+#| code-fold: true
+names(which(colSums(is.na(jakarta))>0))
+```
+
+::: callout-note
+`colSum()` helps form sum for data frame by column. Please refer to the documentation [here](https://www.rdocumentation.org/packages/Matrix/versions/1.5-3/topics/colSums).
+
+`which()` gives the TRUE indices of a logical object, allowing for array indices. Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/which).
+
+`names()` is used to get or set the names of an object. Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/names).
+:::
+
+There are two rows with missing values in the columns shown above. Let's see what they mean... Google Translate tells us that: 🤔
+
+-   "KAB_KOTA" = CITY REGENCY
+
+-   "KECAMATAN" = SUB DISTRICT
+
+-   "DESA_KELUR" = VILLAGE
+
+We can remove all rows with missing values under the "DESA_KELUR" (i.e., VILLAGE level) column since we are only interested in the sub-district and potentially city level data.
+
+*Nonetheless, it should be noted that in this particular case removing the missing values from any of the columns will yield the same result.*
+
+```{r}
+#| code-fold: true
+jakarta <- na.omit(jakarta, c("DESA_KELUR"))
+```
+
+Let's check if we have removed the rows with missing values:
+
+```{r}
+#| code-fold: true
+jakarta[rowSums(is.na(jakarta))!=0,]
+```
+
+Looks good! 😎 But we still have 3 other pre-processing steps to do...
+
+#### Re-assign Coordinate Reference System (CRS)
+
+The CRS of `jakarta` is WGS 84. The assignment requires us to use the national CRS of Indonesia [*( DGN95 / Indonesia TM-3 zone 54.1)*](https://epsg.io/23845) since our dataset is specific to Indonesia.
+
+```{r}
+#| code-fold: true
+st_crs(jakarta)
+```
+
+Let's re-assign using EPSG code 23845 and check the results.
+
+```{r}
+#| code-fold: true
+jakarta <- st_transform(jakarta, 23845)
+st_crs(jakarta)
+```
+
+#### Exclude all outer islands from `jakarta`
+
+The assignment requires us to remove all outer islands from `jakarta`. Let's plot the geometry of `jakarta` to see what we're working with.
+
+```{r}
+#| code-fold: true
+plot(jakarta['geometry'])
+```
+
+From the visualisation we can see that there are some outer islands scattered towards the north. Let's remove them.
+
+In Section 4.2.2, we saw that the data is grouped by ***KAB_KOTA*** (i.e., CITY), ***KECAMATAN*** (i.e., SUB-DISTRICT), and ***DESA_KELUR*** (i.e., "VILLAGE"). Let's see the different cities we have in DKI Jakarta.
+
+```{r}
+#| code-fold: true
+unique(jakarta$KAB_KOTA)
+```
+
+The output shows us that there are 6 different cities in DKI Jakarta. 5 of them are prefixed with the string "JAKARTA " while one of them isn't. Let's plot this data to see if the one without the prefix represents the outer islands.
+
+```{r}
+#| code-fold: true
+tm_shape(jakarta) + 
+  tm_polygons("KAB_KOTA")
+```
+
+It seems our suspicions are correct, the outer islands are those cities without the "JAKARTA " prefix. Let's remove them and check the results.
+
+```{r}
+#| code-fold: true
+jakarta <- jakarta %>% filter(grepl("JAKARTA", KAB_KOTA))
+
+unique(jakarta$KAB_KOTA)
+```
+
+```{r}
+#| code-fold: true
+plot(jakarta$geometry)
+```
+
+Looks good! 😎
+
+#### Retain first nine fields in `jakarta`
+
+The assignment requires us to only retain the first 9 fields of the **sf** data frame. Let's do this.
+
+```{r}
+#| code-fold: true
+jakarta <- jakarta[,0:9]
+
+jakarta
+```
+
+From the assignment we know that the ninth field is "JUMLAH_PEN". The output generated above matches this information.
+
+We have completed the data pre-processing steps for the geospatial data 🥳 Let's move on to the aspatial data.
+
+## Data Wrangling: Aspatial Data
+
+### Importing Aspatial Data
+
+```{r}
+#| code-fold: true
+
+```
