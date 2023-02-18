@@ -45,6 +45,8 @@ These are the R packages that we'll need for our analyses:
 
 -   **tmap** - for plotting cartographic quality static point patterns maps or interactive maps by using [leaflet](https://leafletjs.com/) API
 
+-   **readxl** - for reading .xlsx files. It is part of the `tidyverse` collection.
+
 ```{r}
 #| code-fold: true
 pacman::p_load(sf, sfdep, tidyverse, tmap)
@@ -52,12 +54,25 @@ pacman::p_load(sf, sfdep, tidyverse, tmap)
 
 ### Datasets used
 
-| Type       | Name                                                                                                                           | Format | Description                                                                             |
-|------------------|------------------|------------------|------------------|
-| Geospatial | [DKI Jakarta Provincial Village Boundary](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) | .shp   | District level boundary in DKI Jakarta. Please take note that the data is from 2019.    |
-| Aspatial   | [Village and District Based Vaccination History](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)        | .xlsx  | Daily .csv files containing all vaccinations done at the district level in DKI Jakarta. |
-
-To retrieve the monthly cumulative records of COVID-19 vaccinations from [*July 2021 to June 2022*]{.underline}, I took the data compiled on the **last day** of each month.
++----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Type           | Name                                                                                                                           | Format         | Description                                                                                                                                                                                    |
++================+================================================================================================================================+================+================================================================================================================================================================================================+
+| Geospatial     | [DKI Jakarta Provincial Village Boundary](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) | .shp           | District level boundary in DKI Jakarta. Please take note that the data is from 2019.                                                                                                           |
++----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Aspatial       | [District Based Vaccination History](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)                    | .xlsx          | Daily .csv files containing all vaccinations done at the sub-district level (i.e., kelurahan) in DKI Jakarta. The files considers the number of doses given to the following groups of people: |
+|                |                                                                                                                                |                |                                                                                                                                                                                                |
+|                |                                                                                                                                |                | -   Mutual Cooperation Vaccination (Ages 18+)                                                                                                                                                  |
+|                |                                                                                                                                |                |                                                                                                                                                                                                |
+|                |                                                                                                                                |                | -   Vaccination of Health Workers (Ages 18+)                                                                                                                                                   |
+|                |                                                                                                                                |                |                                                                                                                                                                                                |
+|                |                                                                                                                                |                | -   Elderly Vaccination (Ages 18+)                                                                                                                                                             |
+|                |                                                                                                                                |                |                                                                                                                                                                                                |
+|                |                                                                                                                                |                | -   Public Service Vaccination (Ages 18+)                                                                                                                                                      |
+|                |                                                                                                                                |                |                                                                                                                                                                                                |
+|                |                                                                                                                                |                | -   Stage 3 Vaccination (General Community, Pre-Elderly, Vulnerable)                                                                                                                           |
+|                |                                                                                                                                |                |                                                                                                                                                                                                |
+|                |                                                                                                                                |                | -   Youth Vaccination (Ages 12-17)                                                                                                                                                             |
++----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ## Data Wrangling: Geospatial Data
 
@@ -92,6 +107,8 @@ Before we can visualise our data, we need to ensure that the data is validated b
 -   [*Xiao Rong Wong's 'Detecting Spatio-Temporal Patterns of COVID-19 in Central Mexico'*](https://rpubs.com/xiaorongw/IS415_Take-home_Ex02)
 
 -   [*Megan Sim Tze Yen's 'Analysing and Visualising Spatio-temporal Patterns of COVID-19 in DKI Jakarta, Indonesia'*](https://is415-msty.netlify.app/posts/2021-09-10-take-home-exercise-1/#data-pre-processing)
+
+Afterwards, we can work on doing the pre-processing on the `jakarta` data as per the requirements of the assignment.
 
 #### Handling invalid geometries
 
@@ -140,11 +157,11 @@ names(which(colSums(is.na(jakarta))>0))
 
 There are two rows with missing values in the columns shown above. Let's see what they mean... Google Translate tells us that: 🤔
 
--   "KAB_KOTA" = CITY REGENCY
+-   "KAB_KOTA" = REGENCY_CITY
 
--   "KECAMATAN" = SUB DISTRICT
+-   "KECAMATAN" = SUB-DISTRICT
 
--   "DESA_KELUR" = VILLAGE
+-   "DESA_KELUR" = VILLAGE_KELUR
 
 We can remove all rows with missing values under the "DESA_KELUR" (i.e., VILLAGE level) column since we are only interested in the sub-district and potentially city level data.
 
@@ -199,7 +216,7 @@ In Section 4.2.2, we saw that the data is grouped by ***KAB_KOTA*** (i.e., CITY)
 unique(jakarta$KAB_KOTA)
 ```
 
-The output shows us that there are 6 different cities in DKI Jakarta. 5 of them are prefixed with the string "JAKARTA " while one of them isn't. Let's plot this data to see if the one without the prefix represents the outer islands.
+The output shows us that there are 6 different cities in DKI Jakarta. 5 of them are prefixed with the string "JAKARTA" while one of them isn't. Let's plot this data to see if the one without the prefix represents the outer islands.
 
 ```{r}
 #| code-fold: true
@@ -207,7 +224,7 @@ tm_shape(jakarta) +
   tm_polygons("KAB_KOTA")
 ```
 
-It seems our suspicions are correct, the outer islands are those cities without the "JAKARTA " prefix. Let's remove them and check the results.
+It seems our suspicions are correct, the outer islands are those cities without the "JAKARTA" prefix. Let's remove them and check the results.
 
 ```{r}
 #| code-fold: true
@@ -238,11 +255,111 @@ From the assignment we know that the ninth field is "JUMLAH_PEN". The output gen
 
 We have completed the data pre-processing steps for the geospatial data 🥳 Let's move on to the aspatial data.
 
-## Data Wrangling: Aspatial Data
+#### Rename Columns for better understanding
 
-### Importing Aspatial Data
+For better understanding of the data, let us rename the columns to their English translation. For this we will use the `rename()` function.
+
+::: callout-note
+Since Google Translate has been giving me contradicting answers 😓, I have decided to use this [wiki page](https://en.wikipedia.org/wiki/Subdivisions_of_Indonesia) as a guide.
+:::
 
 ```{r}
 #| code-fold: true
+# take note of the hierarchy of subdivisions of Indonesia
 
+jakarta <- jakarta %>%
+  rename(
+    object_id = OBJECT_ID,
+    village_code = KODE_DESA,
+    
+    # fifth level
+    village = DESA,
+    code = KODE,
+    
+    # first level
+    province = PROVINSI,
+    
+    # second level
+    city = KAB_KOTA,
+    
+    # third level
+    district = KECAMATAN,
+    
+    # fourth level - assumption made: KELUR = KELURAHAN
+    sub_district = DESA_KELUR,
+    total_population = JUMLAH_PEN
+  )
 ```
+
+::: callout-note
+`rename()` is a method under the **dplyr** library. It changes the names of individual variables using the `new_name = old_name` syntax; `rename_with()` renames columns using a function. Please refer to the documentation [here](https://dplyr.tidyverse.org/reference/rename.html).
+:::
+
+## Data Wrangling: Aspatial Data
+
+In this section, we'll be importing and performing some basic pre-processing on the COVID-19 vaccination datasets.
+
+### Importing Aspatial Data
+
+The assignment requires us to compute the vaccination rate from July 2021 to June 2022 at the sub-district (i.e., kelurahan) level. We will be taking the data compiled on the [**last day**]{.underline} of each month to retrieve the monthly cumulative records of COVID-19 vaccinations from the above-mentioned time period.
+
+#### Primary Data Exploration
+
+Since we will need to import 12 files (which is a lot), let's look at the structure of one of them to figure what kind of data we have and how we can pre-process it moving forward.
+
+```{r}
+#| code-fold: true
+july_2021 <- readxl::read_xlsx("data/aspatial/Data Vaksinasi Berbasis Kelurahan (31 Juli 2021).xlsx")
+
+glimpse(july_2021)
+```
+
+There seems to be a quite a few columns so let's take a look at what each of them mean... 🤔
+
+According to Google Translate:
+
+-   SASARAN = target
+
+-   BELUM VAKSIN = not yet vaccinated
+
+-   JUMLAH DOSIS 1 = number of doses 1
+
+-   JUMLAH DOSIS 2 = number of doses 2
+
+-   TOTAL VAKSIN DEBERIKAN = total number of vaccines administered
+
+-   LANSIA DOSIS 1 = number of doses given to elderly 1
+
+-   LANSIA DOSIS 2 = number of doses given to elderly 2
+
+-   LANSIA TOTAL VAKSIN DIBERIKAN = total number of vaccines given to elderly
+
+-   PELAYAN PUBLIK DOSIS 1 = number of doses given to public service 1
+
+-   PELAYAN PUBLIK DOSIS 2 = number of doses given to public service 2
+
+-   PELAYAN PUBLIK TOTAL VAKSIN DIBERIKAN = total number of vaccines given to public service
+
+-   GOTONG ROYONG DOSIS 1 = number of doses given to mutual cooperation 1
+
+-   GOTONG ROYONG DOSIS 2 = number of doses given to mutual cooperation 2
+
+-   GOTONG ROYONG TOTAL VAKSIN DIBERIKAN = total number of vaccines given to mutual cooperation
+
+-   TENAGA KESEHATAN DOSIS 1 = number of doses given to healthcare workers 1
+
+-   TENAGA KESEHATAN DOSIS 2 = number of doses given to healthcare workers 2
+
+-   TENEGA KESEHATAN TOTAL VAKSIN DIBERIKAN = total number of vaccines given to healthcare workers
+
+-   TAHAPAN 3 DOSIS 1 = number of stage 3 doses 1
+
+-   TAHAPAN 3 DOSIS 2 = number of stage 3 doses 2
+
+-   TAHAPAN 3 TOTAL VAKSIN DIBERIKAN = total number of stage 3 doses administered
+
+-   REMAJA DOSIS 1 = number of doses given to teenagers 1
+
+-   REMAJA DOSIS 2 = number of doses given to teenagers 2
+
+-   REMAJA TOTAL VAKSIN DIBERIKAN = total number of vaccines given to teenagers
