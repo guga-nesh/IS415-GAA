@@ -302,6 +302,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><strong>sfdep</strong> - an <code>sf</code> and <code>tidyverse</code> friendly interface to compute spatial dependence</p></li>
 <li><p><strong>tidyverse</strong> - collection of packages for performing data science tasks such as importing, wrangling, and visualising data</p></li>
 <li><p><strong>tmap</strong> - for plotting cartographic quality static point patterns maps or interactive maps by using <a href="https://leafletjs.com/">leaflet</a> API</p></li>
+<li><p><strong>readxl</strong> - for reading .xlsx files. It is part of the <code>tidyverse</code> collection.</p></li>
 </ul>
 <div class="cell">
 <details>
@@ -330,13 +331,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="even">
 <td>Aspatial</td>
-<td><a href="https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/">Village and District Based Vaccination History</a></td>
+<td><a href="https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/">District Based Vaccination History</a></td>
 <td>.xlsx</td>
-<td>Daily .csv files containing all vaccinations done at the district level in DKI Jakarta.</td>
+<td><p>Daily .csv files containing all vaccinations done at the sub-district level (i.e., kelurahan) in DKI Jakarta. The files considers the number of doses given to the following groups of people:</p>
+<ul>
+<li><p>Mutual Cooperation Vaccination (Ages 18+)</p></li>
+<li><p>Vaccination of Health Workers (Ages 18+)</p></li>
+<li><p>Elderly Vaccination (Ages 18+)</p></li>
+<li><p>Public Service Vaccination (Ages 18+)</p></li>
+<li><p>Stage 3 Vaccination (General Community, Pre-Elderly, Vulnerable)</p></li>
+<li><p>Youth Vaccination (Ages 12-17)</p></li>
+</ul></td>
 </tr>
 </tbody>
 </table>
-<p>To retrieve the monthly cumulative records of COVID-19 vaccinations from <u><em>July 2021 to June 2022</em></u>, I took the data compiled on the <strong>last day</strong> of each month.</p>
 </section>
 </section>
 <section id="data-wrangling-geospatial-data" class="level2" data-number="4">
@@ -389,6 +397,7 @@ Note
 <li><p><a href="https://rpubs.com/xiaorongw/IS415_Take-home_Ex02"><em>Xiao Rong Wong’s ‘Detecting Spatio-Temporal Patterns of COVID-19 in Central Mexico’</em></a></p></li>
 <li><p><a href="https://is415-msty.netlify.app/posts/2021-09-10-take-home-exercise-1/#data-pre-processing"><em>Megan Sim Tze Yen’s ‘Analysing and Visualising Spatio-temporal Patterns of COVID-19 in DKI Jakarta, Indonesia’</em></a></p></li>
 </ul>
+<p>Afterwards, we can work on doing the pre-processing on the <code>jakarta</code> data as per the requirements of the assignment.</p>
 <section id="handling-invalid-geometries" class="level4" data-number="4.2.1">
 <h4 data-number="4.2.1" class="anchored" data-anchor-id="handling-invalid-geometries"><span class="header-section-number">4.2.1</span> Handling invalid geometries</h4>
 <div class="cell">
@@ -534,9 +543,9 @@ Note
 </div>
 <p>There are two rows with missing values in the columns shown above. Let’s see what they mean… Google Translate tells us that: 🤔</p>
 <ul>
-<li><p>“KAB_KOTA” = CITY REGENCY</p></li>
-<li><p>“KECAMATAN” = SUB DISTRICT</p></li>
-<li><p>“DESA_KELUR” = VILLAGE</p></li>
+<li><p>“KAB_KOTA” = REGENCY_CITY</p></li>
+<li><p>“KECAMATAN” = SUB-DISTRICT</p></li>
+<li><p>“DESA_KELUR” = VILLAGE_KELUR</p></li>
 </ul>
 <p>We can remove all rows with missing values under the “DESA_KELUR” (i.e., VILLAGE level) column since we are only interested in the sub-district and potentially city level data.</p>
 <p><em>Nonetheless, it should be noted that in this particular case removing the missing values from any of the columns will yield the same result.</em></p>
@@ -771,17 +780,145 @@ First 10 features:
 <p>From the assignment we know that the ninth field is “JUMLAH_PEN”. The output generated above matches this information.</p>
 <p>We have completed the data pre-processing steps for the geospatial data 🥳 Let’s move on to the aspatial data.</p>
 </section>
+<section id="rename-columns-for-better-understanding" class="level4" data-number="4.2.6">
+<h4 data-number="4.2.6" class="anchored" data-anchor-id="rename-columns-for-better-understanding"><span class="header-section-number">4.2.6</span> Rename Columns for better understanding</h4>
+<p>For better understanding of the data, let us rename the columns to their English translation. For this we will use the <code>rename()</code> function.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Since Google Translate has been giving me contradicting answers 😓, I have decided to use this <a href="https://en.wikipedia.org/wiki/Subdivisions_of_Indonesia">wiki page</a> as a guide.</p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># take note of the hierarchy of subdivisions of Indonesia</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> jakarta <span class="sc">%&gt;%</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">object_id =</span> OBJECT_ID,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">village_code =</span> KODE_DESA,</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># fifth level</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">village =</span> DESA,</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">code =</span> KODE,</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># first level</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">province =</span> PROVINSI,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># second level</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">city =</span> KAB_KOTA,</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># third level</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">district =</span> KECAMATAN,</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># fourth level - assumption made: KELUR = KELURAHAN</span></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">sub_district =</span> DESA_KELUR,</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_population =</span> JUMLAH_PEN</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>rename()</code> is a method under the <strong>dplyr</strong> library. It changes the names of individual variables using the <code>new_name = old_name</code> syntax; <code>rename_with()</code> renames columns using a function. Please refer to the documentation <a href="https://dplyr.tidyverse.org/reference/rename.html">here</a>.</p>
+</div>
+</div>
+</section>
 </section>
 </section>
 <section id="data-wrangling-aspatial-data" class="level2" data-number="5">
 <h2 data-number="5" class="anchored" data-anchor-id="data-wrangling-aspatial-data"><span class="header-section-number">5</span> Data Wrangling: Aspatial Data</h2>
+<p>In this section, we’ll be importing and performing some basic pre-processing on the COVID-19 vaccination datasets.</p>
 <section id="importing-aspatial-data" class="level3" data-number="5.1">
 <h3 data-number="5.1" class="anchored" data-anchor-id="importing-aspatial-data"><span class="header-section-number">5.1</span> Importing Aspatial Data</h3>
+<p>The assignment requires us to compute the vaccination rate from July 2021 to June 2022 at the sub-district (i.e., kelurahan) level. We will be taking the data compiled on the <u><strong>last day</strong></u> of each month to retrieve the monthly cumulative records of COVID-19 vaccinations from the above-mentioned time period.</p>
+<section id="primary-data-exploration" class="level4" data-number="5.1.1">
+<h4 data-number="5.1.1" class="anchored" data-anchor-id="primary-data-exploration"><span class="header-section-number">5.1.1</span> Primary Data Exploration</h4>
+<p>Since we will need to import 12 files (which is a lot), let’s look at the structure of one of them to figure what kind of data we have and how we can pre-process it moving forward.</p>
 <div class="cell">
-
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>july_2021 <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">"data/aspatial/Data Vaksinasi Berbasis Kelurahan (31 Juli 2021).xlsx"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(july_2021)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 268
+Columns: 27
+$ `KODE KELURAHAN`                             &lt;chr&gt; NA, "3172051003", "317304…
+$ `WILAYAH KOTA`                               &lt;chr&gt; NA, "JAKARTA UTARA", "JAK…
+$ KECAMATAN                                    &lt;chr&gt; NA, "PADEMANGAN", "TAMBOR…
+$ KELURAHAN                                    &lt;chr&gt; "TOTAL", "ANCOL", "ANGKE"…
+$ SASARAN                                      &lt;dbl&gt; 8941211, 23947, 29381, 29…
+$ `BELUM VAKSIN`                               &lt;dbl&gt; 4441501, 12333, 13875, 18…
+$ `JUMLAH\r\nDOSIS 1`                          &lt;dbl&gt; 4499710, 11614, 15506, 10…
+$ `JUMLAH\r\nDOSIS 2`                          &lt;dbl&gt; 1663218, 4181, 4798, 3658…
+$ `TOTAL VAKSIN\r\nDIBERIKAN`                  &lt;dbl&gt; 6162928, 15795, 20304, 14…
+$ `LANSIA\r\nDOSIS 1`                          &lt;dbl&gt; 502579, 1230, 2012, 865, …
+$ `LANSIA\r\nDOSIS 2`                          &lt;dbl&gt; 440910, 1069, 1729, 701, …
+$ `LANSIA TOTAL \r\nVAKSIN DIBERIKAN`          &lt;dbl&gt; 943489, 2299, 3741, 1566,…
+$ `PELAYAN PUBLIK\r\nDOSIS 1`                  &lt;dbl&gt; 1052883, 3333, 2586, 2837…
+$ `PELAYAN PUBLIK\r\nDOSIS 2`                  &lt;dbl&gt; 666009, 2158, 1374, 1761,…
+$ `PELAYAN PUBLIK TOTAL\r\nVAKSIN DIBERIKAN`   &lt;dbl&gt; 1718892, 5491, 3960, 4598…
+$ `GOTONG ROYONG\r\nDOSIS 1`                   &lt;dbl&gt; 56660, 78, 122, 174, 71, …
+$ `GOTONG ROYONG\r\nDOSIS 2`                   &lt;dbl&gt; 38496, 51, 84, 106, 57, 7…
+$ `GOTONG ROYONG TOTAL\r\nVAKSIN DIBERIKAN`    &lt;dbl&gt; 95156, 129, 206, 280, 128…
+$ `TENAGA KESEHATAN\r\nDOSIS 1`                &lt;dbl&gt; 76397, 101, 90, 215, 73, …
+$ `TENAGA KESEHATAN\r\nDOSIS 2`                &lt;dbl&gt; 67484, 91, 82, 192, 67, 3…
+$ `TENAGA KESEHATAN TOTAL\r\nVAKSIN DIBERIKAN` &lt;dbl&gt; 143881, 192, 172, 407, 14…
+$ `TAHAPAN 3\r\nDOSIS 1`                       &lt;dbl&gt; 2279398, 5506, 9012, 5408…
+$ `TAHAPAN 3\r\nDOSIS 2`                       &lt;dbl&gt; 446028, 789, 1519, 897, 4…
+$ `TAHAPAN 3 TOTAL\r\nVAKSIN DIBERIKAN`        &lt;dbl&gt; 2725426, 6295, 10531, 630…
+$ `REMAJA\r\nDOSIS 1`                          &lt;dbl&gt; 531793, 1366, 1684, 1261,…
+$ `REMAJA\r\nDOSIS 2`                          &lt;dbl&gt; 4291, 23, 10, 1, 1, 8, 6,…
+$ `REMAJA TOTAL\r\nVAKSIN DIBERIKAN`           &lt;dbl&gt; 536084, 1389, 1694, 1262,…</code></pre>
 </div>
+</div>
+<p>There seems to be a quite a few columns so let’s take a look at what each of them mean… 🤔</p>
+<p>According to Google Translate:</p>
+<ul>
+<li><p>SASARAN = target</p></li>
+<li><p>BELUM VAKSIN = not yet vaccinated</p></li>
+<li><p>JUMLAH DOSIS 1 = number of doses 1</p></li>
+<li><p>JUMLAH DOSIS 2 = number of doses 2</p></li>
+<li><p>TOTAL VAKSIN DEBERIKAN = total number of vaccines administered</p></li>
+<li><p>LANSIA DOSIS 1 = number of doses given to elderly 1</p></li>
+<li><p>LANSIA DOSIS 2 = number of doses given to elderly 2</p></li>
+<li><p>LANSIA TOTAL VAKSIN DIBERIKAN = total number of vaccines given to elderly</p></li>
+<li><p>PELAYAN PUBLIK DOSIS 1 = number of doses given to public service 1</p></li>
+<li><p>PELAYAN PUBLIK DOSIS 2 = number of doses given to public service 2</p></li>
+<li><p>PELAYAN PUBLIK TOTAL VAKSIN DIBERIKAN = total number of vaccines given to public service</p></li>
+<li><p>GOTONG ROYONG DOSIS 1 = number of doses given to mutual cooperation 1</p></li>
+<li><p>GOTONG ROYONG DOSIS 2 = number of doses given to mutual cooperation 2</p></li>
+<li><p>GOTONG ROYONG TOTAL VAKSIN DIBERIKAN = total number of vaccines given to mutual cooperation</p></li>
+<li><p>TENAGA KESEHATAN DOSIS 1 = number of doses given to healthcare workers 1</p></li>
+<li><p>TENAGA KESEHATAN DOSIS 2 = number of doses given to healthcare workers 2</p></li>
+<li><p>TENEGA KESEHATAN TOTAL VAKSIN DIBERIKAN = total number of vaccines given to healthcare workers</p></li>
+<li><p>TAHAPAN 3 DOSIS 1 = number of stage 3 doses 1</p></li>
+<li><p>TAHAPAN 3 DOSIS 2 = number of stage 3 doses 2</p></li>
+<li><p>TAHAPAN 3 TOTAL VAKSIN DIBERIKAN = total number of stage 3 doses administered</p></li>
+<li><p>REMAJA DOSIS 1 = number of doses given to teenagers 1</p></li>
+<li><p>REMAJA DOSIS 2 = number of doses given to teenagers 2</p></li>
+<li><p>REMAJA TOTAL VAKSIN DIBERIKAN = total number of vaccines given to teenagers</p></li>
+</ul>
 
 
+</section>
 </section>
 </section>
 
