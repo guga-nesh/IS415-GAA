@@ -305,10 +305,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><strong>readxl</strong> - for reading .xlsx files. It is part of the <code>tidyverse</code> collection.</p></li>
 </ul>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfdep, tidyverse, tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 <section id="datasets-used" class="level3" data-number="3.2">
@@ -333,7 +330,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>Aspatial</td>
 <td><a href="https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/">District Based Vaccination History</a></td>
 <td>.xlsx</td>
-<td><p>Daily .csv files containing all vaccinations done at the sub-district level (i.e., kelurahan) in DKI Jakarta. The files considers the number of doses given to the following groups of people:</p>
+<td><p>Daily .csv files containing all vaccinations done at the sub-district level (i.e., kelurahan) in DKI Jakarta. The files consider the number of doses given to the following groups of people:</p>
 <ul>
 <li><p>Mutual Cooperation Vaccination (Ages 18+)</p></li>
 <li><p>Vaccination of Health Workers (Ages 18+)</p></li>
@@ -352,11 +349,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="importing-geospatial-data" class="level3" data-number="4.1">
 <h3 data-number="4.1" class="anchored" data-anchor-id="importing-geospatial-data"><span class="header-section-number">4.1</span> Importing Geospatial Data</h3>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">"data/geospatial"</span>,</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">layer=</span><span class="st">"BATAS_DESA_DESEMBER_2019_DUKCAPIL_DKI_JAKARTA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `BATAS_DESA_DESEMBER_2019_DUKCAPIL_DKI_JAKARTA' from data source 
   `C:\guga-nesh\IS415-GAA\take-home_ex\take-home_ex02\data\geospatial' 
@@ -401,10 +395,7 @@ Note
 <section id="handling-invalid-geometries" class="level4" data-number="4.2.1">
 <h4 data-number="4.2.1" class="anchored" data-anchor-id="handling-invalid-geometries"><span class="header-section-number">4.2.1</span> Handling invalid geometries</h4>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">which</span>(<span class="fu">st_is_valid</span>(jakarta) <span class="sc">==</span> <span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0</code></pre>
 </div>
@@ -427,10 +418,7 @@ Note
 <section id="handling-missing-values" class="level4" data-number="4.2.2">
 <h4 data-number="4.2.2" class="anchored" data-anchor-id="handling-missing-values"><span class="header-section-number">4.2.2</span> Handling missing values</h4>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>jakarta[<span class="fu">rowSums</span>(<span class="fu">is.na</span>(jakarta))<span class="sc">!=</span><span class="dv">0</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 2 features and 161 fields
 Geometry type: MULTIPOLYGON
@@ -517,10 +505,7 @@ Note
 <p>From the output shown above we can see that there are NA values 👎</p>
 <p>In fact, there are two rows with missing values. However, it’s hard to tell which columns the NA values are in since the output is so long and messy. Let’s just retrieve the columns with missing values.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">which</span>(<span class="fu">colSums</span>(<span class="fu">is.na</span>(jakarta))<span class="sc">&gt;</span><span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "KAB_KOTA"   "KECAMATAN"  "DESA_KELUR" "GENERATED"  "KODE_DES_1"
 [6] "KODE_DES_3" "DESA_KEL_1"</code></pre>
@@ -548,19 +533,39 @@ Note
 <li><p>“DESA_KELUR” = VILLAGE_KELUR</p></li>
 </ul>
 <p>We can remove all rows with missing values under the “DESA_KELUR” (i.e., VILLAGE level) column since we are only interested in the sub-district and potentially city level data.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Later we find out that the definition of these columns by Google Translate are not 100% accurate. But it’s okay as this does not affect our analysis for now.</p>
+</div>
+</div>
 <p><em>Nonetheless, it should be noted that in this particular case removing the missing values from any of the columns will yield the same result.</em></p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(jakarta, <span class="fu">c</span>(<span class="st">"DESA_KELUR"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>na.omit()</code> is used to handle missing values in objects. In this case, we input the <code>object</code>(must be an R object) and the <code>target.colnames</code> (a vector of names for the target columns to operate upon, if present in <code>object</code>. Please refer to the documentation <a href="https://www.rdocumentation.org/packages/photobiology/versions/0.10.6/topics/na.omit">here</a>.</p>
+</div>
 </div>
 <p>Let’s check if we have removed the rows with missing values:</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>jakarta[<span class="fu">rowSums</span>(<span class="fu">is.na</span>(jakarta))<span class="sc">!=</span><span class="dv">0</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 0 features and 161 fields
 Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
@@ -601,10 +606,7 @@ Geodetic CRS:  WGS 84
 <h4 data-number="4.2.3" class="anchored" data-anchor-id="re-assign-coordinate-reference-system-crs"><span class="header-section-number">4.2.3</span> Re-assign Coordinate Reference System (CRS)</h4>
 <p>The CRS of <code>jakarta</code> is WGS 84. The assignment requires us to use the national CRS of Indonesia <a href="https://epsg.io/23845"><em>( DGN95 / Indonesia TM-3 zone 54.1)</em></a> since our dataset is specific to Indonesia.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(jakarta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: WGS 84 
@@ -627,11 +629,8 @@ GEOGCRS["WGS 84",
 </div>
 <p>Let’s re-assign using EPSG code 23845 and check the results.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(jakarta, <span class="dv">23845</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(jakarta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Coordinate Reference System:
   User input: EPSG:23845 
@@ -676,15 +675,26 @@ PROJCRS["DGN95 / Indonesia TM-3 zone 54.1",
     ID["EPSG",23845]]</code></pre>
 </div>
 </div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>st_transform()</code> is used to transform or convert coordinates of a simple feature. Please refer to the documentation <a href="https://search.r-project.org/CRAN/refmans/sf/html/st_transform.html">here</a>.</p>
+<p><code>st_crs()</code> is used to retrieve the coordinate reference system from an <strong>sf</strong> or <strong>sfc</strong> object. Please refer to the documentation <a href="https://www.rdocumentation.org/packages/sf/versions/0.2-4/topics/st_crs">here</a>.</p>
+</div>
+</div>
 </section>
 <section id="exclude-all-outer-islands-from-jakarta" class="level4" data-number="4.2.4">
 <h4 data-number="4.2.4" class="anchored" data-anchor-id="exclude-all-outer-islands-from-jakarta"><span class="header-section-number">4.2.4</span> Exclude all outer islands from <code>jakarta</code></h4>
 <p>The assignment requires us to remove all outer islands from <code>jakarta</code>. Let’s plot the geometry of <code>jakarta</code> to see what we’re working with.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(jakarta[<span class="st">'geometry'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -692,10 +702,7 @@ PROJCRS["DGN95 / Indonesia TM-3 zone 54.1",
 <p>From the visualisation we can see that there are some outer islands scattered towards the north. Let’s remove them.</p>
 <p>In Section 4.2.2, we saw that the data is grouped by <strong><em>KAB_KOTA</em></strong> (i.e., CITY), <strong><em>KECAMATAN</em></strong> (i.e., SUB-DISTRICT), and <strong><em>DESA_KELUR</em></strong> (i.e., “VILLAGE”). Let’s see the different cities we have in DKI Jakarta.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(jakarta<span class="sc">$</span>KAB_KOTA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "JAKARTA BARAT"    "JAKARTA PUSAT"    "KEPULAUAN SERIBU" "JAKARTA UTARA"   
 [5] "JAKARTA TIMUR"    "JAKARTA SELATAN" </code></pre>
@@ -703,33 +710,37 @@ PROJCRS["DGN95 / Indonesia TM-3 zone 54.1",
 </div>
 <p>The output shows us that there are 6 different cities in DKI Jakarta. 5 of them are prefixed with the string “JAKARTA” while one of them isn’t. Let’s plot this data to see if the one without the prefix represents the outer islands.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(jakarta) <span class="sc">+</span> </span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="st">"KAB_KOTA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>It seems our suspicions are correct, the outer islands are those cities without the “JAKARTA” prefix. Let’s remove them and check the results.</p>
+<p>It seems our suspicions are correct, the outer islands are those cities without the “JAKARTA” prefix. In fact, “KEPULAUAN SEBIRU” can be directly translated to “Thousand Islands” in English. Let’s remove them and check the results.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> jakarta <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"JAKARTA"</span>, KAB_KOTA))</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(jakarta<span class="sc">$</span>KAB_KOTA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "JAKARTA BARAT"   "JAKARTA PUSAT"   "JAKARTA UTARA"   "JAKARTA TIMUR"  
 [5] "JAKARTA SELATAN"</code></pre>
 </div>
 </div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>grepl()</code> is used to search for matches to argument <code>pattern</code> (in our case its “JAKARTA”) within each element of a character vector. Please find the documentation <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/grep">here</a>.</p>
+</div>
+</div>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(jakarta<span class="sc">$</span>geometry)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -740,12 +751,9 @@ PROJCRS["DGN95 / Indonesia TM-3 zone 54.1",
 <h4 data-number="4.2.5" class="anchored" data-anchor-id="retain-first-nine-fields-in-jakarta"><span class="header-section-number">4.2.5</span> Retain first nine fields in <code>jakarta</code></h4>
 <p>The assignment requires us to only retain the first 9 fields of the <strong>sf</strong> data frame. Let’s do this.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> jakarta[,<span class="dv">0</span><span class="sc">:</span><span class="dv">9</span>]</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>jakarta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 261 features and 9 fields
 Geometry type: MULTIPOLYGON
@@ -778,7 +786,6 @@ First 10 features:
 </div>
 </div>
 <p>From the assignment we know that the ninth field is “JUMLAH_PEN”. The output generated above matches this information.</p>
-<p>We have completed the data pre-processing steps for the geospatial data 🥳 Let’s move on to the aspatial data.</p>
 </section>
 <section id="rename-columns-for-better-understanding" class="level4" data-number="4.2.6">
 <h4 data-number="4.2.6" class="anchored" data-anchor-id="rename-columns-for-better-understanding"><span class="header-section-number">4.2.6</span> Rename Columns for better understanding</h4>
@@ -797,8 +804,6 @@ Note
 </div>
 </div>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># take note of the hierarchy of subdivisions of Indonesia</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>jakarta <span class="ot">&lt;-</span> jakarta <span class="sc">%&gt;%</span></span>
@@ -823,7 +828,6 @@ Note
 <span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">sub_district =</span> DESA_KELUR,</span>
 <span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_population =</span> JUMLAH_PEN</span>
 <span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -835,9 +839,11 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>rename()</code> is a method under the <strong>dplyr</strong> library. It changes the names of individual variables using the <code>new_name = old_name</code> syntax; <code>rename_with()</code> renames columns using a function. Please refer to the documentation <a href="https://dplyr.tidyverse.org/reference/rename.html">here</a>.</p>
+<p><code>rename()</code> is a method under the <strong>dplyr</strong> library. It changes the names of individual variables using the <code>new_name = old_name</code> syntax.</p>
+<p>side note: <code>rename_with()</code> renames columns using a function. Please refer to the documentation <a href="https://dplyr.tidyverse.org/reference/rename.html">here</a>.</p>
 </div>
 </div>
+<p>We have completed the data pre-processing steps for the geospatial data 🥳 Let’s move on to the aspatial data.</p>
 </section>
 </section>
 </section>
@@ -851,12 +857,9 @@ Note
 <h4 data-number="5.1.1" class="anchored" data-anchor-id="primary-data-exploration"><span class="header-section-number">5.1.1</span> Primary Data Exploration</h4>
 <p>Since we will need to import 12 files (which is a lot), let’s look at the structure of one of them to figure what kind of data we have and how we can pre-process it moving forward.</p>
 <div class="cell">
-<details>
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>july_2021 <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">"data/aspatial/Data Vaksinasi Berbasis Kelurahan (31 Juli 2021).xlsx"</span>)</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(july_2021)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 268
 Columns: 27

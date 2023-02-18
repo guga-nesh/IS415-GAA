@@ -48,38 +48,36 @@ These are the R packages that we'll need for our analyses:
 -   **readxl** - for reading .xlsx files. It is part of the `tidyverse` collection.
 
 ```{r}
-#| code-fold: true
 pacman::p_load(sf, sfdep, tidyverse, tmap)
 ```
 
 ### Datasets used
 
-+----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Type           | Name                                                                                                                           | Format         | Description                                                                                                                                                                                    |
-+================+================================================================================================================================+================+================================================================================================================================================================================================+
-| Geospatial     | [DKI Jakarta Provincial Village Boundary](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) | .shp           | District level boundary in DKI Jakarta. Please take note that the data is from 2019.                                                                                                           |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Aspatial       | [District Based Vaccination History](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)                    | .xlsx          | Daily .csv files containing all vaccinations done at the sub-district level (i.e., kelurahan) in DKI Jakarta. The files considers the number of doses given to the following groups of people: |
-|                |                                                                                                                                |                |                                                                                                                                                                                                |
-|                |                                                                                                                                |                | -   Mutual Cooperation Vaccination (Ages 18+)                                                                                                                                                  |
-|                |                                                                                                                                |                |                                                                                                                                                                                                |
-|                |                                                                                                                                |                | -   Vaccination of Health Workers (Ages 18+)                                                                                                                                                   |
-|                |                                                                                                                                |                |                                                                                                                                                                                                |
-|                |                                                                                                                                |                | -   Elderly Vaccination (Ages 18+)                                                                                                                                                             |
-|                |                                                                                                                                |                |                                                                                                                                                                                                |
-|                |                                                                                                                                |                | -   Public Service Vaccination (Ages 18+)                                                                                                                                                      |
-|                |                                                                                                                                |                |                                                                                                                                                                                                |
-|                |                                                                                                                                |                | -   Stage 3 Vaccination (General Community, Pre-Elderly, Vulnerable)                                                                                                                           |
-|                |                                                                                                                                |                |                                                                                                                                                                                                |
-|                |                                                                                                                                |                | -   Youth Vaccination (Ages 12-17)                                                                                                                                                             |
-+----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Type           | Name                                                                                                                           | Format         | Description                                                                                                                                                                                   |
++================+================================================================================================================================+================+===============================================================================================================================================================================================+
+| Geospatial     | [DKI Jakarta Provincial Village Boundary](https://www.indonesia-geospasial.com/2020/04/download-shapefile-shp-batas-desa.html) | .shp           | District level boundary in DKI Jakarta. Please take note that the data is from 2019.                                                                                                          |
++----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Aspatial       | [District Based Vaccination History](https://riwayat-file-vaksinasi-dki-jakarta-jakartagis.hub.arcgis.com/)                    | .xlsx          | Daily .csv files containing all vaccinations done at the sub-district level (i.e., kelurahan) in DKI Jakarta. The files consider the number of doses given to the following groups of people: |
+|                |                                                                                                                                |                |                                                                                                                                                                                               |
+|                |                                                                                                                                |                | -   Mutual Cooperation Vaccination (Ages 18+)                                                                                                                                                 |
+|                |                                                                                                                                |                |                                                                                                                                                                                               |
+|                |                                                                                                                                |                | -   Vaccination of Health Workers (Ages 18+)                                                                                                                                                  |
+|                |                                                                                                                                |                |                                                                                                                                                                                               |
+|                |                                                                                                                                |                | -   Elderly Vaccination (Ages 18+)                                                                                                                                                            |
+|                |                                                                                                                                |                |                                                                                                                                                                                               |
+|                |                                                                                                                                |                | -   Public Service Vaccination (Ages 18+)                                                                                                                                                     |
+|                |                                                                                                                                |                |                                                                                                                                                                                               |
+|                |                                                                                                                                |                | -   Stage 3 Vaccination (General Community, Pre-Elderly, Vulnerable)                                                                                                                          |
+|                |                                                                                                                                |                |                                                                                                                                                                                               |
+|                |                                                                                                                                |                | -   Youth Vaccination (Ages 12-17)                                                                                                                                                            |
++----------------+--------------------------------------------------------------------------------------------------------------------------------+----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ## Data Wrangling: Geospatial Data
 
 ### Importing Geospatial Data
 
 ```{r}
-#| code-fold: true
 jakarta <- st_read(dsn="data/geospatial",
                    layer="BATAS_DESA_DESEMBER_2019_DUKCAPIL_DKI_JAKARTA")
 ```
@@ -113,7 +111,6 @@ Afterwards, we can work on doing the pre-processing on the `jakarta` data as per
 #### Handling invalid geometries
 
 ```{r}
-#| code-fold: true
 length(which(st_is_valid(jakarta) == FALSE))
 ```
 
@@ -126,7 +123,6 @@ From the above output, we can see that the geometry is valid 👍
 #### Handling missing values
 
 ```{r}
-#| code-fold: true
 jakarta[rowSums(is.na(jakarta))!=0,]
 ```
 
@@ -143,7 +139,6 @@ From the output shown above we can see that there are NA values 👎
 In fact, there are two rows with missing values. However, it's hard to tell which columns the NA values are in since the output is so long and messy. Let's just retrieve the columns with missing values.
 
 ```{r}
-#| code-fold: true
 names(which(colSums(is.na(jakarta))>0))
 ```
 
@@ -165,17 +160,23 @@ There are two rows with missing values in the columns shown above. Let's see wha
 
 We can remove all rows with missing values under the "DESA_KELUR" (i.e., VILLAGE level) column since we are only interested in the sub-district and potentially city level data.
 
+::: callout-note
+Later we find out that the definition of these columns by Google Translate are not 100% accurate. But it's okay as this does not affect our analysis for now.
+:::
+
 *Nonetheless, it should be noted that in this particular case removing the missing values from any of the columns will yield the same result.*
 
 ```{r}
-#| code-fold: true
 jakarta <- na.omit(jakarta, c("DESA_KELUR"))
 ```
+
+::: callout-note
+`na.omit()` is used to handle missing values in objects. In this case, we input the `object`(must be an R object) and the `target.colnames` (a vector of names for the target columns to operate upon, if present in `object`. Please refer to the documentation [here](https://www.rdocumentation.org/packages/photobiology/versions/0.10.6/topics/na.omit).
+:::
 
 Let's check if we have removed the rows with missing values:
 
 ```{r}
-#| code-fold: true
 jakarta[rowSums(is.na(jakarta))!=0,]
 ```
 
@@ -186,24 +187,27 @@ Looks good! 😎 But we still have 3 other pre-processing steps to do...
 The CRS of `jakarta` is WGS 84. The assignment requires us to use the national CRS of Indonesia [*( DGN95 / Indonesia TM-3 zone 54.1)*](https://epsg.io/23845) since our dataset is specific to Indonesia.
 
 ```{r}
-#| code-fold: true
 st_crs(jakarta)
 ```
 
 Let's re-assign using EPSG code 23845 and check the results.
 
 ```{r}
-#| code-fold: true
 jakarta <- st_transform(jakarta, 23845)
 st_crs(jakarta)
 ```
+
+::: callout-note
+`st_transform()` is used to transform or convert coordinates of a simple feature. Please refer to the documentation [here](https://search.r-project.org/CRAN/refmans/sf/html/st_transform.html).
+
+`st_crs()` is used to retrieve the coordinate reference system from an **sf** or **sfc** object. Please refer to the documentation [here](https://www.rdocumentation.org/packages/sf/versions/0.2-4/topics/st_crs).
+:::
 
 #### Exclude all outer islands from `jakarta`
 
 The assignment requires us to remove all outer islands from `jakarta`. Let's plot the geometry of `jakarta` to see what we're working with.
 
 ```{r}
-#| code-fold: true
 plot(jakarta['geometry'])
 ```
 
@@ -212,29 +216,29 @@ From the visualisation we can see that there are some outer islands scattered to
 In Section 4.2.2, we saw that the data is grouped by ***KAB_KOTA*** (i.e., CITY), ***KECAMATAN*** (i.e., SUB-DISTRICT), and ***DESA_KELUR*** (i.e., "VILLAGE"). Let's see the different cities we have in DKI Jakarta.
 
 ```{r}
-#| code-fold: true
 unique(jakarta$KAB_KOTA)
 ```
 
 The output shows us that there are 6 different cities in DKI Jakarta. 5 of them are prefixed with the string "JAKARTA" while one of them isn't. Let's plot this data to see if the one without the prefix represents the outer islands.
 
 ```{r}
-#| code-fold: true
 tm_shape(jakarta) + 
   tm_polygons("KAB_KOTA")
 ```
 
-It seems our suspicions are correct, the outer islands are those cities without the "JAKARTA" prefix. Let's remove them and check the results.
+It seems our suspicions are correct, the outer islands are those cities without the "JAKARTA" prefix. In fact, "KEPULAUAN SEBIRU" can be directly translated to "Thousand Islands" in English. Let's remove them and check the results.
 
 ```{r}
-#| code-fold: true
 jakarta <- jakarta %>% filter(grepl("JAKARTA", KAB_KOTA))
 
 unique(jakarta$KAB_KOTA)
 ```
 
+::: callout-note
+`grepl()` is used to search for matches to argument `pattern` (in our case its "JAKARTA") within each element of a character vector. Please find the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/grep).
+:::
+
 ```{r}
-#| code-fold: true
 plot(jakarta$geometry)
 ```
 
@@ -245,15 +249,12 @@ Looks good! 😎
 The assignment requires us to only retain the first 9 fields of the **sf** data frame. Let's do this.
 
 ```{r}
-#| code-fold: true
 jakarta <- jakarta[,0:9]
 
 jakarta
 ```
 
 From the assignment we know that the ninth field is "JUMLAH_PEN". The output generated above matches this information.
-
-We have completed the data pre-processing steps for the geospatial data 🥳 Let's move on to the aspatial data.
 
 #### Rename Columns for better understanding
 
@@ -264,7 +265,6 @@ Since Google Translate has been giving me contradicting answers 😓, I have dec
 :::
 
 ```{r}
-#| code-fold: true
 # take note of the hierarchy of subdivisions of Indonesia
 
 jakarta <- jakarta %>%
@@ -292,8 +292,12 @@ jakarta <- jakarta %>%
 ```
 
 ::: callout-note
-`rename()` is a method under the **dplyr** library. It changes the names of individual variables using the `new_name = old_name` syntax; `rename_with()` renames columns using a function. Please refer to the documentation [here](https://dplyr.tidyverse.org/reference/rename.html).
+`rename()` is a method under the **dplyr** library. It changes the names of individual variables using the `new_name = old_name` syntax.
+
+side note: `rename_with()` renames columns using a function. Please refer to the documentation [here](https://dplyr.tidyverse.org/reference/rename.html).
 :::
+
+We have completed the data pre-processing steps for the geospatial data 🥳 Let's move on to the aspatial data.
 
 ## Data Wrangling: Aspatial Data
 
@@ -308,7 +312,6 @@ The assignment requires us to compute the vaccination rate from July 2021 to Jun
 Since we will need to import 12 files (which is a lot), let's look at the structure of one of them to figure what kind of data we have and how we can pre-process it moving forward.
 
 ```{r}
-#| code-fold: true
 july_2021 <- readxl::read_xlsx("data/aspatial/Data Vaksinasi Berbasis Kelurahan (31 Juli 2021).xlsx")
 
 glimpse(july_2021)
