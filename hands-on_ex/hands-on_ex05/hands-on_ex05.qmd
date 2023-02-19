@@ -1,5 +1,5 @@
 ---
-title: "Hands-On Exercise 5: Global Measures of Spatial Autocorrelation"
+title: "Hands-On Exercise 7A: Global Measures of Spatial Autocorrelation"
 date: "19 February 2023"
 date-modified: "`r Sys.Date()`"
 number-sections: true
