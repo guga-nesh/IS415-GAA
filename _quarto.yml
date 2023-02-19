@@ -15,6 +15,10 @@ website:
             href: "hands-on_ex/hands-on_ex02/hands-on_ex02.html"
           - text: "Week 4"
             href: "hands-on_ex/hands-on_ex03/hands-on_ex03.html"
+          - text: "Week 7A"
+            href: "hands-on_ex/hands-on_ex05/hands-on_ex05.html"
+          - text: "Week 7B"
+            href: "hands-on_ex/hands-on_ex06/hands-on_ex06.html"
       - text: "In-Class Exercise"
         menu: 
           - text: "In-Class Exercise 02"
