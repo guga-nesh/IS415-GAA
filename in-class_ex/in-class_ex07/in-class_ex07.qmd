@@ -1,5 +1,5 @@
 ---
-title: "In-Class Exercise 7: "
+title: "In-Class Exercise 7: Global and Local Measures of Spatial Association (sfdep methods)"
 date: "20 February 2023"
 date-modified: "`r Sys.Date()`"
 number-sections: true
@@ -10,3 +10,49 @@ execute:
   warning: false
 editor: visual
 ---
+
+## Setup
+
+### Installing and Loading R Packages
+
+```{r}
+pacman::p_load(sf, tmap, sfdep, tidyverse)
+```
+
+### The Data
+
+| Type       | Name                                   | Format | Description                                            |
+|-----------------|-----------------|-----------------|---------------------|
+| Geospatial | Hunan Province Administrative Boundary | .shp   | Data is at the County level.                           |
+| Aspatial   | Hunan_2012                             | .xlsx  | Selected Hunan's local development indicators in 2012. |
+
+### Importing Geospatial Data
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+```
+
+`st_read()` of **sf** package is used to import shapefile into R as a simple features object. Please refer to the documentation [here](https://r-spatial.github.io/sf/reference/st_read.html).
+
+### Importing Aspatial Data
+
+```{r}
+
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+### Data Wrangling
+
+#### Performing relational join
+
+```{r}
+hunan <- left_join(hunan,hunan2012) %>%
+  select(1:4, 7, 15)
+
+# auto takes the columns that exist in both objects
+```
+
+::: callout-note
+The above code chunk will be used to update the attribute table of `hunan`'s SpatialPolygonsDataFrame with the attribute field of `hunan2012` dataframe. This is performed by using `left_join()` of **dplyr** package.
+:::
