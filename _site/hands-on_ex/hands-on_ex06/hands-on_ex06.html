@@ -191,6 +191,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../../in-class_ex/in-class_ex06/in-class_ex06.html">
  <span class="dropdown-text">In-Class Exercise 06</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex07/in-class_ex07.html">
+ <span class="dropdown-text">In-Class Exercise 07</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -269,7 +273,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#preparing-lisa-map-classes" id="toc-preparing-lisa-map-classes" class="nav-link" data-scroll-target="#preparing-lisa-map-classes"><span class="toc-section-number">6.3</span>  Preparing LISA map classes</a></li>
   <li><a href="#plotting-the-lisa-map" id="toc-plotting-the-lisa-map" class="nav-link" data-scroll-target="#plotting-the-lisa-map"><span class="toc-section-number">6.4</span>  Plotting the LISA map</a></li>
   </ul></li>
-  <li><a href="#hot-spot-and-cold-spot-area-analysis" id="toc-hot-spot-and-cold-spot-area-analysis" class="nav-link" data-scroll-target="#hot-spot-and-cold-spot-area-analysis"><span class="toc-section-number">7</span>  Hot Spot and Cold Spot Area Analysis</a>
+  <li><a href="#emerging-hot-spot-and-cold-spot-area-analysis" id="toc-emerging-hot-spot-and-cold-spot-area-analysis" class="nav-link" data-scroll-target="#emerging-hot-spot-and-cold-spot-area-analysis"><span class="toc-section-number">7</span>  Emerging Hot Spot and Cold Spot Area Analysis</a>
   <ul class="collapse">
   <li><a href="#getis-and-ords-g-statistics" id="toc-getis-and-ords-g-statistics" class="nav-link" data-scroll-target="#getis-and-ords-g-statistics"><span class="toc-section-number">7.1</span>  Getis and Ord’s G-Statistics</a></li>
   <li><a href="#deriving-distance-based-weight-matrix" id="toc-deriving-distance-based-weight-matrix" class="nav-link" data-scroll-target="#deriving-distance-based-weight-matrix"><span class="toc-section-number">7.2</span>  Deriving distance-based weight matrix</a></li>
@@ -301,7 +305,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 19, 2023</p>
+      <p class="date-modified">February 20, 2023</p>
     </div>
   </div>
     
@@ -346,10 +350,10 @@ Note
 <h3 data-number="2.4" class="anchored" data-anchor-id="study-area-and-data-1"><span class="header-section-number">2.4</span> Study Area and Data</h3>
 <table class="table">
 <colgroup>
-<col style="width: 23%">
-<col style="width: 23%">
-<col style="width: 23%">
-<col style="width: 29%">
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 27%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -1048,7 +1052,15 @@ Note
 </div>
 </div>
 <p>The plot is split into 4 quadrants. The top right corner belongs to areas that have high GDPPC and are surrounded by other areas that have the average level of GDPPC. This quadrant contains the “high-high” locations in the lesson slide. Refer to the slide image below:</p>
-<p><img src="images/image-1751107415.png" class="img-fluid"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/image-1751107415.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">HH = high surrounded by high (cluster)<br>
+LH = low surrounded by high (outliers)<br>
+HL = high surrounded by low (outliers)<br>
+LL = low surrounded by low (cluster)</figcaption><p></p>
+</figure>
+</div>
 </section>
 <section id="plotting-moran-scatterplot-with-standardised-variable" class="level3" data-number="6.2">
 <h3 data-number="6.2" class="anchored" data-anchor-id="plotting-moran-scatterplot-with-standardised-variable"><span class="header-section-number">6.2</span> Plotting Moran scatterplot with standardised variable</h3>
@@ -1161,7 +1173,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Note: For effective interpretation, is it better to plot both the GDPPC values map and its corresponding quadrants map next to each other.</p>
+<p>Note: For effective interpretation, is it better to plot both the GDPPC values map and its corresponding quadrants map next to each other. This is to show proof of which are the clusters and which aren’t. Those not part of the “quadrant” map are basically not statistically significant and we cannot put them in the quadrants.</p>
 <p>We can also include the local Moran’s I map and p-value map as shown below for easy comparison.</p>
 </div>
 </div>
@@ -1199,10 +1211,26 @@ Note
 </div>
 </section>
 </section>
-<section id="hot-spot-and-cold-spot-area-analysis" class="level2" data-number="7">
-<h2 data-number="7" class="anchored" data-anchor-id="hot-spot-and-cold-spot-area-analysis"><span class="header-section-number">7</span> Hot Spot and Cold Spot Area Analysis</h2>
+<section id="emerging-hot-spot-and-cold-spot-area-analysis" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="emerging-hot-spot-and-cold-spot-area-analysis"><span class="header-section-number">7</span> Emerging Hot Spot and Cold Spot Area Analysis</h2>
 <p>Besides detecting clusters and outliers, localised spatial statistics can also be used to detect <strong>hot spot</strong> and/or <strong>cold spot</strong> areas.</p>
 <p>Hot Spot = describes a region or value that is higher relative to its surroundings.</p>
+<p>LISA is to help us understand clusters and outliers but this one helps to identify Hot and Cold Spots. While yes, they are related (since Hot and Cold Spots are clusters), this helps us distinguish clusters from HH (i.e., Hot Spot) and LL (Cold Spot)</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The goal of EHSA is to evaluate how cold or hot spots are changing over time. It helps us answer the questions: are they becoming increasingly hotter, are they cooling down, or are they staying the same?</p>
+<p>We need to use Mann-Kendall test to assess whether a set of data values is increasing or decreasing over time. Please refer to this <a href="https://www.statisticshowto.com/wp-content/uploads/2016/08/Mann-Kendall-Analysis-1.pdf">article</a> for more info. Do note that the Mann-Kendall test does not assess the magnitude of change. Example of H0 and H1 = “There is no monotonic trend in the series” and “A trend exists”. Please refer to the data requirements <a href="https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/39">here</a>.</p>
+<p>To use Mann-Kendall test effectively, need to show trendline and map it out as well. Then, use this <a href="https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/40">slide</a> and this <a href="https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/41">slide</a> to describe it.</p>
+</div>
+</div>
 <section id="getis-and-ords-g-statistics" class="level3" data-number="7.1">
 <h3 data-number="7.1" class="anchored" data-anchor-id="getis-and-ords-g-statistics"><span class="header-section-number">7.1</span> Getis and Ord’s G-Statistics</h3>
 <p>Getis and Ord’s G-statistics is an alternative spatial statistics method to detect spatial anomalies. It looks at neighbours within a defined proximity to identify where either high or low values cluster spatially.</p>
@@ -1326,7 +1354,7 @@ B 88 7744 324 648 5440</code></pre>
 <section id="computing-adaptive-distance-weight-matrix" class="level4" data-number="7.2.4">
 <h4 data-number="7.2.4" class="anchored" data-anchor-id="computing-adaptive-distance-weight-matrix"><span class="header-section-number">7.2.4</span> Computing adaptive distance weight matrix</h4>
 <p>Using fixed weight distance means that more densely settled areas (i.e., urban areas) tend to have more neighbours than the less densely settled areas (i.e., rural counties).</p>
-<p>Having many neighbours smooths the neighbour relationship across more neighbours. So we can control the number of neighbours using k-nearest neighbours and either accepting asymetric neighbours or imposing symmetry as shown in this code chunk below.</p>
+<p>Having many neighbours smooths the neighbour relationship across more neighbours. So we can control the number of neighbours using k-nearest neighbours and either accepting asymmetric neighbours or imposing symmetry as shown in this code chunk below.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>knn <span class="ot">&lt;-</span> <span class="fu">knn2nb</span>(<span class="fu">knearneigh</span>(coords, <span class="at">k=</span><span class="dv">8</span>))</span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>knn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

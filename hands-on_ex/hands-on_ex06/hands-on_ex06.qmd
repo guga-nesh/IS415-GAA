@@ -38,7 +38,7 @@ If the answer is **No**. Then we need to check if there are signs of spatial clu
 ### Study Area and Data
 
 | Type       | Name                                   | Format | Description                                            |
-|-----------------|-----------------|-----------------|---------------------|
+|------------------|------------------|------------------|--------------------|
 | Geospatial | Hunan Province Administrative Boundary | .shp   | Data is at the County level.                           |
 | Aspatial   | Hunan_2012                             | .xlsx  | Selected Hunan's local development indicators in 2012. |
 
@@ -377,7 +377,10 @@ We use `moran.plot()` of **spdep** package to plot the Moran scatterplot of GDPP
 
 The plot is split into 4 quadrants. The top right corner belongs to areas that have high GDPPC and are surrounded by other areas that have the average level of GDPPC. This quadrant contains the "high-high" locations in the lesson slide. Refer to the slide image below:
 
-![](images/image-1751107415.png)
+![HH = high surrounded by high (cluster)\
+LH = low surrounded by high (outliers)\
+HL = high surrounded by low (outliers)\
+LL = low surrounded by low (cluster)](images/image-1751107415.png)
 
 ### Plotting Moran scatterplot with standardised variable
 
@@ -469,7 +472,7 @@ tmap_arrange(gdppc, LISAmap,
 ```
 
 ::: callout-note
-Note: For effective interpretation, is it better to plot both the GDPPC values map and its corresponding quadrants map next to each other.
+Note: For effective interpretation, is it better to plot both the GDPPC values map and its corresponding quadrants map next to each other. This is to show proof of which are the clusters and which aren't. Those not part of the "quadrant" map are basically not statistically significant and we cannot put them in the quadrants.
 
 We can also include the local Moran's I map and p-value map as shown below for easy comparison.
 :::
@@ -495,11 +498,21 @@ tmap_arrange(localMI.map, pvalue.map, asp=1, ncol=2)
 [**Question: What statistical observations can you draw from the LISA map above?**]{.underline}
 :::
 
-## Hot Spot and Cold Spot Area Analysis
+## Emerging Hot Spot and Cold Spot Area Analysis
 
 Besides detecting clusters and outliers, localised spatial statistics can also be used to detect **hot spot** and/or **cold spot** areas.
 
 Hot Spot = describes a region or value that is higher relative to its surroundings.
+
+LISA is to help us understand clusters and outliers but this one helps to identify Hot and Cold Spots. While yes, they are related (since Hot and Cold Spots are clusters), this helps us distinguish clusters from HH (i.e., Hot Spot) and LL (Cold Spot)
+
+::: callout-note
+The goal of EHSA is to evaluate how cold or hot spots are changing over time. It helps us answer the questions: are they becoming increasingly hotter, are they cooling down, or are they staying the same?
+
+We need to use Mann-Kendall test to assess whether a set of data values is increasing or decreasing over time. Please refer to this [article](https://www.statisticshowto.com/wp-content/uploads/2016/08/Mann-Kendall-Analysis-1.pdf) for more info. Do note that the Mann-Kendall test does not assess the magnitude of change. Example of H0 and H1 = "There is no monotonic trend in the series" and "A trend exists". Please refer to the data requirements [here](https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/39).
+
+To use Mann-Kendall test effectively, need to show trendline and map it out as well. Then, use this [slide](https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/40) and this [slide](https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/41) to describe it.
+:::
 
 ### Getis and Ord's G-Statistics
 
@@ -590,7 +603,7 @@ summary(wm62_lw)
 
 Using fixed weight distance means that more densely settled areas (i.e., urban areas) tend to have more neighbours than the less densely settled areas (i.e., rural counties).
 
-Having many neighbours smooths the neighbour relationship across more neighbours. So we can control the number of neighbours using k-nearest neighbours and either accepting asymetric neighbours or imposing symmetry as shown in this code chunk below.
+Having many neighbours smooths the neighbour relationship across more neighbours. So we can control the number of neighbours using k-nearest neighbours and either accepting asymmetric neighbours or imposing symmetry as shown in this code chunk below.
 
 ```{r}
 knn <- knn2nb(knearneigh(coords, k=8))

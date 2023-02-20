@@ -26,7 +26,7 @@ If the answer is **No**. Then we need to check if there are signs of spatial clu
 ### Study Area and Data
 
 | Type       | Name                                   | Format | Description                                            |
-|----------------|----------------|----------------|------------------------|
+|------------|----------------------------------------|--------|--------------------------------------------------------|
 | Geospatial | Hunan Province Administrative Boundary | .shp   | Data is at the County level.                           |
 | Aspatial   | Hunan_2012                             | .xlsx  | Selected Hunan's local development indicators in 2012. |
 
@@ -255,7 +255,7 @@ bperm
 ```
 
 ::: callout-note
-Perform Geary\'s C test for spatial autocorrelation by using `geary.test()` of **spdep**. Please refer to the documentation [here](https://r-spatial.github.io/spdep/reference/geary.test.html).
+Perform Geary's C test for spatial autocorrelation by using `geary.test()` of **spdep**. Please refer to the documentation [here](https://r-spatial.github.io/spdep/reference/geary.test.html).
 :::
 
 ::: callout-note
