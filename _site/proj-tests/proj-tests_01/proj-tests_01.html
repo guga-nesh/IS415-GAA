@@ -329,6 +329,73 @@ First 10 features:
 <p><img src="proj-tests_01_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>indonesia <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn=</span><span class="st">"data/idn_adm_bps_20200401_shp"</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">layer=</span><span class="st">"idn_admbnda_adm4_bps_20200401"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `idn_admbnda_adm4_bps_20200401' from data source 
+  `C:\guga-nesh\IS415-GAA\proj-tests\proj-tests_01\data\idn_adm_bps_20200401_shp' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 81912 features and 18 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 95.01079 ymin: -11.00762 xmax: 141.0194 ymax: 6.07693
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>indonesia</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 81912 features and 18 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 95.01079 ymin: -11.00762 xmax: 141.0194 ymax: 6.07693
+Geodetic CRS:  WGS 84
+First 10 features:
+   Shape_Leng   Shape_Area ADM4_EN   ADM4_PCODE ADM4_REF ADM4ALT1EN ADM4ALT2EN
+1  0.09638736 1.692560e-04  1 Ilir ID1671060006     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+2  0.01861086 1.697974e-05   1 Ulu ID1671020008     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+3  0.01872895 1.269222e-05 10 Ilir ID1671062001     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+4  0.01486820 6.250206e-06 11 Ilir ID1671062002     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+5  0.02827325 1.849024e-05  11 Ulu ID1671030014     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+6  0.01931659 1.520428e-05  12 Ulu ID1671030013     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+7  0.01953874 1.462618e-05 13 Ilir ID1671050003     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+8  0.04302044 6.127683e-05  13 Ulu ID1671030012     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+9  0.01253364 6.675545e-06 14 Ilir ID1671050004     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+10 0.04278841 8.140646e-05  14 Ulu ID1671030011     &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;
+           ADM3_EN ADM3_PCODE        ADM2_EN ADM2_PCODE          ADM1_EN
+1    Ilir Timur II  ID1671060 Kota Palembang     ID1671 Sumatera Selatan
+2   Seberang Ulu I  ID1671020 Kota Palembang     ID1671 Sumatera Selatan
+3   Ilir Timur III  ID1671062 Kota Palembang     ID1671 Sumatera Selatan
+4   Ilir Timur III  ID1671062 Kota Palembang     ID1671 Sumatera Selatan
+5  Seberang Ulu II  ID1671030 Kota Palembang     ID1671 Sumatera Selatan
+6  Seberang Ulu II  ID1671030 Kota Palembang     ID1671 Sumatera Selatan
+7     Ilir Timur I  ID1671050 Kota Palembang     ID1671 Sumatera Selatan
+8  Seberang Ulu II  ID1671030 Kota Palembang     ID1671 Sumatera Selatan
+9     Ilir Timur I  ID1671050 Kota Palembang     ID1671 Sumatera Selatan
+10 Seberang Ulu II  ID1671030 Kota Palembang     ID1671 Sumatera Selatan
+   ADM1_PCODE   ADM0_EN ADM0_PCODE       date    validOn validTo
+1        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+2        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+3        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+4        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+5        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+6        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+7        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+8        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+9        ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+10       ID16 Indonesia         ID 2019-12-20 2020-04-01    &lt;NA&gt;
+                         geometry
+1  MULTIPOLYGON (((104.8225 -2...
+2  MULTIPOLYGON (((104.7552 -3...
+3  MULTIPOLYGON (((104.7708 -2...
+4  MULTIPOLYGON (((104.7708 -2...
+5  MULTIPOLYGON (((104.7732 -2...
+6  MULTIPOLYGON (((104.7697 -2...
+7  MULTIPOLYGON (((104.7662 -2...
+8  MULTIPOLYGON (((104.7741 -2...
+9  MULTIPOLYGON (((104.7656 -2...
+10 MULTIPOLYGON (((104.781 -2....</code></pre>
+</div>
+</div>
 
 
 

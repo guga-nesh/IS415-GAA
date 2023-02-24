@@ -27,3 +27,10 @@ india
 ```{r}
 plot(india)
 ```
+
+```{r}
+indonesia <- st_read(dsn="data/idn_adm_bps_20200401_shp",
+                 layer="idn_admbnda_adm4_bps_20200401")
+
+indonesia
+```

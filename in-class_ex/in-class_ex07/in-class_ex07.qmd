@@ -22,7 +22,7 @@ pacman::p_load(sf, tmap, sfdep, tidyverse)
 ## The Data
 
 | Type       | Name                                   | Format | Description                                            |
-|-----------------|-----------------|-----------------|---------------------|
+|------------|----------------------------------------|--------|--------------------------------------------------------|
 | Geospatial | Hunan Province Administrative Boundary | .shp   | Data is at the County level.                           |
 | Aspatial   | Hunan_2012                             | .xlsx  | Selected Hunan's local development indicators in 2012. |
 

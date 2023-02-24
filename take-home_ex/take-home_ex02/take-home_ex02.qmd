@@ -47,8 +47,10 @@ These are the R packages that we'll need for our analyses:
 
 -   **readxl** - for reading .xlsx files. It is part of the `tidyverse` collection.
 
+-   **hash** - used to create a hash object. I have used this to convert the month spelling from Bahasa Indonesia to English. This is done so that when the data is visualised it is clear to all.
+
 ```{r}
-pacman::p_load(sf, sfdep, tidyverse, tmap)
+pacman::p_load(sf, sfdep, tidyverse, tmap, hash)
 ```
 
 ### Datasets used
@@ -211,7 +213,7 @@ The assignment requires us to remove all outer islands from `jakarta`. Let's plo
 plot(jakarta['geometry'])
 ```
 
-From the visualisation we can see that there are some outer islands scattered towards the north. Let's remove them.
+From the visualisation above, we can see that there are some outer islands scattered towards the north. Let's remove them.
 
 In Section 4.2.2, we saw that the data is grouped by ***KAB_KOTA*** (i.e., CITY), ***KECAMATAN*** (i.e., SUB-DISTRICT), and ***DESA_KELUR*** (i.e., "VILLAGE"). Let's see the different cities we have in DKI Jakarta.
 
@@ -226,7 +228,7 @@ tm_shape(jakarta) +
   tm_polygons("KAB_KOTA")
 ```
 
-It seems our suspicions are correct, the outer islands are those cities without the "JAKARTA" prefix. In fact, "KEPULAUAN SEBIRU" can be directly translated to "Thousand Islands" in English. Let's remove them and check the results.
+It seems our suspicions are correct, the outer islands are those cities without the "JAKARTA" prefix. In fact, according to Google Translate, "KEPULAUAN SEBIRU" can be directly translated to "Thousand Islands" in English. Let's remove them and check the results.
 
 ```{r}
 jakarta <- jakarta %>% filter(grepl("JAKARTA", KAB_KOTA))
@@ -268,7 +270,7 @@ Since Google Translate has been giving me contradicting answers 😓, I have dec
 # take note of the hierarchy of subdivisions of Indonesia
 
 jakarta <- jakarta %>%
-  rename(
+  dplyr::rename(
     object_id = OBJECT_ID,
     village_code = KODE_DESA,
     
@@ -305,7 +307,11 @@ In this section, we'll be importing and performing some basic pre-processing on 
 
 ### Importing Aspatial Data
 
-The assignment requires us to compute the vaccination rate from July 2021 to June 2022 at the sub-district (i.e., kelurahan) level. We will be taking the data compiled on the [**last day**]{.underline} of each month to retrieve the monthly cumulative records of COVID-19 vaccinations from the above-mentioned time period.
+The assignment requires us to compute the vaccination rate from July 2021 to June 2022 at the sub-district (i.e., kelurahan) level.
+
+::: callout-important
+We will be taking the data compiled on the [**last day**]{.underline} of each month to retrieve the monthly records of COVID-19 vaccinations from the above-mentioned time period.
+:::
 
 #### Primary Data Exploration
 
@@ -317,56 +323,195 @@ july_2021 <- readxl::read_xlsx("data/aspatial/Data Vaksinasi Berbasis Kelurahan 
 glimpse(july_2021)
 ```
 
-There seems to be a quite a few columns so let's take a look at what each of them mean... 🤔
+::: callout-note
+`read_xlsx()` reads data from a .xlsx file. This function is from the **readxl** library under the **tidyverse** collection.
 
-According to Google Translate:
+`glimpse()` makes it easier to see every column in a data frame. Please refer to the documentation [here](https://dplyr.tidyverse.org/reference/glimpse.html).
+:::
 
--   SASARAN = target
+Information gathered on `july_2021`:
 
--   BELUM VAKSIN = not yet vaccinated
+-   Data Type: **tibble** data frame
 
--   JUMLAH DOSIS 1 = number of doses 1
+-   Shape: 268 entries, 27 columns
 
--   JUMLAH DOSIS 2 = number of doses 2
+There seems to be a quite a few columns...🤔
 
--   TOTAL VAKSIN DEBERIKAN = total number of vaccines administered
+We will only need to take the "KELURAHAN" (i.e., sub- district level) , "SASARAN" (i.e., target) and the "BELUM VAKSIN" (i.e., number of people who have not been vaccinated yet) columns to calculate the vaccination rate for each month. We will look at how we can calculate this in Section 5.1.2.
 
--   LANSIA DOSIS 1 = number of doses given to elderly 1
+*I learnt that only these columns were necessary for our analysis after receiving some advice from Professor Kam Tin Seong. Thank you so much for your guidance prof!* 😃
 
--   LANSIA DOSIS 2 = number of doses given to elderly 2
+#### Creating a function to process our Aspatial Data
 
--   LANSIA TOTAL VAKSIN DIBERIKAN = total number of vaccines given to elderly
+First, let us get all the file names for our aspatial data.
 
--   PELAYAN PUBLIK DOSIS 1 = number of doses given to public service 1
+```{r}
+setwd("data/aspatial")
+library(readxl)
+file.list <- list.files(pattern = "*.xlsx")
+file.list
+```
 
--   PELAYAN PUBLIK DOSIS 2 = number of doses given to public service 2
+::: callout-note
+*The above code chunk was referenced from [stackoverflow](https://stackoverflow.com/questions/32888757/how-can-i-read-multiple-excel-files-into-r). Credit to [Jaap](https://stackoverflow.com/users/2204410/jaap) for his detailed answer there.*
 
--   PELAYAN PUBLIK TOTAL VAKSIN DIBERIKAN = total number of vaccines given to public service
+`setwd("dir")` is used to set the working directory to string "dir". Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/getwd).
 
--   GOTONG ROYONG DOSIS 1 = number of doses given to mutual cooperation 1
+`library()` loads and attaches add-on packages. In this case, we need to use to `read_excel()` from **readxl**. Hence, we have loaded in that package. Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/library).
 
--   GOTONG ROYONG DOSIS 2 = number of doses given to mutual cooperation 2
+`list.files()` is used to generate a vector of file names in the specified directory (from `setwd()`) with the pattern ("\*.xlsx"). Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/list.files).
+:::
 
--   GOTONG ROYONG TOTAL VAKSIN DIBERIKAN = total number of vaccines given to mutual cooperation
+Now, we are ready to create a function that processes all the files and merges all the data into a single sf data frame. Our output after all the pre-processing should look something like this:
 
--   TENAGA KESEHATAN DOSIS 1 = number of doses given to healthcare workers 1
+![We need to capture the Kelurahan, Sasaran, and Belum Vaksin columns from the files being read. Then we will need to create a new column "Total Population" based on the Sasaran and Belum Vaksin columns. With this, we can create the "Vaccination Rate" column. We will also need to keep track of the time period of the data (i.e., which month and year it is from). Hence, we need to create the "Month_Year" column.](images/image-424384216.png)
 
--   TENAGA KESEHATAN DOSIS 2 = number of doses given to healthcare workers 2
+We will be using two functions to achieve the above-shown skeleton of the data frame:
 
--   TENEGA KESEHATAN TOTAL VAKSIN DIBERIKAN = total number of vaccines given to healthcare workers
+-   `get_month_year()` - this is used to get the English month and year of each file. The output will be put into the final data frame under the "MONTH.YEAR" column
 
--   TAHAPAN 3 DOSIS 1 = number of stage 3 doses 1
+-   `aspatial_data_processing()` - this is used to process the data. The following steps are done:
 
--   TAHAPAN 3 DOSIS 2 = number of stage 3 doses 2
+    1.  Keep the necessary columns only (i.e., "KELURAHAN", "SASARAN", "BELUM.VAKSIN")
 
--   TAHAPAN 3 TOTAL VAKSIN DIBERIKAN = total number of stage 3 doses administered
+    2.  Remove the first row of the **tibble data frame** as it is not needed (it contains the aggregate sum of the data)
 
--   REMAJA DOSIS 1 = number of doses given to teenagers 1
+    3.  Check for duplicates and remove them *(while primary exploration of data did not show duplicates, we must still be careful as not all files have been manually checked and there is a still a chance that duplicates exist)*
 
--   REMAJA DOSIS 2 = number of doses given to teenagers 2
+    4.  Check for invalid data (i.e., missing values/NA) and convert them to 0 for us to perform our calculations later on.
 
--   REMAJA TOTAL VAKSIN DIBERIKAN = total number of vaccines given to teenagers
+    5.  Calculate "TOTAL.POPULATION" (i.e., "SASARAN"+ "BELUM.VAKSIN")
+
+    6.  Calculate "VACCINATION.RATE" (i.e., ("SASARAN"/"TOTAL.POPULATION") \* 100)
+
+    7.  Create "MONTH.YEAR" column (i.e., English translation of Month and the Year of data collected)
+
+```{r}
+get_month_year <- function(filepath) {
+  
+  # load hash library to get a hash object
+  library(hash)
+  
+  # create hash object to map Bahasa Indonesian translation to English
+  h <- hash()
+  h[["Januari"]] <- "January"
+  h[["Februari"]] <- "February"
+  h[["Maret"]] <- "March"
+  h[["April"]] <- "April"
+  h[["Mei"]] <- "May"
+  h[["Juni"]] <- "June"
+  h[["Juli"]] <- "July"
+  h[["Agustus"]] <- "August"
+  h[["September"]] <- "September"
+  h[["Oktober"]] <- "October"
+  h[["November"]] <- "November"
+  h[["Desember"]] <- "December"
+  
+  # get components of filepath to get date
+  components = str_split(filepath, " ")
+  month = h[[components[[1]][6]]]
+  year = gsub("[^0-9.-].", "", components[[1]][7])
+  
+  return (paste(month, year, sep=" "))
+}
+```
+
+::: callout-note
+The **hash** library and method is used to create and work with has objects. Please refer to the documentation [here](https://www.rdocumentation.org/packages/hash/versions/3.0.1/topics/hash).
+
+`str_split()` takes a character vector and returns a list. In this case, I used it to split up the `filepath` of type *\<string\>* so that I could extract the month and year. Please refer to the documentation [here](https://stringr.tidyverse.org/reference/str_split.html).
+
+`gsub()` performs replacement of the values specified in regex with the value you have specified. In this case, I simply replaced all the non-numerical values with an empty string. Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/grep).
+:::
+
+```{r}
+aspatial_data_processing <- function(filepath) {
+  
+  vaccine_data = read_xlsx(filepath, .name_repair = "universal")
+  
+  # only keep the necessary columns
+  vaccine_data = vaccine_data[, c("KELURAHAN", "SASARAN", "BELUM.VAKSIN")]
+
+  # remove the first row which has the aggregate sum of vaccination numbers
+  vaccine_data = vaccine_data[-1, ]
+
+  # check for duplicates and remove them
+  vaccine_data <- vaccine_data%>%
+  distinct(KELURAHAN, .keep_all = TRUE)
+  
+  # check for invalid data (missing values or NA) and convert them to 0
+  vaccine_data[is.na(vaccine_data)] <- 0
+  
+  # calculate total population (sasaran + belum vaksin)
+  vaccine_data$TOTAL.POPULATION = rowSums(vaccine_data[,c("SASARAN", "BELUM.VAKSIN")])
+  
+  # calculate vaccination rate ((sasaran/total population) * 100)
+  vaccine_data$VACCINATION.RATE = (vaccine_data$SASARAN/vaccine_data$TOTAL.POPULATION) * 100
+  
+  # create date column
+  month_year <- get_month_year(filepath)
+  vaccine_data$MONTH.YEAR <- month_year
+  
+  return(vaccine_data)
+}
+```
+
+::: callout-note
+The argument `.name_repair` of the `read_xlsx()` method is used to automatically change column names to a certain format. "universal" names are unique and syntactic. Please refer to the documentation [here](https://readxl.tidyverse.org/reference/read_excel.html#arguments).
+
+To remove duplicate values of a certain column, we can use the `distinct()` method. This only works for **dplyr** \>= 0.5. Please refer to this [stackoverflow link](https://stackoverflow.com/questions/22959635/remove-duplicated-rows-using-dplyr) that explains more in-depth.
+
+I have used the `is.na()` method to convert all NA values to 0. The `vaccine_data` wrapper is used to make sure we transform the data inside that variable. Please refer to the documentation [here](https://www.rdocumentation.org/packages/ursa/versions/3.9.4/topics/is.na).
+:::
+
+#### Running `aspatial_data_processing()` on Aspatial Data
+
+```{r}
+setwd("data/aspatial")
+
+dflist <- lapply(seq_along(file.list), function(x) aspatial_data_processing(file.list[x]))
+```
+
+::: callout-note
+`seq_along()` is a built-in function in R that creates a vector that contains a sequence of numbers from 1 to the object's length. You can find an in-depth explanation of this method [here](https://r-lang.com/seq_along-function-in-r/).
+
+We used `seq_along()` to create a vector so we can use `lapply()` (which only works on lists or vectors) to apply the `aspatial_data_processing()` to all the files.
+:::
+
+```{r}
+library(plyr)
+
+vax_data_jakarta <- ldply(dflist, data.frame)
+
+glimpse(vax_data_jakarta)
+```
+
+::: callout-note
+Here, we use the `ldply()` function from the **plyr** library to combine and return the results in a single data frame. Please refer to the documentation [here](https://www.rdocumentation.org/packages/plyr/versions/1.8.8/topics/ldply).
+:::
+
+With that we have completed all the Data Wrangling processes for the Aspatial Data 😎
+
+Now, we can finally start analysing the data proper 📈
+
+## Task 1: Choropleth Mapping and Analysis
+
+In Section 2 we looked at the three main objectives of this assignment. Let's start with the first one. Nonetheless, before we can create the choropleths to analyse the data we will need to combine the Spatial and Aspatial data.
+
+### Combining both data frames using left join
+
+```{r}
+# aspatial data
+vax_data_jakarta
+```
+
+```{r}
+# geospatial data
+jakarta
+```
 
 talk about receptive rates and how it has spread geographically over time.
 
 Prepare data in columns: time (year, month), location, attribute (refer to hunan gdppc)
+
+Prof said take target and belum vaksin only
