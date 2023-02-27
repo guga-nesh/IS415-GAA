@@ -19,7 +19,7 @@ In response to this, Indonesia commenced its COVID-19 vaccination program on 13 
 
 However despite its compactness, the cumulative vaccination rate are not evenly distributed within DKI Jakarta. The question is where are the sub-districts with a relatively higher number of vaccination rate and how have they changed over time.
 
-The assignment website can be found [here](https://is415-ay2022-23t2.netlify.app/th_ex2.html).
+The assignment can be found [here](https://is415-ay2022-23t2.netlify.app/th_ex2.html).
 
 ## Objectives
 
@@ -49,8 +49,10 @@ These are the R packages that we'll need for our analyses:
 
 -   **hash** - used to create a hash object. I have used this to convert the month spelling from Bahasa Indonesia to English. This is done so that when the data is visualised it is clear to all.
 
+-   **moments** - used to call the `skewness()` function to calculate skewness of the data.
+
 ```{r}
-pacman::p_load(sf, sfdep, tidyverse, tmap, hash)
+pacman::p_load(sf, sfdep, tidyverse, tmap, hash, moments)
 ```
 
 ### Datasets used
@@ -364,7 +366,7 @@ file.list
 
 Now, we are ready to create a function that processes all the files and merges all the data into a single sf data frame. Our output after all the pre-processing should look something like this:
 
-![We need to capture the Kelurahan, Sasaran, and Belum Vaksin columns from the files being read. Then we will need to create a new column "Total Population" based on the Sasaran and Belum Vaksin columns. With this, we can create the "Vaccination Rate" column. We will also need to keep track of the time period of the data (i.e., which month and year it is from). Hence, we need to create the "Month_Year" column.](images/image-424384216.png)
+![](images/image-196486236.png)
 
 We will be using two functions to achieve the above-shown skeleton of the data frame:
 
@@ -372,7 +374,7 @@ We will be using two functions to achieve the above-shown skeleton of the data f
 
 -   `aspatial_data_processing()` - this is used to process the data. The following steps are done:
 
-    1.  Keep the necessary columns only (i.e., "KELURAHAN", "SASARAN", "BELUM.VAKSIN")
+    1.  Keep the necessary columns only (i.e., "KODE.KELURAHAN", "KELURAHAN", "SASARAN", "BELUM.VAKSIN"). We need the "KODE.KELURAHAN" column to join the processed aspatial data with the processed geospatial data. We will look at how to do this in Section 6.1.
 
     2.  Remove the first row of the **tibble data frame** as it is not needed (it contains the aggregate sum of the data)
 
@@ -380,11 +382,15 @@ We will be using two functions to achieve the above-shown skeleton of the data f
 
     4.  Check for invalid data (i.e., missing values/NA) and convert them to 0 for us to perform our calculations later on.
 
-    5.  Calculate "TOTAL.POPULATION" (i.e., "SASARAN"+ "BELUM.VAKSIN")
+    5.  Calculate "VACCINATION.RATE"
 
-    6.  Calculate "VACCINATION.RATE" (i.e., ("SASARAN"/"TOTAL.POPULATION") \* 100)
+    6.  Create "MONTH.YEAR" column (i.e., English translation of Month and the Year of data collected)
 
-    7.  Create "MONTH.YEAR" column (i.e., English translation of Month and the Year of data collected)
+::: callout-important
+Formula for Vaccination Rate is as follows:
+
+$vaccination rate = (target - unvaccinated) / target$
+:::
 
 ```{r}
 get_month_year <- function(filepath) {
@@ -430,7 +436,7 @@ aspatial_data_processing <- function(filepath) {
   vaccine_data = read_xlsx(filepath, .name_repair = "universal")
   
   # only keep the necessary columns
-  vaccine_data = vaccine_data[, c("KELURAHAN", "SASARAN", "BELUM.VAKSIN")]
+  vaccine_data = vaccine_data[, c("KODE.KELURAHAN", "KELURAHAN", "SASARAN", "BELUM.VAKSIN")]
 
   # remove the first row which has the aggregate sum of vaccination numbers
   vaccine_data = vaccine_data[-1, ]
@@ -441,12 +447,10 @@ aspatial_data_processing <- function(filepath) {
   
   # check for invalid data (missing values or NA) and convert them to 0
   vaccine_data[is.na(vaccine_data)] <- 0
+
   
-  # calculate total population (sasaran + belum vaksin)
-  vaccine_data$TOTAL.POPULATION = rowSums(vaccine_data[,c("SASARAN", "BELUM.VAKSIN")])
-  
-  # calculate vaccination rate ((sasaran/total population) * 100)
-  vaccine_data$VACCINATION.RATE = (vaccine_data$SASARAN/vaccine_data$TOTAL.POPULATION) * 100
+  # calculate vaccination rate - (sasaran - belum vaksin)/sasaran
+  vaccine_data$VACCINATION.RATE = (vaccine_data$SASARAN - vaccine_data$BELUM.VAKSIN)/vaccine_data$SASARAN
   
   # create date column
   month_year <- get_month_year(filepath)
@@ -481,37 +485,287 @@ We used `seq_along()` to create a vector so we can use `lapply()` (which only wo
 ```{r}
 library(plyr)
 
-vax_data_jakarta <- ldply(dflist, data.frame)
+processed_aspatial_data <- ldply(dflist, data.frame)
 
-glimpse(vax_data_jakarta)
+glimpse(processed_aspatial_data)
 ```
 
 ::: callout-note
 Here, we use the `ldply()` function from the **plyr** library to combine and return the results in a single data frame. Please refer to the documentation [here](https://www.rdocumentation.org/packages/plyr/versions/1.8.8/topics/ldply).
 :::
 
-With that we have completed all the Data Wrangling processes for the Aspatial Data 😎
+#### Rename Columns for better understanding
+
+```{r}
+processed_aspatial_data <- processed_aspatial_data %>%
+  dplyr::rename(
+    village_code = KODE.KELURAHAN,
+    sub_district = KELURAHAN,
+    target = SASARAN,
+    not_vaccinated = BELUM.VAKSIN,
+    vaccination_rate = VACCINATION.RATE,
+    month_year = MONTH.YEAR
+  )
+```
+
+With that we have completed the Data Wrangling processes for the Aspatial Data 😎
 
 Now, we can finally start analysing the data proper 📈
 
 ## Task 1: Choropleth Mapping and Analysis
 
-In Section 2 we looked at the three main objectives of this assignment. Let's start with the first one. Nonetheless, before we can create the choropleths to analyse the data we will need to combine the Spatial and Aspatial data.
+In Section 2 we looked at the three main objectives of this assignment. Let's start with the first one. *Please take note that we have already calculated the monthly vaccination rate from July 2021 to June 2022 in section 5.1.2.*
 
-### Combining both data frames using left join
+Before we can create the choropleth maps to analyse the data we will need to combine the Spatial and Aspatial data.
+
+### Combining both data frames using `left_join()`
+
+We would like to join the two data sets on the "village_code" column. Let's take a look at the data to see if there are any discrepancies.
 
 ```{r}
-# aspatial data
-vax_data_jakarta
+setdiff(processed_aspatial_data$village_code, jakarta$village_code)
+```
+
+::: callout-note
+`setdiff()` finds the (asymmetric) difference between two collections of objects. Please refer to the documentation [here](https://www.rdocumentation.org/packages/nat/versions/1.6.6/topics/setdiff).
+:::
+
+Hm... 🤔 while this might seem confusing at first we need to remember that we removed the outer islands from the Geospatial data in Section 4.2.4 but we didn't do that for the Aspatial data. We don't have to do this since `left_join()` helps us exclude these data automatically.
+
+In fact, here are what these codes mean:
+
+-   "3101011003" - PULAU HARAPAN
+
+-   "3101011002" - PULAU KELAPA
+
+-   "3101011001" - PULAU PANGGANG
+
+-   "3101021003" - PULAU PARI
+
+-   "3101021002" - PULAU TIDUNG
+
+-   "3101021001" - PULAU UNTUNG JAWA
+
+```{r}
+jakarta_vaccination_rate <- left_join(jakarta, processed_aspatial_data, by = "village_code")
+```
+
+::: callout-note
+`left_join()` is a function from the **dplyr** library that returns all rows from X (i.e., `jakarta`) and all columns from X and Y (i.e., `vax_data_jakarta`). Please refer to the documentation [here](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/join).
+:::
+
+### Mapping the Distribution of Vaccination Rate for DKI Jakarta over 12 months
+
+#### Choosing the Data Classification Method
+
+There are many data classification methods but the Natural Breaks (or "Jenks") method is useful as the class breaks are iteratively created in a way that best groups similar values together and maximises the differences between classes. However this classification is not recommended for data with low variances ([source](https://en.wikipedia.org/wiki/Jenks_natural_breaks_optimization#:~:text=The%20Jenks%20classification%20method%20is,values%2C%20it%20will%20identify%20them.)).
+
+We can use the Coefficient of Variation (CV) to check whether or variance is large or small. As a rule of thumb a CV \>= 1 indicates a relatively high variation, while CV \< 1 can be considered low ([source](https://statisticsbyjim.com/basics/coefficient-variation/)).
+
+```{r}
+# create a helper function to calculate CV for the different month_year(s)
+print_variance <- function(data) {
+  different_time_periods = unique(data$month_year)
+  for (time_period in different_time_periods) {
+    temp = filter(data, `month_year` == time_period)
+    print(paste(time_period, '-', sd(temp$vaccination_rate)/mean(temp$vaccination_rate)))
+  }
+}
+```
+
+::: callout-note
+`paste()` is used to concatenate vectors by converting them into characters. Here we have used it to print more than 1 variable. Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/paste).
+
+`sd()` computes the standard deviation of the values in `temp$vaccination_rate`. Please refer to the documentation [here](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/sd).
+
+`mean()` computes the mean of the values in `temp$vaccination_rate`. Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/mean).
+:::
+
+```{r}
+# call function created in the previous code chunk
+print_variance(jakarta_vaccination_rate)
+```
+
+From the above output, we can see that the CV for the vaccination_rate is pretty low. So maybe "Jenks" isn't the best method.
+
+Another data classification method is the "Equal Interval" method. As Professor Kam has mentioned in his [slides](https://is415-ay2022-23t2.netlify.app/lesson/lesson03/lesson03-thematic_and_analytical_mapping#/9), this method divides the `vaccination_rate` values into equally sized classes. However, we should avoid this method if the data is skewed to one end or if we have 1 or 2 really large outlier values.
+
+So let's check our data if it is skewed and if it has any outliers. For this, we will be using the `skewness()` and `hist()` methods to calculate the skewness and visualise the data respectively. Do note that as a rule of thumb if the skewness value is between -0.5 and 0.5 the data is relatively symmetrical.
+
+```{r}
+# create a helper function to calculate skewness for the different month_year(s)
+print_skewness <- function(data) {
+  different_time_periods = unique(data$month_year)
+  for (time_period in different_time_periods) {
+    temp = filter(data, `month_year` == time_period)
+    print(paste(time_period, '-', moments::skewness(temp$vaccination_rate)))
+  }
+}
+```
+
+::: callout-note
+`skewness()` computes the skewness of the data given (i.e., `temp$vaccination_rate`). Please refer to the documentation [here](https://www.rdocumentation.org/packages/e1071/versions/1.7-13/topics/skewness).
+:::
+
+```{r}
+# call function created in the previous code chunk
+print_skewness(jakarta_vaccination_rate)
+```
+
+From the above output we can see that all the data is relatively symmetrical. 😌
+
+Let's plot the histograms to check if outliers are present as well!
+
+```{r}
+# create a helper function to draw histogram for the different month_year(s)
+hist_plot <- function(df, time_period) {
+hist(filter(jakarta_vaccination_rate, `month_year` == time_period)$vaccination_rate, ylab=NULL, main=time_period, xlab=NULL)
+}
+```
+
+::: callout-note
+`hist()` computes a histogram of the given values. Please refer to the documentation [here](https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/hist).
+
+We used this method as it is the easiest way to detect outliers ([source](https://www.reneshbedre.com/blog/find-outliers.html#histogram-scatterplot-and-boxplot)). Especially if the dataset is quite small.
+:::
+
+```{r}
+#| code-fold: true
+# call function created in the previous code chunk
+par(mfrow = c(3,2))
+hist_plot(jakarta_vaccination_rate, "July 2021")
+hist_plot(jakarta_vaccination_rate, "August 2021")
+hist_plot(jakarta_vaccination_rate, "September 2021")
+hist_plot(jakarta_vaccination_rate, "October 2021")
+hist_plot(jakarta_vaccination_rate, "November 2021")
+hist_plot(jakarta_vaccination_rate, "December 2021")
 ```
 
 ```{r}
-# geospatial data
-jakarta
+#| code-fold: true
+# call function created in the previous code chunk
+par(mfrow = c(3,2))
+hist_plot(jakarta_vaccination_rate, "January 2022")
+hist_plot(jakarta_vaccination_rate, "February 2022")
+hist_plot(jakarta_vaccination_rate, "March 2022")
+hist_plot(jakarta_vaccination_rate, "April 2022")
+hist_plot(jakarta_vaccination_rate, "May 2022")
+hist_plot(jakarta_vaccination_rate, "June 2022")
 ```
 
-talk about receptive rates and how it has spread geographically over time.
+From our findings, we can say that the data is not skewed and there are not major outliers that we need to worry about 🥳 Hence, the "Equal Interval" method will be perfect for our choropleth maps.
 
-Prepare data in columns: time (year, month), location, attribute (refer to hunan gdppc)
+#### Spatio-Temporal Mapping with custom breakpoints
 
-Prof said take target and belum vaksin only
+To analyse the spatio-temporal change in vaccination rates over time we should use the same data classification method and use the same class intervals. This makes it easier for any comparisons to be made.
+
+-   The Equal Interval data classification method will be utilised (as discussed in Section 6.2.1).
+
+-   We will need to define our custom breaks to have a common classification scheme for the COVID-19 vaccination rates.
+
+Let's take a look at the summary statistics for vaccination rates across the 12 months to determine the breakpoints:
+
+```{r}
+# summary stats for Vaccination Rates in July 2021
+summary(filter(jakarta_vaccination_rate, `month_year` == "July 2021")$vaccination_rate)
+```
+
+```{r}
+# summary stats for Vaccination Rates in November 2021
+summary(filter(jakarta_vaccination_rate, `month_year` == "November 2021")$vaccination_rate)
+```
+
+```{r}
+# summary stats for Vaccination Rates in March 2022
+summary(filter(jakarta_vaccination_rate, `month_year` == "March 2022")$vaccination_rate)
+```
+
+```{r}
+# summary stats for Vaccination Rates in June 2022
+summary(filter(jakarta_vaccination_rate, `month_year` == "June 2022")$vaccination_rate)
+```
+
+::: callout-note
+`summary()` is a generic function used to produce result summaries as shown above. Please refer to the documentation [here](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/summary). We used this here to find out the range of vaccination rates over the 12 months. We can see that the range is from 0.3701 to 0.8978.
+:::
+
+Hence, breakpoints can be defined with intervals of 0.1 where values range from 0.3 to 0.9.
+
+Since we need to plot a map for each month let's start by creating a generic helper function to do it.
+
+```{r}
+# create a helper function to plot the choropleth map
+choropleth_plotting <- function(df, month_name) {
+  temp = filter(df, `month_year` == month_name)
+  tm_shape(temp)+
+  tm_fill("vaccination_rate",
+          breaks = c(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+          palette = "Blues",
+          title = "Vaccination Rate",
+          legend.hist = TRUE) +
+  tm_layout(main.title = month_name,
+            main.title.position = "center",
+            main.title.size = 0.8,
+            legend.height = 0.40, 
+            legend.width = 0.25,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type="8star", size = 1) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+}
+```
+
+```{r}
+#| code-fold: true
+# call the functions for all the different months
+tmap_mode("plot")
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "July 2021"),
+             choropleth_plotting(jakarta_vaccination_rate, "August 2021"))
+```
+
+```{r}
+#| code-fold: true
+# call the functions for all the different months
+tmap_mode("plot")
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "September 2021"),
+             choropleth_plotting(jakarta_vaccination_rate, "October 2021"))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "November 2021"),
+           choropleth_plotting(jakarta_vaccination_rate, "December 2021"))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "January 2022"),
+             choropleth_plotting(jakarta_vaccination_rate, "February 2022"))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "March 2022"),
+             choropleth_plotting(jakarta_vaccination_rate, "April 2022"))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "May 2022"),
+             choropleth_plotting(jakarta_vaccination_rate, "June 2022"))
+```
+
+### Observations from Equal Interval Choropleth Maps with Custom Breakpoints
+
+![*The above gif was made by stitching the individual choropleths we created earlier on [ezgif](https://ezgif.com/maker).*](images/ezgif.com-optimize.gif)
+
+-   There was an increase in vaccination rate all over Jakarta. There doesn't seem to be a single point from which it starts. However, it should be noted that top 3 sub-districts with the highest vaccination rates in July 2021 were **Kamal Muara**, **Halim Perdana Kusuma**, and **Kelapa Gading Timur**. While Halim Perdana Kusuma was still in the top 3 after a year, Kamal Muara and Kelapa Gading Timur were replaced by **Srengseng Sawah** and **Mabggarai Selatan**. Halim Perdana Kusuma remained one of the highest as it had a relatively low target of 28363.
+
+-   After a year, the lowest vaccination rate in a sub-district was 78%. With this, we can see that the generally the population of Jakarta was very receptive to the COVID-19 vaccines.
+
+-   Additionally, the gif tells us that the receptiveness of the vaccine seem to spread "inwards" where the bigger sub-districts tend to reach a higher vaccination rate quicker and gaps between them (i.e., the smaller sub-districts) were "filled-in" later on. Therefore, unequal distribution of vaccination rates among the sub-districts could possibly be attributed to their size. The Indonesian government might have focused their efforts on the largely populated areas to attain herd immunity quicker.
