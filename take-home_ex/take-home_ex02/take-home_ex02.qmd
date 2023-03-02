@@ -52,7 +52,7 @@ These are the R packages that we'll need for our analyses:
 -   **moments** - used to call the `skewness()` function to calculate skewness of the data.
 
 ```{r}
-pacman::p_load(sf, sfdep, tidyverse, tmap, hash, moments)
+pacman::p_load(sf, sfdep, tidyverse, tmap, hash, moments, plyr, readxl)
 ```
 
 ### Datasets used
@@ -349,7 +349,6 @@ First, let us get all the file names for our aspatial data.
 
 ```{r}
 setwd("data/aspatial")
-library(readxl)
 file.list <- list.files(pattern = "*.xlsx")
 file.list
 ```
@@ -384,7 +383,7 @@ We will be using two functions to achieve the above-shown skeleton of the data f
 
     5.  Calculate "VACCINATION.RATE"
 
-    6.  Create "MONTH.YEAR" column (i.e., English translation of Month and the Year of data collected)
+    6.  Create "DATE" column (i.e., date of data collected)
 
 ::: callout-important
 Formula for Vaccination Rate is as follows:
@@ -393,32 +392,30 @@ $vaccination rate = (target - unvaccinated) / target$
 :::
 
 ```{r}
-get_month_year <- function(filepath) {
-  
-  # load hash library to get a hash object
-  library(hash)
-  
+get_date <- function(filepath) {
   # create hash object to map Bahasa Indonesian translation to English
   h <- hash()
-  h[["Januari"]] <- "January"
-  h[["Februari"]] <- "February"
-  h[["Maret"]] <- "March"
-  h[["April"]] <- "April"
-  h[["Mei"]] <- "May"
-  h[["Juni"]] <- "June"
-  h[["Juli"]] <- "July"
-  h[["Agustus"]] <- "August"
-  h[["September"]] <- "September"
-  h[["Oktober"]] <- "October"
-  h[["November"]] <- "November"
-  h[["Desember"]] <- "December"
+  h[["Januari"]] <- "01"
+  h[["Februari"]] <- "02"
+  h[["Maret"]] <- "03"
+  h[["April"]] <- "04"
+  h[["Mei"]] <- "05"
+  h[["Juni"]] <- "06"
+  h[["Juli"]] <- "07"
+  h[["Agustus"]] <- "08"
+  h[["September"]] <- "09"
+  h[["Oktober"]] <- "10"
+  h[["November"]] <- "11"
+  h[["Desember"]] <- "12"
   
   # get components of filepath to get date
   components = str_split(filepath, " ")
   month = h[[components[[1]][6]]]
   year = gsub("[^0-9.-].", "", components[[1]][7])
+  day = gsub("[^0-9.-]", "", components[[1]][5])
+  date = as.Date(paste(year, month, day, sep = "-"))
   
-  return (paste(month, year, sep=" "))
+  return (date)
 }
 ```
 
@@ -453,8 +450,8 @@ aspatial_data_processing <- function(filepath) {
   vaccine_data$VACCINATION.RATE = (vaccine_data$SASARAN - vaccine_data$BELUM.VAKSIN)/vaccine_data$SASARAN
   
   # create date column
-  month_year <- get_month_year(filepath)
-  vaccine_data$MONTH.YEAR <- month_year
+  date <- get_date(filepath)
+  vaccine_data$DATE <- date
   
   return(vaccine_data)
 }
@@ -483,8 +480,6 @@ We used `seq_along()` to create a vector so we can use `lapply()` (which only wo
 :::
 
 ```{r}
-library(plyr)
-
 processed_aspatial_data <- ldply(dflist, data.frame)
 
 glimpse(processed_aspatial_data)
@@ -504,7 +499,7 @@ processed_aspatial_data <- processed_aspatial_data %>%
     target = SASARAN,
     not_vaccinated = BELUM.VAKSIN,
     vaccination_rate = VACCINATION.RATE,
-    month_year = MONTH.YEAR
+    date = DATE
   )
 ```
 
@@ -512,7 +507,7 @@ With that we have completed the Data Wrangling processes for the Aspatial Data �
 
 Now, we can finally start analysing the data proper 📈
 
-## Task 1: Choropleth Mapping and Analysis
+## Choropleth Mapping and Analysis (Task 1)
 
 In Section 2 we looked at the three main objectives of this assignment. Let's start with the first one. *Please take note that we have already calculated the monthly vaccination rate from July 2021 to June 2022 in section 5.1.2.*
 
@@ -551,7 +546,7 @@ jakarta_vaccination_rate <- left_join(jakarta, processed_aspatial_data, by = "vi
 ```
 
 ::: callout-note
-`left_join()` is a function from the **dplyr** library that returns all rows from X (i.e., `jakarta`) and all columns from X and Y (i.e., `vax_data_jakarta`). Please refer to the documentation [here](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/join).
+`left_join()` is a function from the **dplyr** library that returns all rows from X (i.e., `jakarta`) and all columns from X and Y (i.e., `processed_aspatial_data`). Please refer to the documentation [here](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/join).
 :::
 
 ### Mapping the Distribution of Vaccination Rate for DKI Jakarta over 12 months
@@ -565,9 +560,9 @@ We can use the Coefficient of Variation (CV) to check whether or variance is lar
 ```{r}
 # create a helper function to calculate CV for the different month_year(s)
 print_variance <- function(data) {
-  different_time_periods = unique(data$month_year)
+  different_time_periods = unique(data$date)
   for (time_period in different_time_periods) {
-    temp = filter(data, `month_year` == time_period)
+    temp = filter(data, `date` == time_period)
     print(paste(time_period, '-', sd(temp$vaccination_rate)/mean(temp$vaccination_rate)))
   }
 }
@@ -595,9 +590,9 @@ So let's check our data if it is skewed and if it has any outliers. For this, we
 ```{r}
 # create a helper function to calculate skewness for the different month_year(s)
 print_skewness <- function(data) {
-  different_time_periods = unique(data$month_year)
+  different_time_periods = unique(data$date)
   for (time_period in different_time_periods) {
-    temp = filter(data, `month_year` == time_period)
+    temp = filter(data, `date` == time_period)
     print(paste(time_period, '-', moments::skewness(temp$vaccination_rate)))
   }
 }
@@ -619,7 +614,7 @@ Let's plot the histograms to check if outliers are present as well!
 ```{r}
 # create a helper function to draw histogram for the different month_year(s)
 hist_plot <- function(df, time_period) {
-hist(filter(jakarta_vaccination_rate, `month_year` == time_period)$vaccination_rate, ylab=NULL, main=time_period, xlab=NULL)
+hist(filter(jakarta_vaccination_rate, `date` == time_period)$vaccination_rate, ylab=NULL, main=time_period, xlab=NULL)
 }
 ```
 
@@ -633,27 +628,27 @@ We used this method as it is the easiest way to detect outliers ([source](https:
 #| code-fold: true
 # call function created in the previous code chunk
 par(mfrow = c(3,2))
-hist_plot(jakarta_vaccination_rate, "July 2021")
-hist_plot(jakarta_vaccination_rate, "August 2021")
-hist_plot(jakarta_vaccination_rate, "September 2021")
-hist_plot(jakarta_vaccination_rate, "October 2021")
-hist_plot(jakarta_vaccination_rate, "November 2021")
-hist_plot(jakarta_vaccination_rate, "December 2021")
+hist_plot(jakarta_vaccination_rate, as.Date("2021-07-31"))
+hist_plot(jakarta_vaccination_rate, as.Date("2021-08-31"))
+hist_plot(jakarta_vaccination_rate, as.Date("2021-09-30"))
+hist_plot(jakarta_vaccination_rate, as.Date("2021-10-31"))
+hist_plot(jakarta_vaccination_rate, as.Date("2021-11-30"))
+hist_plot(jakarta_vaccination_rate, as.Date("2021-12-31"))
 ```
 
 ```{r}
 #| code-fold: true
 # call function created in the previous code chunk
 par(mfrow = c(3,2))
-hist_plot(jakarta_vaccination_rate, "January 2022")
-hist_plot(jakarta_vaccination_rate, "February 2022")
-hist_plot(jakarta_vaccination_rate, "March 2022")
-hist_plot(jakarta_vaccination_rate, "April 2022")
-hist_plot(jakarta_vaccination_rate, "May 2022")
-hist_plot(jakarta_vaccination_rate, "June 2022")
+hist_plot(jakarta_vaccination_rate, as.Date("2022-01-31"))
+hist_plot(jakarta_vaccination_rate, as.Date("2022-02-27"))
+hist_plot(jakarta_vaccination_rate, as.Date("2022-03-31"))
+hist_plot(jakarta_vaccination_rate, as.Date("2022-04-30"))
+hist_plot(jakarta_vaccination_rate, as.Date("2022-05-31"))
+hist_plot(jakarta_vaccination_rate, as.Date("2022-06-30"))
 ```
 
-From our findings, we can say that the data is not skewed and there are not major outliers that we need to worry about 🥳 Hence, the "Equal Interval" method will be perfect for our choropleth maps.
+From our findings, we can say that the data is not skewed and there are no major outliers that we need to worry about 🥳 Hence, the "Equal Interval" method will be perfect for our choropleth maps.
 
 #### Spatio-Temporal Mapping with custom breakpoints
 
@@ -667,22 +662,22 @@ Let's take a look at the summary statistics for vaccination rates across the 12 
 
 ```{r}
 # summary stats for Vaccination Rates in July 2021
-summary(filter(jakarta_vaccination_rate, `month_year` == "July 2021")$vaccination_rate)
+summary(filter(jakarta_vaccination_rate, `date` == as.Date("2021-07-31"))$vaccination_rate)
 ```
 
 ```{r}
 # summary stats for Vaccination Rates in November 2021
-summary(filter(jakarta_vaccination_rate, `month_year` == "November 2021")$vaccination_rate)
+summary(filter(jakarta_vaccination_rate, `date` == as.Date("2021-11-30"))$vaccination_rate)
 ```
 
 ```{r}
 # summary stats for Vaccination Rates in March 2022
-summary(filter(jakarta_vaccination_rate, `month_year` == "March 2022")$vaccination_rate)
+summary(filter(jakarta_vaccination_rate, `date` == as.Date("2022-03-31"))$vaccination_rate)
 ```
 
 ```{r}
 # summary stats for Vaccination Rates in June 2022
-summary(filter(jakarta_vaccination_rate, `month_year` == "June 2022")$vaccination_rate)
+summary(filter(jakarta_vaccination_rate, `date` == as.Date("2022-06-30"))$vaccination_rate)
 ```
 
 ::: callout-note
@@ -695,15 +690,15 @@ Since we need to plot a map for each month let's start by creating a generic hel
 
 ```{r}
 # create a helper function to plot the choropleth map
-choropleth_plotting <- function(df, month_name) {
-  temp = filter(df, `month_year` == month_name)
+choropleth_plotting <- function(df, d) {
+  temp = filter(df, `date` == d)
   tm_shape(temp)+
   tm_fill("vaccination_rate",
           breaks = c(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
           palette = "Blues",
           title = "Vaccination Rate",
           legend.hist = TRUE) +
-  tm_layout(main.title = month_name,
+  tm_layout(main.title = format(d, "%b-%Y"),
             main.title.position = "center",
             main.title.size = 0.8,
             legend.height = 0.40, 
@@ -720,47 +715,47 @@ choropleth_plotting <- function(df, month_name) {
 #| code-fold: true
 # call the functions for all the different months
 tmap_mode("plot")
-tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "July 2021"),
-             choropleth_plotting(jakarta_vaccination_rate, "August 2021"))
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, as.Date("2021-07-31")),
+             choropleth_plotting(jakarta_vaccination_rate, as.Date("2021-08-31")))
 ```
 
 ```{r}
 #| code-fold: true
 # call the functions for all the different months
 tmap_mode("plot")
-tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "September 2021"),
-             choropleth_plotting(jakarta_vaccination_rate, "October 2021"))
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, as.Date("2021-09-30")),
+             choropleth_plotting(jakarta_vaccination_rate, as.Date("2021-10-31")))
 ```
 
 ```{r}
 #| code-fold: true
 tmap_mode("plot")
-tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "November 2021"),
-           choropleth_plotting(jakarta_vaccination_rate, "December 2021"))
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, as.Date("2021-11-30")),
+           choropleth_plotting(jakarta_vaccination_rate, as.Date("2021-12-31")))
 ```
 
 ```{r}
 #| code-fold: true
 tmap_mode("plot")
-tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "January 2022"),
-             choropleth_plotting(jakarta_vaccination_rate, "February 2022"))
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, as.Date("2022-01-31")),
+             choropleth_plotting(jakarta_vaccination_rate, as.Date("2022-02-27")))
 ```
 
 ```{r}
 #| code-fold: true
 tmap_mode("plot")
-tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "March 2022"),
-             choropleth_plotting(jakarta_vaccination_rate, "April 2022"))
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, as.Date("2022-03-31")),
+             choropleth_plotting(jakarta_vaccination_rate, as.Date("2022-04-30")))
 ```
 
 ```{r}
 #| code-fold: true
 tmap_mode("plot")
-tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "May 2022"),
-             choropleth_plotting(jakarta_vaccination_rate, "June 2022"))
+tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, as.Date("2022-05-31")),
+             choropleth_plotting(jakarta_vaccination_rate, as.Date("2022-06-30")))
 ```
 
-### Observations from Equal Interval Choropleth Maps with Custom Breakpoints
+### Observations from Choropleth Maps with Custom Equal Interval Breakpoints
 
 ![*The above gif was made by stitching the individual choropleths we created earlier on [ezgif](https://ezgif.com/maker).*](images/ezgif.com-optimize.gif)
 
@@ -769,3 +764,385 @@ tmap_arrange(choropleth_plotting(jakarta_vaccination_rate, "May 2022"),
 -   After a year, the lowest vaccination rate in a sub-district was 78%. With this, we can see that the generally the population of Jakarta was very receptive to the COVID-19 vaccines.
 
 -   Additionally, the gif tells us that the receptiveness of the vaccine seem to spread "inwards" where the bigger sub-districts tend to reach a higher vaccination rate quicker and gaps between them (i.e., the smaller sub-districts) were "filled-in" later on. Therefore, unequal distribution of vaccination rates among the sub-districts could possibly be attributed to their size. The Indonesian government might have focused their efforts on the largely populated areas to attain herd immunity quicker.
+
+With that, we have completed Task 1 of our Take-Home Exercise 🥳 Let's move onto the next task.
+
+## Local Gi\* Analysis (Task 2)
+
+While choropleth maps are a useful visualisation tool for displaying spatial data, they have limitations when it comes to identifying clusters or hotspots of high and low vaccination rates. To do so, we can employ statistical methods such as the **Local Getis-Ord G\*** statistic. It measures whether a particular region has values that are significantly higher or lower than its neighbouring regions.
+
+First we need to create a time-series cube using `as_spacetime()`. The **spacetime** class links a flat data set containing spatio-temporal information with the related geometry data ([source](https://sfdep.josiahparry.com/articles/spacetime-s3.html)).
+
+### Create function to calculate Local Gi\* values of the monthly vaccination rate
+
+To calculate the Gi\* statistic values of the vaccination rates, we need to construct the spatial weights of the study area. This is done to define the neighbourhood relationships between the sub-districts in DKI Jakarta.
+
+Since our study is focused on identifying clusters of high or low vaccination rates at a local scale, it is more appropriate to use an adjacency criterion. We will be defining our contiguity weights using the **Queen's (Kings) Case**. Additionally, the **Inverse Distance** spatial weighting method will be used as it takes into account the spatial autocorrelation of the vaccination rates ([source](https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/33)). This is to ensure the influence of neighbouring locations on a target location is accounted for.
+
+Then we will need to compute the local Gi\* statistics using `local_gstar_perm()`. Our significance level will be set to 0.05.
+
+```{r}
+
+gi_values <- function (d) {
+  set.seed(1234)
+  
+  temp = filter(jakarta_vaccination_rate, `date` == d)
+  
+  # compute conguity weights
+  cw <- temp %>%
+  mutate(nb = st_contiguity(geometry),
+         wt = st_inverse_distance(nb, geometry,
+                                  scale = 1,
+                                  alpha = 1))
+  
+  # compute Gi* values
+  HCSA <- cw %>%
+    mutate(local_Gi=local_gstar_perm(
+      vaccination_rate, nb, wt, nsim=99),
+      .before=1) %>%
+    unnest(local_Gi)
+  
+  return (HCSA)
+}
+
+```
+
+```{r}
+# run the function for all the different dates
+
+dates = c("2021-07-31", "2021-08-31", "2021-09-30", "2021-10-31", "2021-11-30", "2021-12-31", "2022-01-31", "2022-02-27", "2022-03-31", "2022-04-30", "2022-05-31", "2022-06-30")
+
+gi_output = list()
+
+for (i in 1: 12) {
+  gi_output[[i]] = gi_values(dates[i])
+}
+
+# GI* values have been computed
+```
+
+::: callout-note
+`st_contiguity()` is used to generate the neighbour list. Please refer to the documentation [here](https://rdrr.io/github/JosiahParry/sfweight/man/st_contiguity.html).
+
+`st_inverse_distance()` helps calculate inverse distance weight from the neighbour list and geometry column. Please refer to the documentation [here](https://sfdep.josiahparry.com/reference/st_inverse_distance.html).
+
+`local_gstar_perm()` helps us calculate the local Gi\* statistic value. Please refer to the documentation [here](https://sfdep.josiahparry.com/reference/local_gstar.html).
+
+`unnest()` expands a list-column containing data frames into rows and columns. Please refer to the documentation [here](https://tidyr.tidyverse.org/reference/unnest.html).
+:::
+
+### Create a function to display Gi\* maps
+
+As requested, when creating the maps, we will need to exclude the insignificant data (i.e., `p-sim` \< 0.05).
+
+```{r}
+# function to draw maps
+gi_map <- function(gi_output) {
+  tm_shape(gi_output) +
+  tm_polygons() +
+  tm_shape(gi_output %>% filter(p_sim < 0.05)) +
+  tm_fill("gi_star") + 
+  tm_borders(alpha = 0.5) +
+  tm_layout(main.title = paste("Gi values of", gi_output$date[1]),
+            main.title.size = 1)
+}
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(gi_map(gi_output[[1]]),
+             gi_map(gi_output[[2]]))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(gi_map(gi_output[[3]]),
+             gi_map(gi_output[[4]]))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(gi_map(gi_output[[5]]),
+             gi_map(gi_output[[6]]))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(gi_map(gi_output[[7]]),
+             gi_map(gi_output[[8]]))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(gi_map(gi_output[[9]]),
+             gi_map(gi_output[[10]]))
+```
+
+```{r}
+#| code-fold: true
+tmap_mode("plot")
+tmap_arrange(gi_map(gi_output[[11]]),
+             gi_map(gi_output[[12]]))
+```
+
+### Observations on Gi\* Maps of monthly vaccination rate
+
+As we have learnt in [class](https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/28), if the Gi\* value is significant and positive, the location is associated with relatively high values of the surrounding locations and the opposite is true. With this information, we can make these observations:
+
+-   Generally throughout the year the hot spots (green colour) seem to be more clustered compared to the cold spots (red colour). In fact, the cold spots appear to be more well spread out (with some exceptions which I will talk about in the next point). In addition, most of the hot spot sub-districts are larger than the cold spots sub-districts. In Section 6.3, I theorised that the Indonesian government might have focused their efforts on largely populated sub-districts to attain herd immunity quicker. These maps further support that point as it shows us that the higher values tend to cluster around the larger districts.
+
+-   As mentioned, the cold spots appear to be less clustered and well spread out. However, we should note that the center of DKI, Jakarta seems to be an exception. Throughout the 12 months, the center shows a few cold spots. In Section 6.2, our maps show us that that region has the lowest vaccination rates. Hence, we can infer that there is some underlying process that is influencing the variable such as lack of quality health care systems in that area. The Indonesian government should look into this.
+
+With that, we have completed Task 2 of our Take-Home Exercise 🥳 Let's move onto the next task.
+
+## Emerging Hot Spot Analysis (Task 3)
+
+### Creating a Time Series Cube
+
+Before we can perform our EHSA, we need to create a time series cube. The **spacetime** class links a flat data set containing spatio-temporal data with the related geometry. This allows us to examine changes in a variable over time while accounting for the spatial relationships between locations.
+
+```{r}
+temp = select(jakarta_vaccination_rate, c(2, 8, 13, 14))
+vr_st <- spacetime(temp, jakarta,
+                   .loc_col = "village_code",
+                   .time_col = "date")
+```
+
+Let's check if `vr_st` is a spacetime cube.
+
+```{r}
+is_spacetime_cube(vr_st)
+```
+
+::: callout-note
+`spacetime()` creates new **spacetime** objects. Please refer to the documentation [here](https://sfdep.josiahparry.com/articles/version-0-1-2?q=spacetime#spacetime).
+
+`is_spacetime_cube()` determines if a **spacetime** object is a spatio-temporal full grid (i.e., spacetime cube). Please refer to the documentation [here](https://sfdep.josiahparry.com/reference/is_spacetime_cube.html).
+:::
+
+With the confirmation that `vr_st` is indeed a **spacetime cube** object, we can proceed with our analysis.
+
+### Computing Gi\*
+
+#### Deriving spatial weights
+
+We will use the same method used in Section 7.1. We will be using the inverse distance method to identify neighbours and derive the spatial weights.
+
+```{r}
+vr_nb <- vr_st %>%
+  activate("geometry") %>%
+  mutate(nb = include_self(st_contiguity(geometry)),
+         wt = st_inverse_distance(nb, geometry,
+                                  scale = 1,
+                                  alpha = 1),
+         .before = 1) %>%
+  set_wts("wt") %>%
+  set_nbs("nb")
+```
+
+```{r}
+head(vr_nb)
+```
+
+#### Calculating the Gi\* values
+
+With the `nb` and `wt` columns created by the above code chunk we can calculate the Local Gi\* for each location like so:
+
+```{r}
+set.seed(1234)
+
+gi_stars <- vr_nb %>% 
+  group_by(`date`) %>% 
+  mutate(gi_star = local_gstar_perm(
+    vaccination_rate, nb, wt, nsim=99)) %>% 
+  tidyr::unnest(gi_star)
+```
+
+### Using Mann-Kendall Test to evaluate trends in each location
+
+The Mann-Kendall statistical test is used to assess the trend of a set of data values and whether the trend (in any direction) is statistically signification ([source](https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/37)). The test calculates a Kendall **tau** rank correlation coefficient (measures strength and direction of trend) and a **p-value** (indicates statistical significance of the trend).
+
+I have selected the following sub-districts as per the requirements of this assignment (I chose these sub-districts based off my analyses in Section 6.3:
+
+-   KAMAL MUARA - 3172011002
+
+-   HALIM PERDANA KUSUMA - 3175081004
+
+-   KELAPA GADING TIMUR - 3172061001
+
+```{r}
+cbg <- gi_stars %>%
+  ungroup() %>%
+  filter(village_code %in% c(3172011002, 3175081004, 3172061001)) %>%
+  select(village_code, `date`, gi_star)
+```
+
+Mann-Kendall Test details:
+
+-   **H0**: There is no monotonic trend in the series.
+
+-   **H1**: There is a trend in the series.
+
+-   **Confidence Level** = 95%
+
+    -   I have chosen this level of confidence as it strikes a balance between the level of precision and the level of certainty that is desired in the results. In fact, generally a confidence level of 99% is not commonly used in practice, given the inherent uncertainty in many research studies.
+
+-   **Significance Level** = 0.05
+
+```{r}
+# km <- gi_stars %>%
+#   ungroup() %>%
+#   filter(village_code == 3172011002) %>%
+#   select(sub_district.x, `date`, gi_star)
+# 
+# ggplot(data = km,
+#        aes(x = `date`,
+#            y = gi_star)) +
+#   geom_line() +
+#   theme_light()
+km = filter(cbg, village_code == 3172011002)
+ggplot(data = km,
+       aes(x = date,
+           y = gi_star)) +
+  geom_line() +
+  theme_light() +
+  ggtitle("KAMAL MUARA")
+```
+
+```{r}
+km %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>% 
+  tidyr::unnest_wider(mk)
+```
+
+```{r}
+hpk = filter(cbg, village_code == 3175081004)
+ggplot(data = hpk, 
+       aes(x = `date`, 
+           y = gi_star)) +
+  geom_line() +
+  theme_light() + 
+  ggtitle("HALIM PERDANA KUSUMA")
+```
+
+```{r}
+hpk %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>% 
+  tidyr::unnest_wider(mk)
+```
+
+```{r}
+kgt = filter(cbg, village_code == 3172061001)
+ggplot(data = kgt, 
+       aes(x = `date`, 
+           y = gi_star)) +
+  geom_line() +
+  theme_light() + 
+  ggtitle("KELAPA GADING TIMUR")
+```
+
+```{r}
+kgt %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>% 
+  tidyr::unnest_wider(mk)
+```
+
+### Observations on Mann-Kendall Test for the 3 sub-districts selected
+
+-   **KAMAL MUARA**: We see a very sharp upwards trend in the first 4 months and a sharp decline after Oct 2021. Since the tau value is negative and closer to -1 we can see that there is a strong decreasing trend. The p-value is also less than 0.05 which indicates that the trend is statistically significant and we can reject the null hypothesis that there is no trend. This trend matches our previous observations in Section 6.3 and Section 7.3.
+
+-   **HALIM PERDANA KUSUMA**: We see a very irregular pattern in the trend. The tau value is positive but not too close to 1 which shows a weak upwards trend. However, since the p-value is above 0.05 we cannot reject the null hypothesis that there is no monotonic trend in the series. This is interesting as our conclusion from Section 6.3 was that this sub-district is smaller and thus is more likely to have a higher vaccination rate even if vaccination efforts are reduced over time. This "trend" shows us this irregularity.
+
+-   **KELAPA GADING TIMUR**: We see a strong downward trend and the tau value is negative and close to -1. Since the p-value is \< 0.05 the trend is statistically significant and we can reject the null hypothesis. This chart further supports our analysis done in Section 6.3 that their vaccination rates seem to drop over time.
+
+#### Performing Emerging Hotspot Analysis
+
+By using the below code, we can replicate the Mann-Kendall test on all the `village_code`(s) and even identify the significant ones.
+
+*The code used in this section was provided by Professor Kam Tin Seong in our In-Class Exercise [here](https://is415-gaa-tskam.netlify.app/in-class_ex/in-class_ex07/in-class_ex07_ehsa#arrange-to-show-significant-emerging-hotcold-spots).*
+
+```{r}
+ehsa <- gi_stars %>%
+  group_by(village_code) %>%
+  summarise(mk = list(
+    unclass(
+      Kendall::MannKendall(gi_star)))) %>%
+  tidyr::unnest_wider(mk)
+```
+
+```{r}
+emerging <- ehsa %>% 
+  arrange(sl, abs(tau)) %>% 
+  slice(1:5)
+
+emerging
+```
+
+According to the above code chunk we can see that these are the significant emerging hot/cold spots:
+
++--------------+-------------------+-----------------------------------------------------------+
+| Village Code | Sub-District Name | Hot/Cold Spot                                             |
++==============+===================+===========================================================+
+| 3171011003   | PETOJO UTARA      | Cold Spot - there is a significant strong downward trend. |
++--------------+-------------------+-----------------------------------------------------------+
+| 3175011003   | KAYU MANIS        | Hot Spot - there is a significant strong upward trend.    |
++--------------+-------------------+-----------------------------------------------------------+
+| 3175011001   | PISANGAN BARU     | Hot Spot - there is a significant strong upward trend.    |
++--------------+-------------------+-----------------------------------------------------------+
+| 3175021004   | JATINEGARA KAUM   | Hot Spot - there is a significant strong upward trend.    |
++--------------+-------------------+-----------------------------------------------------------+
+| 3171021001   | PASAR BARU        | Cold Spot - there is a significant strong downward trend. |
++--------------+-------------------+-----------------------------------------------------------+
+
+: The emerging hot/cold spots in DKI Jakarta
+
+### Prepare EHSA map of Gi\* values of vaccination rate
+
+This will be done using `emerging_hotspot_analysis()`
+
+```{r}
+set.seed (1234)
+```
+
+```{r}
+ehsa <- emerging_hotspot_analysis(
+  x = vr_st, 
+  .var = "vaccination_rate", 
+  k = 1, 
+  nsim = 99
+)
+```
+
+```{r}
+# ggplot(data = ehsa,
+#        aes(x=classification)) +
+#   geom_bar()
+```
+
+```{r}
+set.seed (1234)
+
+ehsa <- emerging_hotspot_analysis(
+  x = vr_st, 
+  .var = "vaccination_rate", 
+  k = 1, 
+  nsim = 99
+)
+```
+
+```{r}
+# ggplot2::ggplot(ehsa,
+#        aes(x = classification)) +
+#   geom_bar()
+```

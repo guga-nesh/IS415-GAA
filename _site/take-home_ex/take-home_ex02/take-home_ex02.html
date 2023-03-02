@@ -254,11 +254,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#importing-aspatial-data" id="toc-importing-aspatial-data" class="nav-link" data-scroll-target="#importing-aspatial-data"><span class="toc-section-number">5.1</span>  Importing Aspatial Data</a></li>
   </ul></li>
-  <li><a href="#task-1-choropleth-mapping-and-analysis" id="toc-task-1-choropleth-mapping-and-analysis" class="nav-link" data-scroll-target="#task-1-choropleth-mapping-and-analysis"><span class="toc-section-number">6</span>  Task 1: Choropleth Mapping and Analysis</a>
+  <li><a href="#choropleth-mapping-and-analysis-task-1" id="toc-choropleth-mapping-and-analysis-task-1" class="nav-link" data-scroll-target="#choropleth-mapping-and-analysis-task-1"><span class="toc-section-number">6</span>  Choropleth Mapping and Analysis (Task 1)</a>
   <ul class="collapse">
   <li><a href="#combining-both-data-frames-using-left_join" id="toc-combining-both-data-frames-using-left_join" class="nav-link" data-scroll-target="#combining-both-data-frames-using-left_join"><span class="toc-section-number">6.1</span>  Combining both data frames using <code>left_join()</code></a></li>
   <li><a href="#mapping-the-distribution-of-vaccination-rate-for-dki-jakarta-over-12-months" id="toc-mapping-the-distribution-of-vaccination-rate-for-dki-jakarta-over-12-months" class="nav-link" data-scroll-target="#mapping-the-distribution-of-vaccination-rate-for-dki-jakarta-over-12-months"><span class="toc-section-number">6.2</span>  Mapping the Distribution of Vaccination Rate for DKI Jakarta over 12 months</a></li>
-  <li><a href="#observations-from-equal-interval-choropleth-maps-with-custom-breakpoints" id="toc-observations-from-equal-interval-choropleth-maps-with-custom-breakpoints" class="nav-link" data-scroll-target="#observations-from-equal-interval-choropleth-maps-with-custom-breakpoints"><span class="toc-section-number">6.3</span>  Observations from Equal Interval Choropleth Maps with Custom Breakpoints</a></li>
+  <li><a href="#observations-from-choropleth-maps-with-custom-equal-interval-breakpoints" id="toc-observations-from-choropleth-maps-with-custom-equal-interval-breakpoints" class="nav-link" data-scroll-target="#observations-from-choropleth-maps-with-custom-equal-interval-breakpoints"><span class="toc-section-number">6.3</span>  Observations from Choropleth Maps with Custom Equal Interval Breakpoints</a></li>
+  </ul></li>
+  <li><a href="#local-gi-analysis-task-2" id="toc-local-gi-analysis-task-2" class="nav-link" data-scroll-target="#local-gi-analysis-task-2"><span class="toc-section-number">7</span>  Local Gi* Analysis (Task 2)</a>
+  <ul class="collapse">
+  <li><a href="#create-function-to-calculate-local-gi-values-of-the-monthly-vaccination-rate" id="toc-create-function-to-calculate-local-gi-values-of-the-monthly-vaccination-rate" class="nav-link" data-scroll-target="#create-function-to-calculate-local-gi-values-of-the-monthly-vaccination-rate"><span class="toc-section-number">7.1</span>  Create function to calculate Local Gi* values of the monthly vaccination rate</a></li>
+  <li><a href="#create-a-function-to-display-gi-maps" id="toc-create-a-function-to-display-gi-maps" class="nav-link" data-scroll-target="#create-a-function-to-display-gi-maps"><span class="toc-section-number">7.2</span>  Create a function to display Gi* maps</a></li>
+  <li><a href="#observations-on-gi-maps-of-monthly-vaccination-rate" id="toc-observations-on-gi-maps-of-monthly-vaccination-rate" class="nav-link" data-scroll-target="#observations-on-gi-maps-of-monthly-vaccination-rate"><span class="toc-section-number">7.3</span>  Observations on Gi* Maps of monthly vaccination rate</a></li>
+  </ul></li>
+  <li><a href="#emerging-hot-spot-analysis-task-3" id="toc-emerging-hot-spot-analysis-task-3" class="nav-link" data-scroll-target="#emerging-hot-spot-analysis-task-3"><span class="toc-section-number">8</span>  Emerging Hot Spot Analysis (Task 3)</a>
+  <ul class="collapse">
+  <li><a href="#creating-a-time-series-cube" id="toc-creating-a-time-series-cube" class="nav-link" data-scroll-target="#creating-a-time-series-cube"><span class="toc-section-number">8.1</span>  Creating a Time Series Cube</a></li>
+  <li><a href="#computing-gi" id="toc-computing-gi" class="nav-link" data-scroll-target="#computing-gi"><span class="toc-section-number">8.2</span>  Computing Gi*</a></li>
+  <li><a href="#using-mann-kendall-test-to-evaluate-trends-in-each-location" id="toc-using-mann-kendall-test-to-evaluate-trends-in-each-location" class="nav-link" data-scroll-target="#using-mann-kendall-test-to-evaluate-trends-in-each-location"><span class="toc-section-number">8.3</span>  Using Mann-Kendall Test to evaluate trends in each location</a></li>
+  <li><a href="#observations-on-mann-kendall-test-for-the-3-sub-districts-selected" id="toc-observations-on-mann-kendall-test-for-the-3-sub-districts-selected" class="nav-link" data-scroll-target="#observations-on-mann-kendall-test-for-the-3-sub-districts-selected"><span class="toc-section-number">8.4</span>  Observations on Mann-Kendall Test for the 3 sub-districts selected</a></li>
+  <li><a href="#prepare-ehsa-map-of-gi-values-of-vaccination-rate" id="toc-prepare-ehsa-map-of-gi-values-of-vaccination-rate" class="nav-link" data-scroll-target="#prepare-ehsa-map-of-gi-values-of-vaccination-rate"><span class="toc-section-number">8.5</span>  Prepare EHSA map of Gi* values of vaccination rate</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -286,7 +300,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 28, 2023</p>
+      <p class="date-modified">March 3, 2023</p>
     </div>
   </div>
     
@@ -326,7 +340,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><strong>moments</strong> - used to call the <code>skewness()</code> function to calculate skewness of the data.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfdep, tidyverse, tmap, hash, moments)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, sfdep, tidyverse, tmap, hash, moments, plyr, readxl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="datasets-used" class="level3" data-number="3.2">
@@ -954,9 +968,8 @@ Note
 <p>First, let us get all the file names for our aspatial data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"data/aspatial"</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>file.list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">pattern =</span> <span class="st">"*.xlsx"</span>)</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>file.list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>file.list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">pattern =</span> <span class="st">"*.xlsx"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>file.list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "Data Vaksinasi Berbasis Kelurahan (27 Februari 2022).xlsx" 
  [2] "Data Vaksinasi Berbasis Kelurahan (30 April 2022).xlsx"    
@@ -1000,7 +1013,7 @@ Note
 <li><p>Check for duplicates and remove them <em>(while primary exploration of data did not show duplicates, we must still be careful as not all files have been manually checked and there is a still a chance that duplicates exist)</em></p></li>
 <li><p>Check for invalid data (i.e., missing values/NA) and convert them to 0 for us to perform our calculations later on.</p></li>
 <li><p>Calculate “VACCINATION.RATE”</p></li>
-<li><p>Create “MONTH.YEAR” column (i.e., English translation of Month and the Year of data collected)</p></li>
+<li><p>Create “DATE” column (i.e., date of data collected)</p></li>
 </ol></li>
 </ul>
 <div class="callout-important callout callout-style-default callout-captioned">
@@ -1018,33 +1031,31 @@ Important
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>get_month_year <span class="ot">&lt;-</span> <span class="cf">function</span>(filepath) {</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># load hash library to get a hash object</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(hash)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create hash object to map Bahasa Indonesian translation to English</span></span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  h <span class="ot">&lt;-</span> <span class="fu">hash</span>()</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Januari"</span>]] <span class="ot">&lt;-</span> <span class="st">"January"</span></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Februari"</span>]] <span class="ot">&lt;-</span> <span class="st">"February"</span></span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Maret"</span>]] <span class="ot">&lt;-</span> <span class="st">"March"</span></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"April"</span>]] <span class="ot">&lt;-</span> <span class="st">"April"</span></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Mei"</span>]] <span class="ot">&lt;-</span> <span class="st">"May"</span></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Juni"</span>]] <span class="ot">&lt;-</span> <span class="st">"June"</span></span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Juli"</span>]] <span class="ot">&lt;-</span> <span class="st">"July"</span></span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Agustus"</span>]] <span class="ot">&lt;-</span> <span class="st">"August"</span></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"September"</span>]] <span class="ot">&lt;-</span> <span class="st">"September"</span></span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Oktober"</span>]] <span class="ot">&lt;-</span> <span class="st">"October"</span></span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"November"</span>]] <span class="ot">&lt;-</span> <span class="st">"November"</span></span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Desember"</span>]] <span class="ot">&lt;-</span> <span class="st">"December"</span></span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get components of filepath to get date</span></span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>  components <span class="ot">=</span> <span class="fu">str_split</span>(filepath, <span class="st">" "</span>)</span>
-<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>  month <span class="ot">=</span> h[[components[[<span class="dv">1</span>]][<span class="dv">6</span>]]]</span>
-<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>  year <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">"[^0-9.-]."</span>, <span class="st">""</span>, components[[<span class="dv">1</span>]][<span class="dv">7</span>])</span>
-<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (<span class="fu">paste</span>(month, year, <span class="at">sep=</span><span class="st">" "</span>))</span>
-<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>get_date <span class="ot">&lt;-</span> <span class="cf">function</span>(filepath) {</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create hash object to map Bahasa Indonesian translation to English</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  h <span class="ot">&lt;-</span> <span class="fu">hash</span>()</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Januari"</span>]] <span class="ot">&lt;-</span> <span class="st">"01"</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Februari"</span>]] <span class="ot">&lt;-</span> <span class="st">"02"</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Maret"</span>]] <span class="ot">&lt;-</span> <span class="st">"03"</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"April"</span>]] <span class="ot">&lt;-</span> <span class="st">"04"</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Mei"</span>]] <span class="ot">&lt;-</span> <span class="st">"05"</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Juni"</span>]] <span class="ot">&lt;-</span> <span class="st">"06"</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Juli"</span>]] <span class="ot">&lt;-</span> <span class="st">"07"</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Agustus"</span>]] <span class="ot">&lt;-</span> <span class="st">"08"</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"September"</span>]] <span class="ot">&lt;-</span> <span class="st">"09"</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Oktober"</span>]] <span class="ot">&lt;-</span> <span class="st">"10"</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"November"</span>]] <span class="ot">&lt;-</span> <span class="st">"11"</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  h[[<span class="st">"Desember"</span>]] <span class="ot">&lt;-</span> <span class="st">"12"</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get components of filepath to get date</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  components <span class="ot">=</span> <span class="fu">str_split</span>(filepath, <span class="st">" "</span>)</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  month <span class="ot">=</span> h[[components[[<span class="dv">1</span>]][<span class="dv">6</span>]]]</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  year <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">"[^0-9.-]."</span>, <span class="st">""</span>, components[[<span class="dv">1</span>]][<span class="dv">7</span>])</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>  day <span class="ot">=</span> <span class="fu">gsub</span>(<span class="st">"[^0-9.-]"</span>, <span class="st">""</span>, components[[<span class="dv">1</span>]][<span class="dv">5</span>])</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>  date <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="fu">paste</span>(year, month, day, <span class="at">sep =</span> <span class="st">"-"</span>))</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (date)</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -1084,8 +1095,8 @@ Note
 <span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  vaccine_data<span class="sc">$</span>VACCINATION.RATE <span class="ot">=</span> (vaccine_data<span class="sc">$</span>SASARAN <span class="sc">-</span> vaccine_data<span class="sc">$</span>BELUM.VAKSIN)<span class="sc">/</span>vaccine_data<span class="sc">$</span>SASARAN</span>
 <span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create date column</span></span>
-<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>  month_year <span class="ot">&lt;-</span> <span class="fu">get_month_year</span>(filepath)</span>
-<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  vaccine_data<span class="sc">$</span>MONTH.YEAR <span class="ot">&lt;-</span> month_year</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>  date <span class="ot">&lt;-</span> <span class="fu">get_date</span>(filepath)</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  vaccine_data<span class="sc">$</span>DATE <span class="ot">&lt;-</span> date</span>
 <span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(vaccine_data)</span>
 <span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1128,11 +1139,9 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plyr)</span>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>processed_aspatial_data <span class="ot">&lt;-</span> <span class="fu">ldply</span>(dflist, data.frame)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>processed_aspatial_data <span class="ot">&lt;-</span> <span class="fu">ldply</span>(dflist, data.frame)</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(processed_aspatial_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(processed_aspatial_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 3,204
 Columns: 6
@@ -1141,7 +1150,7 @@ $ KELURAHAN        &lt;chr&gt; "ANCOL", "ANGKE", "BALE KAMBANG", "BALI MESTER", 
 $ SASARAN          &lt;dbl&gt; 23947, 29381, 29074, 9752, 26285, 21566, 23886, 47898…
 $ BELUM.VAKSIN     &lt;dbl&gt; 4592, 5319, 5903, 1649, 4030, 3950, 3344, 9382, 3772,…
 $ VACCINATION.RATE &lt;dbl&gt; 0.8082432, 0.8189646, 0.7969664, 0.8309065, 0.8466806…
-$ MONTH.YEAR       &lt;chr&gt; "February 2022", "February 2022", "February 2022", "F…</code></pre>
+$ DATE             &lt;date&gt; 2022-02-27, 2022-02-27, 2022-02-27, 2022-02-27, 2022…</code></pre>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -1168,7 +1177,7 @@ Note
 <span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">target =</span> SASARAN,</span>
 <span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">not_vaccinated =</span> BELUM.VAKSIN,</span>
 <span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">vaccination_rate =</span> VACCINATION.RATE,</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">month_year =</span> MONTH.YEAR</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">date =</span> DATE</span>
 <span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>With that we have completed the Data Wrangling processes for the Aspatial Data 😎</p>
@@ -1176,8 +1185,8 @@ Note
 </section>
 </section>
 </section>
-<section id="task-1-choropleth-mapping-and-analysis" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="task-1-choropleth-mapping-and-analysis"><span class="header-section-number">6</span> Task 1: Choropleth Mapping and Analysis</h2>
+<section id="choropleth-mapping-and-analysis-task-1" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="choropleth-mapping-and-analysis-task-1"><span class="header-section-number">6</span> Choropleth Mapping and Analysis (Task 1)</h2>
 <p>In Section 2 we looked at the three main objectives of this assignment. Let’s start with the first one. <em>Please take note that we have already calculated the monthly vaccination rate from July 2021 to June 2022 in section 5.1.2.</em></p>
 <p>Before we can create the choropleth maps to analyse the data we will need to combine the Spatial and Aspatial data.</p>
 <section id="combining-both-data-frames-using-left_join" class="level3" data-number="6.1">
@@ -1226,7 +1235,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>left_join()</code> is a function from the <strong>dplyr</strong> library that returns all rows from X (i.e., <code>jakarta</code>) and all columns from X and Y (i.e., <code>vax_data_jakarta</code>). Please refer to the documentation <a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/join">here</a>.</p>
+<p><code>left_join()</code> is a function from the <strong>dplyr</strong> library that returns all rows from X (i.e., <code>jakarta</code>) and all columns from X and Y (i.e., <code>processed_aspatial_data</code>). Please refer to the documentation <a href="https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/join">here</a>.</p>
 </div>
 </div>
 </section>
@@ -1239,9 +1248,9 @@ Note
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a helper function to calculate CV for the different month_year(s)</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>print_variance <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  different_time_periods <span class="ot">=</span> <span class="fu">unique</span>(data<span class="sc">$</span>month_year)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  different_time_periods <span class="ot">=</span> <span class="fu">unique</span>(data<span class="sc">$</span>date)</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (time_period <span class="cf">in</span> different_time_periods) {</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    temp <span class="ot">=</span> <span class="fu">filter</span>(data, <span class="st">`</span><span class="at">month_year</span><span class="st">`</span> <span class="sc">==</span> time_period)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    temp <span class="ot">=</span> <span class="fu">filter</span>(data, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> time_period)</span>
 <span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">paste</span>(time_period, <span class="st">'-'</span>, <span class="fu">sd</span>(temp<span class="sc">$</span>vaccination_rate)<span class="sc">/</span><span class="fu">mean</span>(temp<span class="sc">$</span>vaccination_rate)))</span>
 <span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1265,18 +1274,18 @@ Note
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># call function created in the previous code chunk</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print_variance</span>(jakarta_vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "February 2022 - 0.0204124688455782"
-[1] "April 2022 - 0.0195280126426937"
-[1] "June 2022 - 0.019149038400642"
-[1] "November 2021 - 0.0256946444161707"
-[1] "September 2021 - 0.0329776110706792"
-[1] "August 2021 - 0.0450062768148874"
-[1] "December 2021 - 0.0225819104823015"
-[1] "January 2022 - 0.0207887827395515"
-[1] "July 2021 - 0.0981352771312773"
-[1] "March 2022 - 0.0198328772481761"
-[1] "May 2022 - 0.0194085783913278"
-[1] "October 2021 - 0.0289456339694201"</code></pre>
+<pre><code>[1] "19050 - 0.0204124688455782"
+[1] "19112 - 0.0195280126426937"
+[1] "19173 - 0.019149038400642"
+[1] "18961 - 0.0256946444161707"
+[1] "18900 - 0.0329776110706792"
+[1] "18870 - 0.0450062768148874"
+[1] "18992 - 0.0225819104823015"
+[1] "19023 - 0.0207887827395515"
+[1] "18839 - 0.0981352771312773"
+[1] "19082 - 0.0198328772481761"
+[1] "19143 - 0.0194085783913278"
+[1] "18931 - 0.0289456339694201"</code></pre>
 </div>
 </div>
 <p>From the above output, we can see that the CV for the vaccination_rate is pretty low. So maybe “Jenks” isn’t the best method.</p>
@@ -1285,9 +1294,9 @@ Note
 <div class="cell">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a helper function to calculate skewness for the different month_year(s)</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>print_skewness <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  different_time_periods <span class="ot">=</span> <span class="fu">unique</span>(data<span class="sc">$</span>month_year)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  different_time_periods <span class="ot">=</span> <span class="fu">unique</span>(data<span class="sc">$</span>date)</span>
 <span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (time_period <span class="cf">in</span> different_time_periods) {</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    temp <span class="ot">=</span> <span class="fu">filter</span>(data, <span class="st">`</span><span class="at">month_year</span><span class="st">`</span> <span class="sc">==</span> time_period)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    temp <span class="ot">=</span> <span class="fu">filter</span>(data, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> time_period)</span>
 <span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">paste</span>(time_period, <span class="st">'-'</span>, moments<span class="sc">::</span><span class="fu">skewness</span>(temp<span class="sc">$</span>vaccination_rate)))</span>
 <span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1309,18 +1318,18 @@ Note
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># call function created in the previous code chunk</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print_skewness</span>(jakarta_vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "February 2022 - -0.295699763720069"
-[1] "April 2022 - -0.265297167937898"
-[1] "June 2022 - -0.270797534250581"
-[1] "November 2021 - -0.486301892731201"
-[1] "September 2021 - -0.139155729188301"
-[1] "August 2021 - 0.0964932215434923"
-[1] "December 2021 - -0.392411450973568"
-[1] "January 2022 - -0.349709242169843"
-[1] "July 2021 - -0.0428275905167636"
-[1] "March 2022 - -0.256095796585012"
-[1] "May 2022 - -0.266302251476784"
-[1] "October 2021 - -0.378649334850257"</code></pre>
+<pre><code>[1] "19050 - -0.295699763720069"
+[1] "19112 - -0.265297167937898"
+[1] "19173 - -0.270797534250581"
+[1] "18961 - -0.486301892731201"
+[1] "18900 - -0.139155729188301"
+[1] "18870 - 0.0964932215434923"
+[1] "18992 - -0.392411450973568"
+[1] "19023 - -0.349709242169843"
+[1] "18839 - -0.0428275905167636"
+[1] "19082 - -0.256095796585012"
+[1] "19143 - -0.266302251476784"
+[1] "18931 - -0.378649334850257"</code></pre>
 </div>
 </div>
 <p>From the above output we can see that all the data is relatively symmetrical. 😌</p>
@@ -1328,7 +1337,7 @@ Note
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a helper function to draw histogram for the different month_year(s)</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>hist_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(df, time_period) {</span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">month_year</span><span class="st">`</span> <span class="sc">==</span> time_period)<span class="sc">$</span>vaccination_rate, <span class="at">ylab=</span><span class="cn">NULL</span>, <span class="at">main=</span>time_period, <span class="at">xlab=</span><span class="cn">NULL</span>)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> time_period)<span class="sc">$</span>vaccination_rate, <span class="at">ylab=</span><span class="cn">NULL</span>, <span class="at">main=</span>time_period, <span class="at">xlab=</span><span class="cn">NULL</span>)</span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -1350,12 +1359,12 @@ Note
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># call function created in the previous code chunk</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>))</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"July 2021"</span>)</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"August 2021"</span>)</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"September 2021"</span>)</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"October 2021"</span>)</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"November 2021"</span>)</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"December 2021"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-07-31"</span>))</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-08-31"</span>))</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-09-30"</span>))</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-10-31"</span>))</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-11-30"</span>))</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-12-31"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
@@ -1366,18 +1375,18 @@ Note
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># call function created in the previous code chunk</span></span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">2</span>))</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"January 2022"</span>)</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"February 2022"</span>)</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"March 2022"</span>)</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"April 2022"</span>)</span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"May 2022"</span>)</span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="st">"June 2022"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-01-31"</span>))</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-02-27"</span>))</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-03-31"</span>))</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-04-30"</span>))</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-05-31"</span>))</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist_plot</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-06-30"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>From our findings, we can say that the data is not skewed and there are not major outliers that we need to worry about 🥳 Hence, the “Equal Interval” method will be perfect for our choropleth maps.</p>
+<p>From our findings, we can say that the data is not skewed and there are no major outliers that we need to worry about 🥳 Hence, the “Equal Interval” method will be perfect for our choropleth maps.</p>
 </section>
 <section id="spatio-temporal-mapping-with-custom-breakpoints" class="level4" data-number="6.2.2">
 <h4 data-number="6.2.2" class="anchored" data-anchor-id="spatio-temporal-mapping-with-custom-breakpoints"><span class="header-section-number">6.2.2</span> Spatio-Temporal Mapping with custom breakpoints</h4>
@@ -1389,7 +1398,7 @@ Note
 <p>Let’s take a look at the summary statistics for vaccination rates across the 12 months to determine the breakpoints:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summary stats for Vaccination Rates in July 2021</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">month_year</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"July 2021"</span>)<span class="sc">$</span>vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2021-07-31"</span>))<span class="sc">$</span>vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.3701  0.4759  0.5134  0.5107  0.5419  0.6520 </code></pre>
@@ -1397,7 +1406,7 @@ Note
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summary stats for Vaccination Rates in November 2021</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">month_year</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"November 2021"</span>)<span class="sc">$</span>vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2021-11-30"</span>))<span class="sc">$</span>vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.7385  0.7980  0.8114  0.8094  0.8232  0.8750 </code></pre>
@@ -1405,7 +1414,7 @@ Note
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summary stats for Vaccination Rates in March 2022</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">month_year</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"March 2022"</span>)<span class="sc">$</span>vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2022-03-31"</span>))<span class="sc">$</span>vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.7766  0.8260  0.8354  0.8353  0.8453  0.8946 </code></pre>
@@ -1413,7 +1422,7 @@ Note
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summary stats for Vaccination Rates in June 2022</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">month_year</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"June 2022"</span>)<span class="sc">$</span>vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2022-06-30"</span>))<span class="sc">$</span>vaccination_rate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.7831  0.8318  0.8403  0.8408  0.8505  0.8978 </code></pre>
@@ -1436,15 +1445,15 @@ Note
 <p>Since we need to plot a map for each month let’s start by creating a generic helper function to do it.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a helper function to plot the choropleth map</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>choropleth_plotting <span class="ot">&lt;-</span> <span class="cf">function</span>(df, month_name) {</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">=</span> <span class="fu">filter</span>(df, <span class="st">`</span><span class="at">month_year</span><span class="st">`</span> <span class="sc">==</span> month_name)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>choropleth_plotting <span class="ot">&lt;-</span> <span class="cf">function</span>(df, d) {</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">=</span> <span class="fu">filter</span>(df, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> d)</span>
 <span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(temp)<span class="sc">+</span></span>
 <span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"vaccination_rate"</span>,</span>
 <span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">breaks =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="fl">0.6</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>, <span class="fl">0.9</span>),</span>
 <span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>,</span>
 <span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Vaccination Rate"</span>,</span>
 <span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.hist =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> month_name,</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="fu">format</span>(d, <span class="st">"%b-%Y"</span>),</span>
 <span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
 <span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.size =</span> <span class="fl">0.8</span>,</span>
 <span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.height =</span> <span class="fl">0.40</span>, </span>
@@ -1461,8 +1470,8 @@ Note
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># call the functions for all the different months</span></span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"July 2021"</span>),</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"August 2021"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-07-31"</span>)),</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-08-31"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
@@ -1473,8 +1482,8 @@ Note
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># call the functions for all the different months</span></span>
 <span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"September 2021"</span>),</span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"October 2021"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-09-30"</span>)),</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-10-31"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid" width="672"></p>
@@ -1484,8 +1493,8 @@ Note
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"November 2021"</span>),</span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"December 2021"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-11-30"</span>)),</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2021-12-31"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
@@ -1495,8 +1504,8 @@ Note
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
-<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"January 2022"</span>),</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"February 2022"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-01-31"</span>)),</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-02-27"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
@@ -1506,8 +1515,8 @@ Note
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"March 2022"</span>),</span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"April 2022"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-03-31"</span>)),</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-04-30"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid" width="672"></p>
@@ -1517,8 +1526,8 @@ Note
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
-<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"May 2022"</span>),</span>
-<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="st">"June 2022"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-05-31"</span>)),</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">choropleth_plotting</span>(jakarta_vaccination_rate, <span class="fu">as.Date</span>(<span class="st">"2022-06-30"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="take-home_ex02_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
@@ -1526,8 +1535,8 @@ Note
 </div>
 </section>
 </section>
-<section id="observations-from-equal-interval-choropleth-maps-with-custom-breakpoints" class="level3" data-number="6.3">
-<h3 data-number="6.3" class="anchored" data-anchor-id="observations-from-equal-interval-choropleth-maps-with-custom-breakpoints"><span class="header-section-number">6.3</span> Observations from Equal Interval Choropleth Maps with Custom Breakpoints</h3>
+<section id="observations-from-choropleth-maps-with-custom-equal-interval-breakpoints" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="observations-from-choropleth-maps-with-custom-equal-interval-breakpoints"><span class="header-section-number">6.3</span> Observations from Choropleth Maps with Custom Equal Interval Breakpoints</h3>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/ezgif.com-optimize.gif" class="img-fluid figure-img"></p>
@@ -1539,6 +1548,488 @@ Note
 <li><p>After a year, the lowest vaccination rate in a sub-district was 78%. With this, we can see that the generally the population of Jakarta was very receptive to the COVID-19 vaccines.</p></li>
 <li><p>Additionally, the gif tells us that the receptiveness of the vaccine seem to spread “inwards” where the bigger sub-districts tend to reach a higher vaccination rate quicker and gaps between them (i.e., the smaller sub-districts) were “filled-in” later on. Therefore, unequal distribution of vaccination rates among the sub-districts could possibly be attributed to their size. The Indonesian government might have focused their efforts on the largely populated areas to attain herd immunity quicker.</p></li>
 </ul>
+<p>With that, we have completed Task 1 of our Take-Home Exercise 🥳 Let’s move onto the next task.</p>
+</section>
+</section>
+<section id="local-gi-analysis-task-2" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="local-gi-analysis-task-2"><span class="header-section-number">7</span> Local Gi* Analysis (Task 2)</h2>
+<p>While choropleth maps are a useful visualisation tool for displaying spatial data, they have limitations when it comes to identifying clusters or hotspots of high and low vaccination rates. To do so, we can employ statistical methods such as the <strong>Local Getis-Ord G*</strong> statistic. It measures whether a particular region has values that are significantly higher or lower than its neighbouring regions.</p>
+<p>First we need to create a time-series cube using <code>as_spacetime()</code>. The <strong>spacetime</strong> class links a flat data set containing spatio-temporal information with the related geometry data (<a href="https://sfdep.josiahparry.com/articles/spacetime-s3.html">source</a>).</p>
+<section id="create-function-to-calculate-local-gi-values-of-the-monthly-vaccination-rate" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="create-function-to-calculate-local-gi-values-of-the-monthly-vaccination-rate"><span class="header-section-number">7.1</span> Create function to calculate Local Gi* values of the monthly vaccination rate</h3>
+<p>To calculate the Gi* statistic values of the vaccination rates, we need to construct the spatial weights of the study area. This is done to define the neighbourhood relationships between the sub-districts in DKI Jakarta.</p>
+<p>Since our study is focused on identifying clusters of high or low vaccination rates at a local scale, it is more appropriate to use an adjacency criterion. We will be defining our contiguity weights using the <strong>Queen’s (Kings) Case</strong>. Additionally, the <strong>Inverse Distance</strong> spatial weighting method will be used as it takes into account the spatial autocorrelation of the vaccination rates (<a href="https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/33">source</a>). This is to ensure the influence of neighbouring locations on a target location is accounted for.</p>
+<p>Then we will need to compute the local Gi* statistics using <code>local_gstar_perm()</code>. Our significance level will be set to 0.05.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>gi_values <span class="ot">&lt;-</span> <span class="cf">function</span> (d) {</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">=</span> <span class="fu">filter</span>(jakarta_vaccination_rate, <span class="st">`</span><span class="at">date</span><span class="st">`</span> <span class="sc">==</span> d)</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute conguity weights</span></span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>  cw <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">st_contiguity</span>(geometry),</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_inverse_distance</span>(nb, geometry,</span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">scale =</span> <span class="dv">1</span>,</span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">alpha =</span> <span class="dv">1</span>))</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute Gi* values</span></span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>  HCSA <span class="ot">&lt;-</span> cw <span class="sc">%&gt;%</span></span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">local_Gi=</span><span class="fu">local_gstar_perm</span>(</span>
+<span id="cb64-16"><a href="#cb64-16" aria-hidden="true" tabindex="-1"></a>      vaccination_rate, nb, wt, <span class="at">nsim=</span><span class="dv">99</span>),</span>
+<span id="cb64-17"><a href="#cb64-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">.before=</span><span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb64-18"><a href="#cb64-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest</span>(local_Gi)</span>
+<span id="cb64-19"><a href="#cb64-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb64-20"><a href="#cb64-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span> (HCSA)</span>
+<span id="cb64-21"><a href="#cb64-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run the function for all the different dates</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>dates <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"2021-07-31"</span>, <span class="st">"2021-08-31"</span>, <span class="st">"2021-09-30"</span>, <span class="st">"2021-10-31"</span>, <span class="st">"2021-11-30"</span>, <span class="st">"2021-12-31"</span>, <span class="st">"2022-01-31"</span>, <span class="st">"2022-02-27"</span>, <span class="st">"2022-03-31"</span>, <span class="st">"2022-04-30"</span>, <span class="st">"2022-05-31"</span>, <span class="st">"2022-06-30"</span>)</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>gi_output <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span> <span class="dv">12</span>) {</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>  gi_output[[i]] <span class="ot">=</span> <span class="fu">gi_values</span>(dates[i])</span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a><span class="co"># GI* values have been computed</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>st_contiguity()</code> is used to generate the neighbour list. Please refer to the documentation <a href="https://rdrr.io/github/JosiahParry/sfweight/man/st_contiguity.html">here</a>.</p>
+<p><code>st_inverse_distance()</code> helps calculate inverse distance weight from the neighbour list and geometry column. Please refer to the documentation <a href="https://sfdep.josiahparry.com/reference/st_inverse_distance.html">here</a>.</p>
+<p><code>local_gstar_perm()</code> helps us calculate the local Gi* statistic value. Please refer to the documentation <a href="https://sfdep.josiahparry.com/reference/local_gstar.html">here</a>.</p>
+<p><code>unnest()</code> expands a list-column containing data frames into rows and columns. Please refer to the documentation <a href="https://tidyr.tidyverse.org/reference/unnest.html">here</a>.</p>
+</div>
+</div>
+</section>
+<section id="create-a-function-to-display-gi-maps" class="level3" data-number="7.2">
+<h3 data-number="7.2" class="anchored" data-anchor-id="create-a-function-to-display-gi-maps"><span class="header-section-number">7.2</span> Create a function to display Gi* maps</h3>
+<p>As requested, when creating the maps, we will need to exclude the insignificant data (i.e., <code>p-sim</code> &lt; 0.05).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># function to draw maps</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>gi_map <span class="ot">&lt;-</span> <span class="cf">function</span>(gi_output) {</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(gi_output) <span class="sc">+</span></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(gi_output <span class="sc">%&gt;%</span> <span class="fu">filter</span>(p_sim <span class="sc">&lt;</span> <span class="fl">0.05</span>)) <span class="sc">+</span></span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"gi_star"</span>) <span class="sc">+</span> </span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="fu">paste</span>(<span class="st">"Gi values of"</span>, gi_output<span class="sc">$</span>date[<span class="dv">1</span>]),</span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.size =</span> <span class="dv">1</span>)</span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">gi_map</span>(gi_output[[<span class="dv">1</span>]]),</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">gi_map</span>(gi_output[[<span class="dv">2</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">gi_map</span>(gi_output[[<span class="dv">3</span>]]),</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">gi_map</span>(gi_output[[<span class="dv">4</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">gi_map</span>(gi_output[[<span class="dv">5</span>]]),</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">gi_map</span>(gi_output[[<span class="dv">6</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">gi_map</span>(gi_output[[<span class="dv">7</span>]]),</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">gi_map</span>(gi_output[[<span class="dv">8</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">gi_map</span>(gi_output[[<span class="dv">9</span>]]),</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">gi_map</span>(gi_output[[<span class="dv">10</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-51-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(<span class="fu">gi_map</span>(gi_output[[<span class="dv">11</span>]]),</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">gi_map</span>(gi_output[[<span class="dv">12</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-52-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="observations-on-gi-maps-of-monthly-vaccination-rate" class="level3" data-number="7.3">
+<h3 data-number="7.3" class="anchored" data-anchor-id="observations-on-gi-maps-of-monthly-vaccination-rate"><span class="header-section-number">7.3</span> Observations on Gi* Maps of monthly vaccination rate</h3>
+<p>As we have learnt in <a href="https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/28">class</a>, if the Gi* value is significant and positive, the location is associated with relatively high values of the surrounding locations and the opposite is true. With this information, we can make these observations:</p>
+<ul>
+<li><p>Generally throughout the year the hot spots (green colour) seem to be more clustered compared to the cold spots (red colour). In fact, the cold spots appear to be more well spread out (with some exceptions which I will talk about in the next point). In addition, most of the hot spot sub-districts are larger than the cold spots sub-districts. In Section 6.3, I theorised that the Indonesian government might have focused their efforts on largely populated sub-districts to attain herd immunity quicker. These maps further support that point as it shows us that the higher values tend to cluster around the larger districts.</p></li>
+<li><p>As mentioned, the cold spots appear to be less clustered and well spread out. However, we should note that the center of DKI, Jakarta seems to be an exception. Throughout the 12 months, the center shows a few cold spots. In Section 6.2, our maps show us that that region has the lowest vaccination rates. Hence, we can infer that there is some underlying process that is influencing the variable such as lack of quality health care systems in that area. The Indonesian government should look into this.</p></li>
+</ul>
+<p>With that, we have completed Task 2 of our Take-Home Exercise 🥳 Let’s move onto the next task.</p>
+</section>
+</section>
+<section id="emerging-hot-spot-analysis-task-3" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="emerging-hot-spot-analysis-task-3"><span class="header-section-number">8</span> Emerging Hot Spot Analysis (Task 3)</h2>
+<section id="creating-a-time-series-cube" class="level3" data-number="8.1">
+<h3 data-number="8.1" class="anchored" data-anchor-id="creating-a-time-series-cube"><span class="header-section-number">8.1</span> Creating a Time Series Cube</h3>
+<p>Before we can perform our EHSA, we need to create a time series cube. The <strong>spacetime</strong> class links a flat data set containing spatio-temporal data with the related geometry. This allows us to examine changes in a variable over time while accounting for the spatial relationships between locations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">=</span> <span class="fu">select</span>(jakarta_vaccination_rate, <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>, <span class="dv">13</span>, <span class="dv">14</span>))</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>vr_st <span class="ot">&lt;-</span> <span class="fu">spacetime</span>(temp, jakarta,</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.loc_col =</span> <span class="st">"village_code"</span>,</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">.time_col =</span> <span class="st">"date"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s check if <code>vr_st</code> is a spacetime cube.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">is_spacetime_cube</span>(vr_st)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>spacetime()</code> creates new <strong>spacetime</strong> objects. Please refer to the documentation <a href="https://sfdep.josiahparry.com/articles/version-0-1-2?q=spacetime#spacetime">here</a>.</p>
+<p><code>is_spacetime_cube()</code> determines if a <strong>spacetime</strong> object is a spatio-temporal full grid (i.e., spacetime cube). Please refer to the documentation <a href="https://sfdep.josiahparry.com/reference/is_spacetime_cube.html">here</a>.</p>
+</div>
+</div>
+<p>With the confirmation that <code>vr_st</code> is indeed a <strong>spacetime cube</strong> object, we can proceed with our analysis.</p>
+</section>
+<section id="computing-gi" class="level3" data-number="8.2">
+<h3 data-number="8.2" class="anchored" data-anchor-id="computing-gi"><span class="header-section-number">8.2</span> Computing Gi*</h3>
+<section id="deriving-spatial-weights" class="level4" data-number="8.2.1">
+<h4 data-number="8.2.1" class="anchored" data-anchor-id="deriving-spatial-weights"><span class="header-section-number">8.2.1</span> Deriving spatial weights</h4>
+<p>We will use the same method used in Section 7.1. We will be using the inverse distance method to identify neighbours and derive the spatial weights.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>vr_nb <span class="ot">&lt;-</span> vr_st <span class="sc">%&gt;%</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activate</span>(<span class="st">"geometry"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">nb =</span> <span class="fu">include_self</span>(<span class="fu">st_contiguity</span>(geometry)),</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">wt =</span> <span class="fu">st_inverse_distance</span>(nb, geometry,</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">scale =</span> <span class="dv">1</span>,</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">alpha =</span> <span class="dv">1</span>),</span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">.before =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_wts</span>(<span class="st">"wt"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_nbs</span>(<span class="st">"nb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vr_nb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 6 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -3627698 ymin: 689029.1 xmax: -3619528 ymax: 693390.8
+Projected CRS: DGN95 / Indonesia TM-3 zone 54.1
+   village_code sub_district.x vaccination_rate       date
+9    3173031006      KEAGUNGAN        0.5326393 2021-07-31
+21   3173031007         GLODOK        0.6164349 2021-07-31
+33   3171031003  HARAPAN MULIA        0.4973179 2021-07-31
+45   3171031006   CEMPAKA BARU        0.4671434 2021-07-31
+57   3171021001     PASAR BARU        0.5929373 2021-07-31
+69   3171021002   KARANG ANYAR        0.5224176 2021-07-31
+                         geometry
+9  MULTIPOLYGON (((-3626874 69...
+21 MULTIPOLYGON (((-3627130 69...
+33 MULTIPOLYGON (((-3621251 68...
+45 MULTIPOLYGON (((-3620608 69...
+57 MULTIPOLYGON (((-3624097 69...
+69 MULTIPOLYGON (((-3624785 69...
+                                                                                                                             wt
+9                                                  0.000000000, 0.001071983, 0.001039284, 0.001417870, 0.001110612, 0.001297268
+21                             0.0010719832, 0.0000000000, 0.0015104128, 0.0009296520, 0.0017907632, 0.0007307585, 0.0008494813
+33                                           0.0000000000, 0.0008142118, 0.0009393129, 0.0013989989, 0.0012870298, 0.0006120168
+45                             0.0008142118, 0.0000000000, 0.0007692215, 0.0007293181, 0.0007540881, 0.0009920877, 0.0006784241
+57 0.0000000000, 0.0005532172, 0.0007069914, 0.0010234291, 0.0007360076, 0.0005753173, 0.0004691258, 0.0006728587, 0.0004157941
+69                             0.0005532172, 0.0000000000, 0.0006268231, 0.0018409190, 0.0014996188, 0.0008237842, 0.0007788561
+                                      nb
+9                1, 2, 39, 152, 158, 166
+21          1, 2, 39, 162, 163, 166, 171
+33               3, 4, 10, 110, 140, 141
+45          3, 4, 11, 110, 116, 118, 130
+57 5, 6, 9, 117, 119, 121, 122, 123, 158
+69           5, 6, 7, 121, 151, 158, 159</code></pre>
+</div>
+</div>
+</section>
+<section id="calculating-the-gi-values" class="level4" data-number="8.2.2">
+<h4 data-number="8.2.2" class="anchored" data-anchor-id="calculating-the-gi-values"><span class="header-section-number">8.2.2</span> Calculating the Gi* values</h4>
+<p>With the <code>nb</code> and <code>wt</code> columns created by the above code chunk we can calculate the Local Gi* for each location like so:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>gi_stars <span class="ot">&lt;-</span> vr_nb <span class="sc">%&gt;%</span> </span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">date</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">gi_star =</span> <span class="fu">local_gstar_perm</span>(</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>    vaccination_rate, nb, wt, <span class="at">nsim=</span><span class="dv">99</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(gi_star)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="using-mann-kendall-test-to-evaluate-trends-in-each-location" class="level3" data-number="8.3">
+<h3 data-number="8.3" class="anchored" data-anchor-id="using-mann-kendall-test-to-evaluate-trends-in-each-location"><span class="header-section-number">8.3</span> Using Mann-Kendall Test to evaluate trends in each location</h3>
+<p>The Mann-Kendall statistical test is used to assess the trend of a set of data values and whether the trend (in any direction) is statistically signification (<a href="https://is415-ay2022-23t2.netlify.app/lesson/lesson07/lesson07-glsa#/37">source</a>). The test calculates a Kendall <strong>tau</strong> rank correlation coefficient (measures strength and direction of trend) and a <strong>p-value</strong> (indicates statistical significance of the trend).</p>
+<p>I have selected the following sub-districts as per the requirements of this assignment (I chose these sub-districts based off my analyses in Section 6.3:</p>
+<ul>
+<li><p>KAMAL MUARA - 3172011002</p></li>
+<li><p>HALIM PERDANA KUSUMA - 3175081004</p></li>
+<li><p>KELAPA GADING TIMUR - 3172061001</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>cbg <span class="ot">&lt;-</span> gi_stars <span class="sc">%&gt;%</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(village_code <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">3172011002</span>, <span class="dv">3175081004</span>, <span class="dv">3172061001</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(village_code, <span class="st">`</span><span class="at">date</span><span class="st">`</span>, gi_star)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Mann-Kendall Test details:</p>
+<ul>
+<li><p><strong>H0</strong>: There is no monotonic trend in the series.</p></li>
+<li><p><strong>H1</strong>: There is a trend in the series.</p></li>
+<li><p><strong>Confidence Level</strong> = 95%</p>
+<ul>
+<li>I have chosen this level of confidence as it strikes a balance between the level of precision and the level of certainty that is desired in the results. In fact, generally a confidence level of 99% is not commonly used in practice, given the inherent uncertainty in many research studies.</li>
+</ul></li>
+<li><p><strong>Significance Level</strong> = 0.05</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># km &lt;- gi_stars %&gt;%</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   ungroup() %&gt;%</span></span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   filter(village_code == 3172011002) %&gt;%</span></span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   select(sub_district.x, `date`, gi_star)</span></span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(data = km,</span></span>
+<span id="cb81-7"><a href="#cb81-7" aria-hidden="true" tabindex="-1"></a><span class="co">#        aes(x = `date`,</span></span>
+<span id="cb81-8"><a href="#cb81-8" aria-hidden="true" tabindex="-1"></a><span class="co">#            y = gi_star)) +</span></span>
+<span id="cb81-9"><a href="#cb81-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_line() +</span></span>
+<span id="cb81-10"><a href="#cb81-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   theme_light()</span></span>
+<span id="cb81-11"><a href="#cb81-11" aria-hidden="true" tabindex="-1"></a>km <span class="ot">=</span> <span class="fu">filter</span>(cbg, village_code <span class="sc">==</span> <span class="dv">3172011002</span>)</span>
+<span id="cb81-12"><a href="#cb81-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> km,</span>
+<span id="cb81-13"><a href="#cb81-13" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> date,</span>
+<span id="cb81-14"><a href="#cb81-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> gi_star)) <span class="sc">+</span></span>
+<span id="cb81-15"><a href="#cb81-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb81-16"><a href="#cb81-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span></span>
+<span id="cb81-17"><a href="#cb81-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"KAMAL MUARA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-59-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>km <span class="sc">%&gt;%</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mk =</span> <span class="fu">list</span>(</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unclass</span>(</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>      Kendall<span class="sc">::</span><span class="fu">MannKendall</span>(gi_star)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest_wider</span>(mk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+    tau         sl     S     D  varS
+  &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1  1.00 0.00000834    66  66.0  213.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>hpk <span class="ot">=</span> <span class="fu">filter</span>(cbg, village_code <span class="sc">==</span> <span class="dv">3175081004</span>)</span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> hpk, </span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">date</span><span class="st">`</span>, </span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> gi_star)) <span class="sc">+</span></span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span> </span>
+<span id="cb84-7"><a href="#cb84-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"HALIM PERDANA KUSUMA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-61-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>hpk <span class="sc">%&gt;%</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mk =</span> <span class="fu">list</span>(</span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unclass</span>(</span>
+<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a>      Kendall<span class="sc">::</span><span class="fu">MannKendall</span>(gi_star)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest_wider</span>(mk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+    tau         sl     S     D  varS
+  &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1  1.00 0.00000834    66  66.0  213.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>kgt <span class="ot">=</span> <span class="fu">filter</span>(cbg, village_code <span class="sc">==</span> <span class="dv">3172061001</span>)</span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> kgt, </span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">date</span><span class="st">`</span>, </span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> gi_star)) <span class="sc">+</span></span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span> </span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"KELAPA GADING TIMUR"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="take-home_ex02_files/figure-html/unnamed-chunk-63-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>kgt <span class="sc">%&gt;%</span></span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mk =</span> <span class="fu">list</span>(</span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unclass</span>(</span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>      Kendall<span class="sc">::</span><span class="fu">MannKendall</span>(gi_star)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest_wider</span>(mk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+    tau         sl     S     D  varS
+  &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1  1.00 0.00000834    66  66.0  213.</code></pre>
+</div>
+</div>
+</section>
+<section id="observations-on-mann-kendall-test-for-the-3-sub-districts-selected" class="level3" data-number="8.4">
+<h3 data-number="8.4" class="anchored" data-anchor-id="observations-on-mann-kendall-test-for-the-3-sub-districts-selected"><span class="header-section-number">8.4</span> Observations on Mann-Kendall Test for the 3 sub-districts selected</h3>
+<ul>
+<li><p><strong>KAMAL MUARA</strong>: We see a very sharp upwards trend in the first 4 months and a sharp decline after Oct 2021. Since the tau value is negative and closer to -1 we can see that there is a strong decreasing trend. The p-value is also less than 0.05 which indicates that the trend is statistically significant and we can reject the null hypothesis that there is no trend. This trend matches our previous observations in Section 6.3 and Section 7.3.</p></li>
+<li><p><strong>HALIM PERDANA KUSUMA</strong>: We see a very irregular pattern in the trend. The tau value is positive but not too close to 1 which shows a weak upwards trend. However, since the p-value is above 0.05 we cannot reject the null hypothesis that there is no monotonic trend in the series. This is interesting as our conclusion from Section 6.3 was that this sub-district is smaller and thus is more likely to have a higher vaccination rate even if vaccination efforts are reduced over time. This “trend” shows us this irregularity.</p></li>
+<li><p><strong>KELAPA GADING TIMUR</strong>: We see a strong downward trend and the tau value is negative and close to -1. Since the p-value is &lt; 0.05 the trend is statistically significant and we can reject the null hypothesis. This chart further supports our analysis done in Section 6.3 that their vaccination rates seem to drop over time.</p></li>
+</ul>
+<section id="performing-emerging-hotspot-analysis" class="level4" data-number="8.4.1">
+<h4 data-number="8.4.1" class="anchored" data-anchor-id="performing-emerging-hotspot-analysis"><span class="header-section-number">8.4.1</span> Performing Emerging Hotspot Analysis</h4>
+<p>By using the below code, we can replicate the Mann-Kendall test on all the <code>village_code</code>(s) and even identify the significant ones.</p>
+<p><em>The code used in this section was provided by Professor Kam Tin Seong in our In-Class Exercise <a href="https://is415-gaa-tskam.netlify.app/in-class_ex/in-class_ex07/in-class_ex07_ehsa#arrange-to-show-significant-emerging-hotcold-spots">here</a>.</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>ehsa <span class="ot">&lt;-</span> gi_stars <span class="sc">%&gt;%</span></span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(village_code) <span class="sc">%&gt;%</span></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mk =</span> <span class="fu">list</span>(</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unclass</span>(</span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>      Kendall<span class="sc">::</span><span class="fu">MannKendall</span>(gi_star)))) <span class="sc">%&gt;%</span></span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest_wider</span>(mk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>emerging <span class="ot">&lt;-</span> ehsa <span class="sc">%&gt;%</span> </span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(sl, <span class="fu">abs</span>(tau)) <span class="sc">%&gt;%</span> </span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>emerging</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+    tau    sl      S       D       varS
+  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+1 0.153     0 749768 4903144 3415313408</code></pre>
+</div>
+</div>
+<p>According to the above code chunk we can see that these are the significant emerging hot/cold spots:</p>
+<table class="table">
+<caption>The emerging hot/cold spots in DKI Jakarta</caption>
+<colgroup>
+<col style="width: 15%">
+<col style="width: 20%">
+<col style="width: 62%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Village Code</th>
+<th>Sub-District Name</th>
+<th>Hot/Cold Spot</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>3171011003</td>
+<td>PETOJO&nbsp;UTARA</td>
+<td>Cold Spot - there is a significant strong downward trend.</td>
+</tr>
+<tr class="even">
+<td>3175011003</td>
+<td>KAYU MANIS</td>
+<td>Hot Spot - there is a significant strong upward trend.</td>
+</tr>
+<tr class="odd">
+<td>3175011001</td>
+<td>PISANGAN BARU</td>
+<td>Hot Spot - there is a significant strong upward trend.</td>
+</tr>
+<tr class="even">
+<td>3175021004</td>
+<td>JATINEGARA KAUM</td>
+<td>Hot Spot - there is a significant strong upward trend.</td>
+</tr>
+<tr class="odd">
+<td>3171021001</td>
+<td>PASAR BARU</td>
+<td>Cold Spot - there is a significant strong downward trend.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="prepare-ehsa-map-of-gi-values-of-vaccination-rate" class="level3" data-number="8.5">
+<h3 data-number="8.5" class="anchored" data-anchor-id="prepare-ehsa-map-of-gi-values-of-vaccination-rate"><span class="header-section-number">8.5</span> Prepare EHSA map of Gi* values of vaccination rate</h3>
+<p>This will be done using <code>emerging_hotspot_analysis()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>ehsa <span class="ot">&lt;-</span> <span class="fu">emerging_hotspot_analysis</span>(</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> vr_st, </span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">.var =</span> <span class="st">"vaccination_rate"</span>, </span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> <span class="dv">1</span>, </span>
+<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">nsim =</span> <span class="dv">99</span></span>
+<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(data = ehsa,</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a><span class="co">#        aes(x=classification)) +</span></span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_bar()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span> (<span class="dv">1234</span>)</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>ehsa <span class="ot">&lt;-</span> <span class="fu">emerging_hotspot_analysis</span>(</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> vr_st, </span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.var =</span> <span class="st">"vaccination_rate"</span>, </span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> <span class="dv">1</span>, </span>
+<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">nsim =</span> <span class="dv">99</span></span>
+<span id="cb96-8"><a href="#cb96-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot2::ggplot(ehsa,</span></span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a><span class="co">#        aes(x = classification)) +</span></span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_bar()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 </section>
