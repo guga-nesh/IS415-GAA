@@ -907,7 +907,10 @@ With that, we have completed Task 2 of our Take-Home Exercise 🥳 Let's move on
 Before we can perform our EHSA, we need to create a time series cube. The **spacetime** class links a flat data set containing spatio-temporal data with the related geometry. This allows us to examine changes in a variable over time while accounting for the spatial relationships between locations.
 
 ```{r}
-temp = select(jakarta_vaccination_rate, c(2, 8, 13, 14))
+temp = select(jakarta_vaccination_rate, c(2, 8, 13, 14)) %>% st_drop_geometry()
+```
+
+```{r}
 vr_st <- spacetime(temp, jakarta,
                    .loc_col = "village_code",
                    .time_col = "date")
@@ -954,12 +957,10 @@ head(vr_nb)
 With the `nb` and `wt` columns created by the above code chunk we can calculate the Local Gi\* for each location like so:
 
 ```{r}
-set.seed(1234)
-
 gi_stars <- vr_nb %>% 
   group_by(`date`) %>% 
   mutate(gi_star = local_gstar_perm(
-    vaccination_rate, nb, wt, nsim=99)) %>% 
+    vaccination_rate, nb, wt)) %>% 
   tidyr::unnest(gi_star)
 ```
 
@@ -969,17 +970,31 @@ The Mann-Kendall statistical test is used to assess the trend of a set of data v
 
 I have selected the following sub-districts as per the requirements of this assignment (I chose these sub-districts based off my analyses in Section 6.3:
 
--   KAMAL MUARA - 3172011002
+-   KOJA - 3172031001
 
--   HALIM PERDANA KUSUMA - 3175081004
+-   SRENGSENG SAWAH - 3174091002
 
--   KELAPA GADING TIMUR - 3172061001
+-   MANGGARAI SELATAN - 3174011006
 
 ```{r}
-cbg <- gi_stars %>%
+k <- gi_stars %>%
   ungroup() %>%
-  filter(village_code %in% c(3172011002, 3175081004, 3172061001)) %>%
-  select(village_code, `date`, gi_star)
+  filter(village_code == 3172031001) %>%
+  select(village_code, date, gi_star)
+```
+
+```{r}
+ss <- gi_stars %>%
+  ungroup() %>%
+  filter(village_code == 3174091002) %>%
+  select(village_code, date, gi_star)
+```
+
+```{r}
+ms <- gi_stars %>%
+  ungroup() %>%
+  filter(village_code == 3174011006) %>%
+  select(village_code, date, gi_star)
 ```
 
 Mann-Kendall Test details:
@@ -995,27 +1010,16 @@ Mann-Kendall Test details:
 -   **Significance Level** = 0.05
 
 ```{r}
-# km <- gi_stars %>%
-#   ungroup() %>%
-#   filter(village_code == 3172011002) %>%
-#   select(sub_district.x, `date`, gi_star)
-# 
-# ggplot(data = km,
-#        aes(x = `date`,
-#            y = gi_star)) +
-#   geom_line() +
-#   theme_light()
-km = filter(cbg, village_code == 3172011002)
-ggplot(data = km,
+ggplot(data = k,
        aes(x = date,
            y = gi_star)) +
   geom_line() +
   theme_light() +
-  ggtitle("KAMAL MUARA")
+  ggtitle("KOJA")
 ```
 
 ```{r}
-km %>%
+k %>%
   summarise(mk = list(
     unclass(
       Kendall::MannKendall(gi_star)))) %>% 
@@ -1023,17 +1027,16 @@ km %>%
 ```
 
 ```{r}
-hpk = filter(cbg, village_code == 3175081004)
-ggplot(data = hpk, 
-       aes(x = `date`, 
+ggplot(data = ss, 
+       aes(x = date, 
            y = gi_star)) +
   geom_line() +
   theme_light() + 
-  ggtitle("HALIM PERDANA KUSUMA")
+  ggtitle("SRENGSENG SAWAH")
 ```
 
 ```{r}
-hpk %>%
+ss %>%
   summarise(mk = list(
     unclass(
       Kendall::MannKendall(gi_star)))) %>% 
@@ -1041,17 +1044,16 @@ hpk %>%
 ```
 
 ```{r}
-kgt = filter(cbg, village_code == 3172061001)
-ggplot(data = kgt, 
-       aes(x = `date`, 
+ggplot(data = ms, 
+       aes(x = date, 
            y = gi_star)) +
   geom_line() +
   theme_light() + 
-  ggtitle("KELAPA GADING TIMUR")
+  ggtitle("MANGGARAI SELATAN")
 ```
 
 ```{r}
-kgt %>%
+ms %>%
   summarise(mk = list(
     unclass(
       Kendall::MannKendall(gi_star)))) %>% 
@@ -1060,11 +1062,13 @@ kgt %>%
 
 ### Observations on Mann-Kendall Test for the 3 sub-districts selected
 
--   **KAMAL MUARA**: We see a very sharp upwards trend in the first 4 months and a sharp decline after Oct 2021. Since the tau value is negative and closer to -1 we can see that there is a strong decreasing trend. The p-value is also less than 0.05 which indicates that the trend is statistically significant and we can reject the null hypothesis that there is no trend. This trend matches our previous observations in Section 6.3 and Section 7.3.
+-   **KOJA**: We see a sharp upwards trend in the first 4 months. However, after Oct 2021, we can see indications of a slowing rate of growth in the vaccination rate. Since the tau value is positive and very close to 1 we can see that there is a strong increasing trend. However, since the p-value is less than 0.05 which indicates that the trend is statistically significant and we can reject the null hypothesis that there is no trend.
 
--   **HALIM PERDANA KUSUMA**: We see a very irregular pattern in the trend. The tau value is positive but not too close to 1 which shows a weak upwards trend. However, since the p-value is above 0.05 we cannot reject the null hypothesis that there is no monotonic trend in the series. This is interesting as our conclusion from Section 6.3 was that this sub-district is smaller and thus is more likely to have a higher vaccination rate even if vaccination efforts are reduced over time. This "trend" shows us this irregularity.
+-   **SRENGSENG SAWAH**: Similar to Koja, we see a sharp upwards trend within the first 4 months. However, after Oct 2021, we can see indications of a plateauing raise. We should note that the plauteauing of the rate of increase in Srengseng Sawah seems to be worse than in Koja. The tau value is positive and close to 1 which shows a strong upwards trend. Since the p-value is below 0.05 we cannot reject the null hypothesis that there is no monotonic trend in the series.
 
--   **KELAPA GADING TIMUR**: We see a strong downward trend and the tau value is negative and close to -1. Since the p-value is \< 0.05 the trend is statistically significant and we can reject the null hypothesis. This chart further supports our analysis done in Section 6.3 that their vaccination rates seem to drop over time.
+-   **MANGGARAI SELATAN**: Similar to Koja and Srengseng Sawah, we see a sharp upwards trend within the first 4 months. However, after Oct 2021, we can see indications that the growth in vaccination rate is tapering off. It should be notes that Manggarai Selatan has the most gradual decrease in vaccination rate increase when compares with Koja and Srengseng Sawah. We see a strong upwards trend since the tau value is positive and close to 1. Since the p-value is \< 0.05 the trend is statistically significant and we can reject the null hypothesis.
+
+-   These chart further supports our analysis done in Section 6.3 that vaccination rate increase seem to taper off over time. This is likely due to the different sub-districts meeting their vaccination targets and the relaxation of COVID-19 measures since the start of 2022 ([source](https://www.reuters.com/world/asia-pacific/indonesia-lifts-remaining-covid-restrictions-president-2022-12-30/)).
 
 #### Performing Emerging Hotspot Analysis
 
@@ -1083,29 +1087,10 @@ ehsa <- gi_stars %>%
 
 ```{r}
 emerging <- ehsa %>% 
-  arrange(sl, abs(tau)) %>% 
-  slice(1:5)
+  arrange(sl, abs(tau))
 
 emerging
 ```
-
-According to the above code chunk we can see that these are the significant emerging hot/cold spots:
-
-+--------------+-------------------+-----------------------------------------------------------+
-| Village Code | Sub-District Name | Hot/Cold Spot                                             |
-+==============+===================+===========================================================+
-| 3171011003   | PETOJO UTARA      | Cold Spot - there is a significant strong downward trend. |
-+--------------+-------------------+-----------------------------------------------------------+
-| 3175011003   | KAYU MANIS        | Hot Spot - there is a significant strong upward trend.    |
-+--------------+-------------------+-----------------------------------------------------------+
-| 3175011001   | PISANGAN BARU     | Hot Spot - there is a significant strong upward trend.    |
-+--------------+-------------------+-----------------------------------------------------------+
-| 3175021004   | JATINEGARA KAUM   | Hot Spot - there is a significant strong upward trend.    |
-+--------------+-------------------+-----------------------------------------------------------+
-| 3171021001   | PASAR BARU        | Cold Spot - there is a significant strong downward trend. |
-+--------------+-------------------+-----------------------------------------------------------+
-
-: The emerging hot/cold spots in DKI Jakarta
 
 ### Prepare EHSA map of Gi\* values of vaccination rate
 
@@ -1125,24 +1110,33 @@ ehsa <- emerging_hotspot_analysis(
 ```
 
 ```{r}
-# ggplot(data = ehsa,
-#        aes(x=classification)) +
-#   geom_bar()
+ggplot(data = ehsa,
+       aes(x=classification)) +
+  geom_bar()
 ```
 
 ```{r}
-set.seed (1234)
-
-ehsa <- emerging_hotspot_analysis(
-  x = vr_st, 
-  .var = "vaccination_rate", 
-  k = 1, 
-  nsim = 99
-)
+jakarta_ehsa <- jakarta %>%
+  left_join(ehsa,
+            by = join_by(village_code == location))
 ```
 
 ```{r}
-# ggplot2::ggplot(ehsa,
-#        aes(x = classification)) +
-#   geom_bar()
+ehsa_sig <- jakarta_ehsa  %>%
+  filter(p_value < 0.05)
+tmap_mode("plot")
+tm_shape(jakarta_ehsa) +
+  tm_polygons() +
+  tm_borders(alpha = 0.5) +
+tm_shape(ehsa_sig) +
+  tm_fill("classification") + 
+  tm_borders(alpha = 0.4)
 ```
+
+### Observations of Emerging Hot Spot Analysis
+
+There is a large number of oscilating hotspots which indicates that most of the areas in DKI Jakarta is experiencing intermittent increases in COVID-19 vaccination. Do note that these areas tend to be the large sub-districts which further proves our points made in the earlier sections that more people have been getting vaccinated quickly in these states. This could be due to effective vaccine campaigns by the government or the population in these areas tend to be more wary of the spread of COVID-19 and have decided to get vaccinated as the vaccines are made available.
+
+There is also a large number of sporadic coldspots which suggest that there is a statistically significant decrease in the vaccination rates. This means that these areas have lower vaccine uptake than in their surrounding areas. While the number of these sub-districts are lower it should still be a cause of concern as there are lower vaccination rates in these areas. Identifying and addressing these areas is important for public health officials to ensure that vaccine uptake is equitable and that vulnerable populations are not left behind in their vaccination efforts.
+
+It seems that there are more sporadic coldspots clustered in the center of Jakarta while the oscilating hotspots are surrounding the these areas.
