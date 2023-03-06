@@ -1,0 +1,332 @@
+---
+title: "In-Class Exercise 8: Building Hedonic Price Model with GWR"
+date: "06 March 2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+editor: visual
+---
+
+## Load relevant packages into R
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# do not load corrplot onto our memory using pacman
+
+pacman::p_load(olsrr, ggupubr, sf, spdep, GWmodel, tmap, tidyverse, gtsummary)
+```
+
+## Geospatial Data Wrangling
+
+### Geospatial Data
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# import shapefile using st_read()
+# use st_transform() to update CRS information
+
+mpsz = st_read(dsn = "data/geospatial",
+               layer = "MP14_SUBZONE_WEB_PL") %>%
+  st_transform(crs = 3414)
+```
+
+### Aspatial Data
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# purpose of glimpse() is to know the data type
+
+condo_resale = read_csv("data/aspatial/Condo_resale_2015.csv")
+glimpse(condo_resale)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# for you to have a feel of whether your data have excessive 0s or missing data (normally ppl exclude them). Does it have a good spread?
+
+summary(condo_resale)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# convert aspatial df into sf object
+condo_resale.sf <- st_as_sf(condo_resale,
+                            coords = c("LONGITUDE", "LATITUDE"),
+                            crs = 4326) %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# visualise variables to understand distribution, see outliers, whether categorical or not, etc.
+
+AREA_SQM <- ggplot(data=condo_resale.sf, aes(x= `AREA_SQM`)) + 
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+AGE <- ggplot(data=condo_resale.sf, aes(x= `AGE`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_CBD <- ggplot(data=condo_resale.sf, aes(x= `PROX_CBD`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_CHILDCARE <- ggplot(data=condo_resale.sf, aes(x= `PROX_CHILDCARE`)) + 
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_ELDERLYCARE <- ggplot(data=condo_resale.sf, aes(x= `PROX_ELDERLYCARE`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_URA_GROWTH_AREA <- ggplot(data=condo_resale.sf, 
+                               aes(x= `PROX_URA_GROWTH_AREA`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_HAWKER_MARKET <- ggplot(data=condo_resale.sf, aes(x= `PROX_HAWKER_MARKET`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_KINDERGARTEN <- ggplot(data=condo_resale.sf, aes(x= `PROX_KINDERGARTEN`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_MRT <- ggplot(data=condo_resale.sf, aes(x= `PROX_MRT`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_PARK <- ggplot(data=condo_resale.sf, aes(x= `PROX_PARK`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_PRIMARY_SCH <- ggplot(data=condo_resale.sf, aes(x= `PROX_PRIMARY_SCH`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+PROX_TOP_PRIMARY_SCH <- ggplot(data=condo_resale.sf, 
+                               aes(x= `PROX_TOP_PRIMARY_SCH`)) +
+  geom_histogram(bins=20, color="black", fill="light blue")
+
+ggpubr::ggarrange(AREA_SQM, AGE, PROX_CBD, PROX_CHILDCARE, PROX_ELDERLYCARE, 
+          PROX_URA_GROWTH_AREA, PROX_HAWKER_MARKET, PROX_KINDERGARTEN, PROX_MRT,
+          PROX_PARK, PROX_PRIMARY_SCH, PROX_TOP_PRIMARY_SCH,  
+          ncol = 3, nrow = 4)
+```
+
+## Multiple Linear Regression Method
+
+### Visualising the relationships of the independent variables
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 10
+
+# using corrplot to visualise correlations
+corrplot::corrplot(cor(condo_resale[, 5:23]), diag = FALSE, order = "AOE",
+         tl.pos = "td", tl.cex = 0.5, method = "number", type = "upper")
+```
+
+### Building Hedonic Pricing Model with MLR method
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# using lm() to calibrate MLR model
+# save the entire model into an lm object -> you can get your residuals, intercepts, etc. all from here.
+
+condo.mlr <- lm(formula = SELLING_PRICE ~ AREA_SQM + AGE    + 
+                  PROX_CBD + PROX_CHILDCARE + PROX_ELDERLYCARE +
+                  PROX_URA_GROWTH_AREA + PROX_HAWKER_MARKET + PROX_KINDERGARTEN + 
+                  PROX_MRT  + PROX_PARK + PROX_PRIMARY_SCH + 
+                  PROX_TOP_PRIMARY_SCH + PROX_SHOPPING_MALL + PROX_SUPERMARKET + 
+                  PROX_BUS_STOP + NO_Of_UNITS + FAMILY_FRIENDLY + FREEHOLD, 
+                data=condo_resale.sf)
+
+summary(condo.mlr)
+```
+
+## Preparing Reports
+
+### Method 1: Using OLSRR
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# look at Model Summary to see R, R^2
+# can see goodness of fit test under ANOVA
+
+condo.mlr1 <- lm(formula = SELLING_PRICE ~ AREA_SQM + AGE + 
+                   PROX_CBD + PROX_CHILDCARE + PROX_ELDERLYCARE +
+                   PROX_URA_GROWTH_AREA + PROX_MRT  + PROX_PARK + 
+                   PROX_PRIMARY_SCH + PROX_SHOPPING_MALL    + PROX_BUS_STOP + 
+                   NO_Of_UNITS + FAMILY_FRIENDLY + FREEHOLD,
+                 data=condo_resale.sf)
+ols_regress(condo.mlr1)
+```
+
+### Method 2: `gtsummary()` method
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# a more nicer and tidy method - well formatted regression report
+# things to look at for our project
+# we can even append other report tables as shown below
+tbl_regression(condo.mlr1, 
+               intercept = TRUE) %>% 
+  add_glance_source_note(
+    label = list(sigma ~ "\U03C3"),
+    include = c(r.squared, adj.r.squared, 
+                AIC, statistic,
+                p.value, sigma))
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# to perform spatial autocorrelation test we need to convert sf into SpatialPointsDataFrame
+# take only the residuals
+
+condo_resale.res.sf <- cbind(condo_resale.sf, 
+                        condo.mlr1$residuals) %>%
+rename(`MLR_RES` = `condo.mlr1.residuals`)
+
+condo_resale.sp <- as_Spatial(condo_resale.res.sf)
+condo_resale.sp
+```
+
+## \[...\] Skipped tests for multicolinearity, non-linearity, normality assumption, spatial autocorrelation
+
+## Building Hedonic Pricing Models using GWmodel
+
+### Computing fixed bandwidth
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# GWModel package used to determine the optimal fixed bandwidth - it also provides a variety of geographically weighted multi linear calibration methods
+# define stopping rule using approach argument (CV or AIC)
+# iterate thru and always give you the smallest bandwidth
+
+bw.fixed <- bw.gwr(formula = SELLING_PRICE ~ AREA_SQM + AGE + PROX_CBD + 
+                     PROX_CHILDCARE + PROX_ELDERLYCARE  + PROX_URA_GROWTH_AREA + 
+                     PROX_MRT   + PROX_PARK + PROX_PRIMARY_SCH + 
+                     PROX_SHOPPING_MALL + PROX_BUS_STOP + NO_Of_UNITS + 
+                     FAMILY_FRIENDLY + FREEHOLD, 
+                   data=condo_resale.sp, 
+                   approach="CV", 
+                   kernel="gaussian", 
+                   adaptive=FALSE, 
+                   longlat=FALSE)
+```
+
+### Computing Adaptive Bandwidth
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# similar to the fixed bandwidth computation with a few differences
+bw.adaptive <- bw.gwr(formula = SELLING_PRICE ~ AREA_SQM + AGE  + 
+                        PROX_CBD + PROX_CHILDCARE + PROX_ELDERLYCARE    + 
+                        PROX_URA_GROWTH_AREA + PROX_MRT + PROX_PARK + 
+                        PROX_PRIMARY_SCH + PROX_SHOPPING_MALL   + PROX_BUS_STOP + 
+                        NO_Of_UNITS + FAMILY_FRIENDLY + FREEHOLD, 
+                      data=condo_resale.sp, 
+                      approach="CV", 
+                      kernel="gaussian", 
+                      adaptive=TRUE, 
+                      longlat=FALSE)
+```
+
+## Lesson Introduction
+
+Focus of lesson (Explanatory Models):
+
+-   try to calibrate a model that allows us to explain the response/dependent variable
+
+-   identify explanatory variables that best explain dependent variables
+
+-   need to ensure statistical regress is important
+
+    -   Goodness of fit: f-test statistic = where we want p-value \< 0.05 (enough confidence to reject the H0 - where this model is better than average). **Always describe your goodness of fit statistic first before talking about p-value.** Take note of explanation for R\^2 and all.
+
+    -   Individual parameter testing: t-test
+
+    -   Existence of multicollinearity:
+
+::: callout-note
+Explanatory Models help us to explain the factors that affect a certain phenomenon (i.e., response/dependent variable - e.g., vaccination rate)
+:::
+
+::: callout-note
+For Predictive Models, we tend to focus on the accuracy of the models.
+:::
+
+## Take-Home 03 Advice
+
+[**Get Domain Knowledge**]{.underline}
+
+Understand the ground conditions (what is happening in the study area) so you know which factors to choose. We need to choose variables that are relevant to the issue.
+
+[**Check statistical significance**]{.underline}
+
+Exclude those that don't meet and then only we re-calibrate the model and interpret it again. When you work with statistical methods, got assumptions to make into consideration.. If variables are correlated, please remove.
+
+[**Check for assumptions**]{.underline}**\
+**(if you see the distribution, if normal dist also cannot)
+
+[**Spatial Non-stationary**]{.underline}
+
+Use Moran's I for regression residuals
+
+```{r}
+#| fig-width: 10
+```
+
+## Regression Analysis
+
+Once you have come up with your dependent variables, we can look at the statistical methods:
+
+-   [Statistical Learning]{.underline}
+
+    -   Regression Modeling - there are many types (e.g., Linear Regression Model)
+
+        -   Your choice is based on the dependent variables (for instance, LRM is only useful if your dependent variable is continuous and approx. normally distributed). Additionally, the relationship should be linear --\> we want to find the best fit line by minimising residuals (aka Least Square Method/OLS)\
+            ![](images/image-1694971976.png){width="121"}
+
+            -   If slope (beta 0) is bigger (i.e., more steep) it has a relatively larger influence. If positive (directly related), else (inversely related).
+
+        -   Multiple Linear Regression need continuous response variable and/or categorical explanatory variable. If you have many variables (to look at several plains)\
+            ![](images/image-664474702.png)
+
+-   Machine Learning
+
+::: callout-note
+GWR: not just one model, you should expose as many models as you can so they can use it for different use case.
+:::
+
+## GWR
+
+We need to provide x and y coordinate (depends on the spatial unit you're working on).
+
+Only use distance weight to calibrate. Don't use proximity. If you're using adaptive (it means distance changes, but number of data points fixed). What's the cutoff for us to determine the best bandwidth and weights? -\> use mathematical methods (use least AIC or least cross-validation)
+
+Output:
+
+-   overall model performance
+
+-   localised result (localised R\^2 - tells us which part of the study area you can better estimate the outcome) -\> need visualise this
