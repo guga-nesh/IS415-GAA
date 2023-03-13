@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-03-11">
+
+<title>IS415-GAA - Take Home Exercise 03: Predicting HDB Public Housing Resale Prices using Geographically Weighted Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">IS415-GAA</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../hands-on_ex/hands-on_ex02/hands-on_ex02.html">
+ <span class="dropdown-text">Week 3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../hands-on_ex/hands-on_ex03/hands-on_ex03.html">
+ <span class="dropdown-text">Week 4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../hands-on_ex/hands-on_ex05/hands-on_ex05.html">
+ <span class="dropdown-text">Week 7A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../hands-on_ex/hands-on_ex06/hands-on_ex06.html">
+ <span class="dropdown-text">Week 7B</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../hands-on_ex/hands-on_ex07/hands-on_ex07.html">
+ <span class="dropdown-text">Week 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../hands-on_ex/hands-on_ex08/hands-on_ex08.html">
+ <span class="dropdown-text">Week 10</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../hands-on_ex/hands-on_ex09/hands-on_ex09.html">
+ <span class="dropdown-text">Week 11</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-Class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex02/in-class_ex02.html">
+ <span class="dropdown-text">In-Class Exercise 02</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex03/in-class_ex03.html">
+ <span class="dropdown-text">In-Class Exercise 03</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex04/in-class_ex04.html">
+ <span class="dropdown-text">In-Class Exercise 04</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex05/in-class_ex05.html">
+ <span class="dropdown-text">In-Class Exercise 05</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex06/in-class_ex06.html">
+ <span class="dropdown-text">In-Class Exercise 06</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex07/in-class_ex07.html">
+ <span class="dropdown-text">In-Class Exercise 07</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex08/in-class_ex08.html">
+ <span class="dropdown-text">In-Class Exercise 08</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex09/in-class_ex09.html">
+ <span class="dropdown-text">In-Class Exercise 09</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../in-class_ex/in-class_ex10/in-class_ex10.html">
+ <span class="dropdown-text">In-Class Exercise 10</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-Home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../take-home_ex/take-home_ex01/take-home_ex01.html">
+ <span class="dropdown-text">Take-Home Exercise 01</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../take-home_ex/take-home_ex02/take-home_ex02.html">
+ <span class="dropdown-text">Take-Home Exercise 02</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../take-home_ex/take-home_ex02/take-home_ex03.html">
+ <span class="dropdown-text">Take-Home Exercise 03</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#our-objective" id="toc-our-objective" class="nav-link active" data-scroll-target="#our-objective"><span class="toc-section-number">1</span>  Our Objective</a></li>
+  <li><a href="#understanding-singapores-housing-market" id="toc-understanding-singapores-housing-market" class="nav-link" data-scroll-target="#understanding-singapores-housing-market"><span class="toc-section-number">2</span>  Understanding Singapore’s Housing Market</a></li>
+  <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source"><span class="toc-section-number">3</span>  Data Source</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><span class="toc-section-number">4</span>  Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#install-r-packages" id="toc-install-r-packages" class="nav-link" data-scroll-target="#install-r-packages"><span class="toc-section-number">4.1</span>  Install R Packages</a></li>
+  <li><a href="#prepare-geospatial-data" id="toc-prepare-geospatial-data" class="nav-link" data-scroll-target="#prepare-geospatial-data"><span class="toc-section-number">4.2</span>  Prepare Geospatial Data</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Take Home Exercise 03: Predicting HDB Public Housing Resale Prices using Geographically Weighted Models</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 11, 2023</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">March 13, 2023</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="our-objective" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="our-objective"><span class="header-section-number">1</span> Our Objective</h2>
+<p>Conventional predictive models for housing resale prices were built using the Ordinary Least Square (OLS) method, but this approach didn’t consider the presence of spatial autocorrelation and spatial heterogeneity in geographic data sets. The existence of spatial autocorrelation means that using OLS to estimate predictive housing resale pricing models could result in biased, inconsistent, or inefficient outcomes. Hence, we will be using <strong>Geographical Weighted Models (GWR)</strong> to calibrate a predictive model for housing resale prices.</p>
+</section>
+<section id="understanding-singapores-housing-market" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="understanding-singapores-housing-market"><span class="header-section-number">2</span> Understanding Singapore’s Housing Market</h2>
+<p>After reviewing existing literature on the Singapore Housing Market and looking through the recommendations by Professor Kam, I hypothesise that the following factors affect the price of HDB flats:</p>
+<div class="panel-tabset" data-collapse="true">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Structural</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Locational</a></li></ul>
+<div class="tab-content" data-collapse="true">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<ul>
+<li><p>Age of unit</p></li>
+<li><p>Floor area of unit</p></li>
+<li><p>Remaining lease of unit</p></li>
+<li><p>Floor level of unit</p></li>
+</ul>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<ul>
+<li><p>Distance to the nearest MRT (Mass Rapid Transit) station</p></li>
+<li><p>Distance to the Central Business District (CBD)</p></li>
+<li><p>Distance to the nearest Park</p></li>
+<li><p>Distance to the nearest Hospital</p></li>
+<li><p>Distance to the nearest Mall</p></li>
+<li><p>Distance to the Top Primary Schools</p></li>
+<li><p>Distance to nearest Hawker Centre</p></li>
+<li><p>Number of Primary Schools within a 1000m radius</p></li>
+<li><p>Number of clinics within a 500m radius</p></li>
+<li><p>Number of childcare centres within a 350m radius</p></li>
+<li><p>Number of bus stops within a 350m radius</p></li>
+<li><p>Percentage of Young in Planning Area</p></li>
+<li><p>Percentage of Working Adults in Planning Area</p></li>
+<li><p>Percentage of Elderly in Planning Area</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+References for Feature Selection
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Cao, Diao, M., &amp; Wu, B. (2019). A Big Data-Based Geographically Weighted Regression Model for Public Housing Prices: A Case Study in Singapore. <em>Annals of the American Association of Geographers</em>, <em>109</em>(1), 173–186. https://doi.org/10.1080/24694452.2018.1470925</p></li>
+<li><p>Ong, M., Toh, D. X., &amp; Lim, V. (2021) Econometric analysis on factors affecting HDB and private property resale prices through hedonic pricing models. <em>SSS Student Reports (FYP/IA/PA/PI), https://hdl.handle.net/10356/147773</em></p></li>
+<li><p>PropertyGuru. (2022, June 23). <em>4 Reasons Your Singapore Dream Home is So Expensive (2023)</em>. PropertyGuru. Retrieved March 11, 2023, from https://www.propertyguru.com.sg/property-guides/pgf-singapore-house-prices-why-is-housing-in-singapore-so-expensive-66550</p></li>
+<li><p>Nguyen, J. (2022, July 13). <em>4 Key Factors That Drive the Real Estate Market</em>. Investopedia. Retrieved March 11, 2023, from https://www.investopedia.com/articles/mortages-real-estate/11/factors-affecting-real-estate-market.asp</p></li>
+<li><p>Kam, T. S. (2023, February 10). <em>Take-home exercise 3: Predicting HDB public housing resale prices using geographically weighted methods</em>. IS415 AY2022-23T2. Retrieved March 11, 2023, from https://is415-ay2022-23t2.netlify.app/th_ex3.html</p></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="data-source" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="data-source"><span class="header-section-number">3</span> Data Source</h2>
+<table class="table">
+<caption>Fig. 1: Datasets used</caption>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Name</th>
+<th>Format</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Geospatial</td>
+<td>Master Plan 2014 Subzone Boundary (Web)</td>
+<td>.shp</td>
+<td><a href="https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web">link</a></td>
+</tr>
+<tr class="even">
+<td>Aspatial</td>
+<td>Resale Flat Prices</td>
+<td>.csv</td>
+<td><a href="https://data.gov.sg/dataset/resale-flat-prices">link</a></td>
+</tr>
+<tr class="odd">
+<td>Geospatial</td>
+<td>Train Station</td>
+<td>.shp</td>
+<td><a href="https://datamall.lta.gov.sg/content/datamall/en/static-data.html">link</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="data-preparation" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="data-preparation"><span class="header-section-number">4</span> Data Preparation</h2>
+<section id="install-r-packages" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="install-r-packages"><span class="header-section-number">4.1</span> Install R Packages</h3>
+<div class="cell">
+<details>
+<summary>Code for Package Installation</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(olsrr, ggpubr, sf, spdep, GWmodel, tmap, tidyverse, gtsummary, onemapsgapi, rvest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="prepare-geospatial-data" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="prepare-geospatial-data"><span class="header-section-number">4.2</span> Prepare Geospatial Data</h3>
+<p>We will need to prepare the shapefiles (.shp) for most of the features we have selected. Here’s how I did it:</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Methods Used To Extract Data:
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><u><strong>OneMapSG API</strong></u></p>
+<p>The data was extracted by calling the OpenMapSG API. Most API endpoints in OneMapSG require a token. Please register for one <a href="https://developers.onemap.sg/register/">here</a> if you would like to perform some of the steps shown below.</p>
+<p><u><strong>Webscrapped From Government Websites Using Rvest</strong></u></p>
+<p>The data was extracted from government websites using the <strong>rvest</strong> package. The OneMapSG API was then used on the names of the facilities extracted to get the longitude and latitude.</p>
+<p><u><strong>Shapefiles From LTA or data.gov.sg</strong></u></p>
+<p>The shapefiles were directly downloaded from LTA or data.gov.sg</p>
+</div>
+</div>
+</div>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Parks</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Hospitals</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">MRT &amp; LRT Stations</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false">Primary Schools</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-5" role="tab" aria-controls="tabset-2-5" aria-selected="false">Hawker Centres</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-6" role="tab" aria-controls="tabset-2-6" aria-selected="false">Clinics</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-7" role="tab" aria-controls="tabset-2-7" aria-selected="false">Childcare Centres</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-8-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-8" role="tab" aria-controls="tabset-2-8" aria-selected="false">Bus Stops</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># search for themes related to "parks"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>park_themes <span class="ot">=</span> onemapsgapi<span class="sc">::</span><span class="fu">search_themes</span>(token, <span class="st">"parks"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># pick a suitable theme (i.e., "Parks") and use get_themes() to get the location</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># data using the queryname (i.e., "nationalparks")</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>parks_tibble <span class="ot">=</span> onemapsgapi<span class="sc">::</span><span class="fu">get_theme</span>(token, <span class="st">"nationalparks"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># convert it into an sf object and take note that the data is using WGS84</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>parks_sf <span class="ot">=</span> <span class="fu">st_as_sf</span>(parks_tibble, <span class="at">coords=</span><span class="fu">c</span>(<span class="st">"Lng"</span>, <span class="st">"Lat"</span>), <span class="at">crs=</span><span class="dv">4326</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># since the API token is only valid for a few days, let's save this into a</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># shapefile for recurrent use</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># the sf library's st_write() helps us do this</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(parks_sf, <span class="at">dsn=</span><span class="st">"data/geospatial"</span>, <span class="at">layer=</span><span class="st">"parks"</span>, <span class="at">driver=</span> <span class="st">"ESRI Shapefile"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+
+</div>
+<div id="tabset-2-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-5-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># search for themes related to "hawker"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>hawker_themes <span class="ot">=</span> onemapsgapi<span class="sc">::</span><span class="fu">search_themes</span>(token, <span class="st">"hawker"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># pick a suitable theme (i.e., "Hawker Centres") and use get_themes() to get the location</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># data using the queryname (i.e., "hawkercentre")</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>hawker_tibble <span class="ot">=</span> onemapsgapi<span class="sc">::</span><span class="fu">get_theme</span>(token, <span class="st">"hawkercentre"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># convert it into an sf object and take note that the data is using WGS84</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>hawker_sf <span class="ot">=</span> <span class="fu">st_as_sf</span>(hawker_tibble, <span class="at">coords=</span><span class="fu">c</span>(<span class="st">"Lng"</span>, <span class="st">"Lat"</span>), <span class="at">crs=</span><span class="dv">4326</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># since the API token is only valid for a few days, let's save this into a</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># shapefile for recurrent use</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># the sf library's st_write() helps us do this</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(hawker_sf, <span class="at">dsn=</span><span class="st">"data/geospatial"</span>, <span class="at">layer=</span><span class="st">"hawker"</span>, <span class="at">driver=</span> <span class="st">"ESRI Shapefile"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-2-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-6-tab">
+
+</div>
+<div id="tabset-2-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-7-tab">
+
+</div>
+<div id="tabset-2-8" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-8-tab">
+
+</div>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+References for Geospatial Data Preparation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><a href="https://is415-msty.netlify.app/posts/2021-10-25-take-home-exercise-3/">Megan Sim Tze Yen’s ‘Take-Home Exercise 3: Hedonic Pricing Models for Resale Prices of Public Housing in Singapore’</a></p></li>
+<li><p><a href="https://github.com/jolene-lim/onemapsgapi">OneMapSGAPI by Jolene Lim</a></p></li>
+<li><p><a href="https://www.zenrows.com/blog/web-scraping-r">Web Scraping in R: The Complete Guide 2023</a></p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>token <span class="ot">=</span> onemapsgapi<span class="sc">::</span><span class="fu">get_token</span>(<span class="st">"guganesh99@gmail.com"</span>, <span class="st">"Happy1999*@!~#$%"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># search for themes related to "hawker"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>sch_themes <span class="ot">=</span> onemapsgapi<span class="sc">::</span><span class="fu">search_themes</span>(token, <span class="st">"education"</span>, <span class="st">"schools"</span>, <span class="st">"primary"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># pick a suitable theme (i.e., "Hawker Centres") and use get_themes() to get the location</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># data using the queryname (i.e., "hawkercentre")</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># hawker_tibble = onemapsgapi::get_theme(token, "hawkercentre")</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># convert it into an sf object and take note that the data is using WGS84</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#hawker_sf = st_as_sf(hawker_tibble, coords=c("Lng", "Lat"), crs=4326)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># since the API token is only valid for a few days, let's save this into a</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># shapefile for recurrent use</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># the sf library's st_write() helps us do this</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#st_write(hawker_sf, dsn="data/geospatial", layer="hawker", driver= "ESRI Shapefile")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># hawker_sf = st_read(dsn = "data/geospatial", layer="hawker")</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tmap_mode("view")</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># tm_shape(hawker_sf) +</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   tm_dots(col="purple")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clinic_themes = onemapsgapi::search_themes(token, "health")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,309 @@
+---
+title: "In-Class Exercise 9"
+date: "13 March 2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+editor: visual
+---
+
+## Installing the necessary R Packages
+
+```{r}
+#| code-fold: true
+#| code-summary: Installing Packages in R
+
+pacman::p_load(sf, spdep, GWmodel, SpatialML, tidyverse, 
+               tmap, ggpubr, olsrr, devtools, tidymodels)
+```
+
+## Datasets
+
+[**Aspatial**]{.underline}: *.rds* file - more compact and faster for retrieval
+
+[**Geospatial**]{.underline}: *.shp* file - MP14_SUBZONE_WEB_PL and MPSZ-2019 (this is for take-home 3, it has most of the planning subzone information)
+
+## Preparing Data
+
+### Reading rds data file to sf dataframe
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to read .rds file
+
+# you should keep your 'combined' dataset in .rds format (faster to retrieve)
+mdata <- read_rds("data/aspatial/mdata.rds")
+```
+
+### Data Sampling
+
+```{r}
+#| code-fold: true
+#| code-summary: Code for Data Sampling
+
+# set seed value to ensure procedure is reproducible
+set.seed(1234)
+
+# split the data into 65% training and 35% test
+resale_split <- initial_split(mdata,
+                              prop = 6.5/10,)
+train_data <- training(resale_split)
+test_data <- testing(resale_split)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: Code for writing train and test into rds files
+#| eval: false
+
+
+# write the outputs into rds files - for easier access and data management
+write_rds(train_data, "data/model/train_data.rds")
+write_rds(test_data, "data/model/test_data.rds")
+```
+
+## Building a non spatial multiple linear regression
+
+```{r}
+#| code-fold: true
+#| code-summary: Code for building the OLS model
+
+price_mlr <- lm(resale_price ~ floor_area_sqm +
+                    storey_order + remaining_lease_mths +
+                    PROX_CBD + PROX_ELDERLYCARE + PROX_HAWKER +
+                    PROX_MRT + PROX_PARK + PROX_MALL +
+                    PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN +
+                    WITHIN_350M_CHILDCARE + WITHIN_350M_BUS +
+                    WITHIN_1KM_PRISCH,
+                  data = train_data)
+
+summary(price_mlr)
+# explanations of f-statistic, etc. not important for predictive model
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to write price_mlr into rds file
+#| eval: false
+
+# write the data into an rds file (fitted data = estimated data, etc...)
+write_rds(price_mlr, "data/model/price_mlr.rds")
+```
+
+## GWR Predictive Method
+
+### Coverting the sf dataframe to SpatialPointDataFrame
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to convert train_data into SpatialPointDataFrame
+
+train_data_sp <- as_Spatial(train_data)
+train_data_sp
+```
+
+## Prepare coordinates data
+
+### Extracting coordinates data
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to get coordinate data so ranger package can be used for RF
+
+# ranger doesn't understand simple feature dataframe
+coords <- st_coordinates(mdata)
+coords_train <- st_coordinates(train_data)
+coords_test <- st_coordinates(test_data)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to write coords data into rds files
+#| eval: false
+# write all output into rds for future use
+coords_train <- write_rds(coords_train, "data/model/coords_train.rds")
+coords_test <- write_rds(coords_test, "data/model/coords_test.rds")
+```
+
+### Dropping Geometry Field
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to drop geometry column
+
+# drop geometry column of the sf dataframe
+train_data <- train_data %>%
+  st_drop_geometry()
+```
+
+## Calibrating Random Forest
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to calibrate RF
+
+set.seed(1234)
+
+rf <- ranger(resale_price ~ floor_area_sqm +
+                    storey_order + remaining_lease_mths +
+                    PROX_CBD + PROX_ELDERLYCARE + PROX_HAWKER +
+                    PROX_MRT + PROX_PARK + PROX_MALL +
+                    PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN +
+                    WITHIN_350M_CHILDCARE + WITHIN_350M_BUS +
+                    WITHIN_1KM_PRISCH,
+                  data = train_data)
+
+print(rf)
+```
+
+::: {.callout-note collapse="true"}
+## To note:
+
+-   Number of trees = 500 (default) - i.e., number of subsets
+
+-   Target node size = 5 (default) \[you may increase if you want\]
+
+-   MSE = 728602496 \[Mean [Squared]{.underline} Error\] = RSS != Residual Standard Error in OLS model (for comparison please refer to **sqroot of MSE**)
+:::
+
+## Calibrating Geographically Weighted Random Forest
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to calibrate GWRF
+#| eval: false
+
+# eval:false to render the doc for submission
+
+# set seed
+set.seed(1234)
+
+# calibrate the model
+gwrf_adaptive <- grf(formula = resale_price ~ floor_area_sqm +
+                    storey_order + remaining_lease_mths +
+                    PROX_CBD + PROX_ELDERLYCARE + PROX_HAWKER +
+                    PROX_MRT + PROX_PARK + PROX_MALL +
+                    PROX_SUPERMARKET + WITHIN_350M_KINDERGARTEN +
+                    WITHIN_350M_CHILDCARE + WITHIN_350M_BUS +
+                    WITHIN_1KM_PRISCH,
+                  dframe = train_data,
+                  bw = 55,
+                  kernel = "adaptive",
+                  coords = coords_train)
+
+# if kernel is adaptive, bw is number of observations (has to be integer)
+# if kernel is fixed, bw is distance (real number)
+# how to determine bw? -> borrow from GWR method, or you can use grf.bw(formula, dataset, kernel, coords)
+
+# if I want to know which models contribute the most, go see: gwrf_adaptive$Global.Model$variable.importance
+  # vi_df <- as.data.frame(gwrf_adaptive$Global.Model$variable.importance) [you can put this into your report using gtsummary()]
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to write the GWRF model in .rds file
+#| eval: false
+
+# write the output into rds file for future use
+write_rds(gwrf_adaptive, "data/model/gwrf_adaptive.rds")
+```
+
+## Predicting using test data
+
+### Preparing the test data
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to prepare test data by including coords and dropping geometry
+# combine test data with its corresponding coordinates data
+test_data <- cbind(test_data, coords_test) %>%
+  st_drop_geometry()
+
+# X and Y columns are in metres
+```
+
+### Predicting with test data
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to make predictions
+#| eval: false
+
+# put eval as false to render this code for submission
+# local.w helps to weight the local model compared to the global weight
+gwrf_pred <- predict.grf(gwrf_adaptive,
+                         test_data,
+                         x.var.name="X",
+                         y.var.name="Y",
+                         local.w=1,
+                         global.w=0)
+
+# output is a vector
+```
+
+### Convert prediction output into a dataframe
+
+```{r}
+#| code-fold: true
+#| code-summary: Code to convert vector into dataframe
+#| eval: false
+
+# eval: false as I don't want this to run when rendering
+# we do this so we can combine the predicted values with the coordinates
+gwrf_pred_df <- as.data.frame(gwrf_pred)
+```
+
+::: {.callout-note collapse="true"}
+## Lesson Material
+
+[**What is Geospatial Predictive Modelling?**]{.underline}
+
+-   Rooted in the principle that the occurrences of events are limited in distribution.
+
+-   Geographically referenced data: occurreneces are neither uniform nor randomly distributed across space - geographical factors such as infrastructure influence where they occur.
+
+    -   Geospatial Predictive Modelling - attempts to describe those influences by spatially correlating occurrences with environmental factors that represent those influences.
+
+    -   Refer to [Slide 5](https://is415-ay2022-23t2.netlify.app/lesson/lesson09/lesson09-gwrf#/4) to see difference between Explanatory and Predictive Models (focus should be on accuracy of the model)
+
+![](images/image-1550653837.png){width="305"}
+
+[**Data Sampling**]{.underline} - training, validation, and test dataset (for our case, validation not required)
+
+![](images/image-2097243069.png){width="307"}
+
+-   training data to develop classifiers
+-   test data to test classifier
+
+[**Model Fitting**]{.underline} - build different models or same model with different calibration methods (use AIC and BIC to fit the best models)
+
+[**Model Comparison**]{.underline} - since there is a wide choice of classifiers and predictive methods we can use statistical methods such as: [MSE](https://en.wikipedia.org/wiki/Mean_squared_error), [AIC](https://datacadamia.com/data_mining/aic), and [BIC](https://datacadamia.com/data_mining/bic) to compare models. Using training data \[use test data\]
+
+[**Recursive Partitioning: Random Forest (CART)**]{.underline}
+
+As an ML technique, it builds a model based on training dataset and uses that to make predictions or decisions.
+
+![Do note that it takes multiple iterations of "Learn Model" to achieve stable results.](images/image-123943756.png)
+
+If you are using categorical data: Classification Trees (split based on weighted average entropy, must be mutually exhaustive), else it will be Regression Trees (using average for splitting rule).
+
+Ordinal vs Nominal: If your data is ordinal
+
+To avoid over-fitting: minimum number of membership should be 5 (set restrictions so you don't split all the way).
+
+Random Forest:
+
+1.  Create subsets from our main dataset *(subsets here refer to randomising the entire dataset and having multiple versions of it)*
+2.  Use each of them to calibrate the model
+3.  Then I combine them together to derive a more stable model **(Ensemble Method)**
+
+[**Introducing Geographically Weighted Random Forest**]{.underline}
+
+Now we explicitly take the neighbour into consideration (not calibrate the global model, each of the properties you define which neighbours you want (i.e., adaptive or fixed mtd) and you use them to create the predictive model).
+
+Source: [Lesson 9: Geographically Weighted Random Forest](https://is415-ay2022-23t2.netlify.app/lesson/Lesson09/Lesson09-GWRF.html)
+:::

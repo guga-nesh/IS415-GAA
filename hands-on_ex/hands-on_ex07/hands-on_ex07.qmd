@@ -18,7 +18,7 @@ editor: visual
 ## Overview Of Data Used
 
 | Type       | Name                  | Format | Description                                           |
-|-------------|-------------|-------------|----------------------------------|
+|------------|-----------------------|--------|-------------------------------------------------------|
 | Geospatial | MP14_SUBZONE_WEB_PL   | .shp   | URA Master Plan subzone boundary in shapefile format. |
 | Aspatial   | condo_resale_2015.csv | .csv   | Specific details of individual Condo units in 2015.   |
 
@@ -451,7 +451,7 @@ summary(nb_lw)
 lm.morantest(condo.mlr1, nb_lw)
 ```
 
-The Global Moran\'s I test for residual spatial autocorrelation shows that it\'s p-value is less than 0.00000000000000022 which is less than the alpha value of 0.05. Hence, we will reject the null hypothesis that the residuals are randomly distributed.
+The Global Moran's I test for residual spatial autocorrelation shows that it's p-value is less than 0.00000000000000022 which is less than the alpha value of 0.05. Hence, we will reject the null hypothesis that the residuals are randomly distributed.
 
 Since the Observed Global Moran I = 0.1424418 which is greater than 0, we can infer than the residuals resemble cluster distribution.
 

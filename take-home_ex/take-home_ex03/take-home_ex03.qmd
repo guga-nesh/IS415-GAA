@@ -1,0 +1,219 @@
+---
+title: "Take Home Exercise 03: Predicting HDB Public Housing Resale Prices using Geographically Weighted Models"
+date: "11 March 2023"
+date-modified: "`r Sys.Date()`"
+number-sections: true
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+editor: visual
+---
+
+## Our Objective
+
+Conventional predictive models for housing resale prices were built using the Ordinary Least Square (OLS) method, but this approach didn't consider the presence of spatial autocorrelation and spatial heterogeneity in geographic data sets. The existence of spatial autocorrelation means that using OLS to estimate predictive housing resale pricing models could result in biased, inconsistent, or inefficient outcomes. Hence, we will be using **Geographical Weighted Models (GWR)** to calibrate a predictive model for housing resale prices.
+
+## Understanding Singapore's Housing Market
+
+After reviewing existing literature on the Singapore Housing Market and looking through the recommendations by Professor Kam, I hypothesise that the following factors affect the price of HDB flats:
+
+::: {.panel-tabset collapse="true"}
+## Structural
+
+-   Age of unit
+
+-   Floor area of unit
+
+-   Remaining lease of unit
+
+-   Floor level of unit
+
+## Locational
+
+-   Distance to the nearest MRT (Mass Rapid Transit) station
+
+-   Distance to the Central Business District (CBD)
+
+-   Distance to the nearest Park
+
+-   Distance to the nearest Hospital
+
+-   Distance to the nearest Mall
+
+-   Distance to the Top Primary Schools
+
+-   Distance to nearest Hawker Centre
+
+-   Number of Primary Schools within a 1000m radius
+
+-   Number of clinics within a 500m radius
+
+-   Number of childcare centres within a 350m radius
+
+-   Number of bus stops within a 350m radius
+
+-   Percentage of Young in Planning Area
+
+-   Percentage of Working Adults in Planning Area
+
+-   Percentage of Elderly in Planning Area
+:::
+
+::: {.callout-tip collapse="true"}
+## References for Feature Selection
+
+-   Cao, Diao, M., & Wu, B. (2019). A Big Data-Based Geographically Weighted Regression Model for Public Housing Prices: A Case Study in Singapore. *Annals of the American Association of Geographers*, *109*(1), 173--186. https://doi.org/10.1080/24694452.2018.1470925
+
+-   Ong, M., Toh, D. X., & Lim, V. (2021) Econometric analysis on factors affecting HDB and private property resale prices through hedonic pricing models. *SSS Student Reports (FYP/IA/PA/PI), https://hdl.handle.net/10356/147773*
+
+-   PropertyGuru. (2022, June 23). *4 Reasons Your Singapore Dream Home is So Expensive (2023)*. PropertyGuru. Retrieved March 11, 2023, from https://www.propertyguru.com.sg/property-guides/pgf-singapore-house-prices-why-is-housing-in-singapore-so-expensive-66550
+
+-   Nguyen, J. (2022, July 13). *4 Key Factors That Drive the Real Estate Market*. Investopedia. Retrieved March 11, 2023, from https://www.investopedia.com/articles/mortages-real-estate/11/factors-affecting-real-estate-market.asp
+
+-   Kam, T. S. (2023, February 10). *Take-home exercise 3: Predicting HDB public housing resale prices using geographically weighted methods*. IS415 AY2022-23T2. Retrieved March 11, 2023, from https://is415-ay2022-23t2.netlify.app/th_ex3.html
+:::
+
+## Data Source
+
+| Type       | Name                                    | Format | Source                                                                    |
+|------------|-----------------------------------------|--------|---------------------------------------------------------------------------|
+| Geospatial | Master Plan 2014 Subzone Boundary (Web) | .shp   | [link](https://data.gov.sg/dataset/master-plan-2014-subzone-boundary-web) |
+| Aspatial   | Resale Flat Prices                      | .csv   | [link](https://data.gov.sg/dataset/resale-flat-prices)                    |
+| Geospatial | Train Station                           | .shp   | [link](https://datamall.lta.gov.sg/content/datamall/en/static-data.html)  |
+
+: Fig. 1: Datasets used
+
+## Data Preparation
+
+### Install R Packages
+
+```{r}
+#| code-fold: true
+#| code-summary: Code for Package Installation
+
+pacman::p_load(olsrr, ggpubr, sf, spdep, GWmodel, tmap, tidyverse, gtsummary, onemapsgapi, rvest)
+```
+
+### Prepare Geospatial Data
+
+We will need to prepare the shapefiles (.shp) for most of the features we have selected. Here's how I did it:
+
+::: {.callout-warning collapse="true"}
+## Methods Used To Extract Data:
+
+[**OneMapSG API**]{.underline}
+
+The data was extracted by calling the OpenMapSG API. Most API endpoints in OneMapSG require a token. Please register for one [here](https://developers.onemap.sg/register/) if you would like to perform some of the steps shown below.
+
+[**Webscrapped From Government Websites Using Rvest**]{.underline}
+
+The data was extracted from government websites using the **rvest** package. The OneMapSG API was then used on the names of the facilities extracted to get the longitude and latitude.
+
+[**Shapefiles From LTA or data.gov.sg**]{.underline}
+
+The shapefiles were directly downloaded from LTA or data.gov.sg
+:::
+
+::: panel-tabset
+## Parks
+
+```{r}
+#| eval: false
+
+# search for themes related to "parks"
+park_themes = onemapsgapi::search_themes(token, "parks")
+
+# pick a suitable theme (i.e., "Parks") and use get_themes() to get the location
+# data using the queryname (i.e., "nationalparks")
+parks_tibble = onemapsgapi::get_theme(token, "nationalparks")
+
+# convert it into an sf object and take note that the data is using WGS84
+parks_sf = st_as_sf(parks_tibble, coords=c("Lng", "Lat"), crs=4326)
+  
+  
+# since the API token is only valid for a few days, let's save this into a
+# shapefile for recurrent use
+# the sf library's st_write() helps us do this
+st_write(parks_sf, dsn="data/geospatial", layer="parks", driver= "ESRI Shapefile")
+```
+
+## Hospitals
+
+## MRT & LRT Stations
+
+## Primary Schools
+
+## Hawker Centres
+
+```{r}
+#| eval: false
+
+# search for themes related to "hawker"
+hawker_themes = onemapsgapi::search_themes(token, "hawker")
+
+# pick a suitable theme (i.e., "Hawker Centres") and use get_themes() to get the location
+# data using the queryname (i.e., "hawkercentre")
+hawker_tibble = onemapsgapi::get_theme(token, "hawkercentre")
+
+# convert it into an sf object and take note that the data is using WGS84
+hawker_sf = st_as_sf(hawker_tibble, coords=c("Lng", "Lat"), crs=4326)
+  
+  
+# since the API token is only valid for a few days, let's save this into a
+# shapefile for recurrent use
+# the sf library's st_write() helps us do this
+st_write(hawker_sf, dsn="data/geospatial", layer="hawker", driver= "ESRI Shapefile")
+```
+
+## Clinics
+
+## Childcare Centres
+
+## Bus Stops
+:::
+
+::: {.callout-note collapse="true"}
+## References for Geospatial Data Preparation
+
+-   [Megan Sim Tze Yen's 'Take-Home Exercise 3: Hedonic Pricing Models for Resale Prices of Public Housing in Singapore'](https://is415-msty.netlify.app/posts/2021-10-25-take-home-exercise-3/)
+
+-   [OneMapSGAPI by Jolene Lim](https://github.com/jolene-lim/onemapsgapi)
+
+-   [Web Scraping in R: The Complete Guide 2023](https://www.zenrows.com/blog/web-scraping-r)
+:::
+
+```{r}
+#| eval: false
+
+token = onemapsgapi::get_token("guganesh99@gmail.com", "Happy1999*@!~#$%")
+
+# search for themes related to "hawker"
+sch_themes = onemapsgapi::search_themes(token, "education", "schools", "primary")
+
+# pick a suitable theme (i.e., "Hawker Centres") and use get_themes() to get the location
+# data using the queryname (i.e., "hawkercentre")
+# hawker_tibble = onemapsgapi::get_theme(token, "hawkercentre")
+
+# convert it into an sf object and take note that the data is using WGS84
+#hawker_sf = st_as_sf(hawker_tibble, coords=c("Lng", "Lat"), crs=4326)
+  
+  
+# since the API token is only valid for a few days, let's save this into a
+# shapefile for recurrent use
+# the sf library's st_write() helps us do this
+#st_write(hawker_sf, dsn="data/geospatial", layer="hawker", driver= "ESRI Shapefile")
+```
+
+```{r}
+
+# hawker_sf = st_read(dsn = "data/geospatial", layer="hawker")
+# tmap_mode("view")
+# tm_shape(hawker_sf) +
+#   tm_dots(col="purple")
+```
+
+```{r}
+# clinic_themes = onemapsgapi::search_themes(token, "health")
+```
